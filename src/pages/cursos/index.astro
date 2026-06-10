@@ -1,0 +1,21 @@
+---
+import Base from "@/layouts/Base.astro";
+import Programs from "@/components/home/Programs.astro";
+import FinalCTA from "@/components/home/FinalCTA.astro";
+import { SITE } from "@/data/site";
+import { breadcrumbSchema } from "@/lib/schema";
+---
+
+<Base
+  title="Cursos de preparación TOEFL, SAT, GRE, GMAT y PAA | Professional Academy"
+  description="Conoce nuestros cinco programas de preparación con Garantía de Puntaje: TOEFL iBT, SAT, GRE, GMAT y PAA. Clases 1 a 1, simuladores reales y tutores expertos."
+  schema={[breadcrumbSchema([
+    { name: "Inicio", url: SITE.url },
+    { name: "Cursos", url: `${SITE.url}/cursos` },
+  ])]}
+>
+  <div class="pt-20">
+    <Programs />
+  </div>
+  <FinalCTA />
+</Base>

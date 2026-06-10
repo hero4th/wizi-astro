@@ -1,0 +1,88 @@
+---
+import Base from "@/layouts/Base.astro";
+import { SITE } from "@/data/site";
+import { breadcrumbSchema } from "@/lib/schema";
+
+const sections = [
+  {
+    title: "Nuestro compromiso contigo",
+    body: "Asumimos un compromiso firme con tu privacidad. Tratamos tu información bajo los principios de licitud, calidad, acceso, seguridad y confidencialidad, y solo te pedimos los datos necesarios para brindarte el mejor servicio.",
+  },
+  {
+    title: "Cómo usamos tus datos",
+    body: "Los datos que escribes en nuestro formulario de contacto no se difunden, distribuyen ni comercializan. Únicamente los compartimos con terceros cuando la ley lo exige, según el artículo 22 de la Ley Federal de Transparencia. Tu información permanece siempre bajo resguardo.",
+  },
+  {
+    title: "Corrección de tus datos personales",
+    body: "Puedes solicitar la corrección de tu información cuando quieras. Solo el titular de los datos o su representante legal acreditado puede pedir esa corrección, siguiendo lo que establecen los Lineamientos de Protección de Datos Personales.",
+  },
+  {
+    title: "Uso estadístico de la información",
+    body: "A veces usamos la información de los formularios para medir nuestros avances. Estos informes son meramente estadísticos y nunca incluyen datos que permitan identificarte de forma individual.",
+  },
+  {
+    title: "Confidencialidad de tu información",
+    body: "Nuestro personal accede a datos personales solo cuando su trabajo lo requiere, y todo el equipo se compromete a mantener absoluta confidencialidad. Protegemos tu información conforme a los artículos aplicables de la ley y su reglamento.",
+  },
+  {
+    title: "Cambios a esta política",
+    body: "Esta política puede cambiar con el tiempo. Te avisaremos por este mismo medio cuando eso ocurra. Si algún cambio afecta el tipo de información que recogemos, primero pediremos tu permiso.",
+  },
+];
+---
+
+<Base
+  title="Política de privacidad y manejo de datos personales | Professional Academy"
+  description="Cómo protegemos y tratamos tus datos personales en Professional Academy, conforme a la Ley Federal de Transparencia y los lineamientos del INAI."
+  schema={[breadcrumbSchema([
+    { name: "Inicio", url: SITE.url },
+    { name: "Política de privacidad", url: `${SITE.url}/politica-de-privacidad` },
+  ])]}
+  stickyCta={false}
+>
+  <article class="pt-36 pb-24">
+    <div class="container-edge">
+      <header class="mx-auto max-w-2xl">
+        <h1 class="font-display text-3xl leading-tight font-semibold tracking-tight text-balance sm:text-5xl">
+          Política de privacidad y manejo de datos personales
+        </h1>
+        <p class="mt-5 text-lg leading-relaxed text-pearl-dim">
+          Tu privacidad es nuestra prioridad. Así protegemos y tratamos tu información.
+        </p>
+        <p class="mt-8 text-[15px] leading-relaxed text-ink-300">
+          En Professional Academy protegemos tu información. Por eso, queremos
+          explicarte de forma clara cómo tratamos tus datos personales. Nuestro
+          compromiso se basa en la Ley Federal de Transparencia y Acceso a la
+          Información Pública y en los Lineamientos de Protección de Datos
+          Personales.
+        </p>
+      </header>
+
+      <div class="mx-auto mt-14 max-w-2xl space-y-12">
+        {sections.map((s) => (
+          <section>
+            <h2 class="border-l-2 border-teal-500 pl-4 font-display text-xl font-semibold tracking-tight sm:text-2xl">
+              {s.title}
+            </h2>
+            <p class="mt-4 text-[15px] leading-relaxed text-ink-300">{s.body}</p>
+          </section>
+        ))}
+
+        <section>
+          <h2 class="border-l-2 border-teal-500 pl-4 font-display text-xl font-semibold tracking-tight sm:text-2xl">
+            Alcance y más información
+          </h2>
+          <p class="mt-4 text-[15px] leading-relaxed text-ink-300">
+            Esta política aplica únicamente al sitio{" "}
+            <a href={SITE.url} class="text-teal-400 underline underline-offset-2">www.proacademymx.com</a>{" "}
+            y a la información publicada bajo ese dominio. Si deseas conocer más
+            sobre tus derechos, puedes consultar al{" "}
+            <a href="https://home.inai.org.mx/" target="_blank" rel="noopener noreferrer" class="text-teal-400 underline underline-offset-2">
+              Instituto Nacional de Transparencia, Acceso a la Información y Protección de Datos Personales (INAI)
+            </a>.
+          </p>
+        </section>
+      </div>
+    </div>
+  </article>
+</Base>

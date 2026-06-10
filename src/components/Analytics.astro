@@ -1,0 +1,77 @@
+---
+/**
+ * Analytics loader — every tracker is gated on its env var so dev builds
+ * and previews ship zero third-party JS. Set the PUBLIC_* IDs on Vercel.
+ */
+import { SITE } from "@/data/site";
+
+const { ga4, gtm, clarity, metaPixel, linkedin } = SITE.analytics;
+const enabled = import.meta.env.PROD;
+---
+
+{enabled && gtm && (
+  <script is:inline define:vars={{ gtm }}>
+    window.dataLayer = window.dataLayer || [];
+    (function (w, d, s, l, i) {
+      w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
+      var f = d.getElementsByTagName(s)[0],
+        j = d.createElement(s);
+      j.async = true;
+      j.src = "https://www.googletagmanager.com/gtm.js?id=" + i;
+      f.parentNode.insertBefore(j, f);
+    })(window, document, "script", "dataLayer", gtm);
+  </script>
+)}
+
+{enabled && ga4 && !gtm && (
+  <>
+    <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${ga4}`}></script>
+    <script is:inline define:vars={{ ga4 }}>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      gtag("js", new Date());
+      gtag("config", ga4, { anonymize_ip: true });
+    </script>
+  </>
+)}
+
+{enabled && clarity && (
+  <script is:inline define:vars={{ clarity }}>
+    (function (c, l, a, r, i, t, y) {
+      c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments); };
+      t = l.createElement(r); t.async = 1; t.src = "https://www.clarity.ms/tag/" + i;
+      y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
+    })(window, document, "clarity", "script", clarity);
+  </script>
+)}
+
+{enabled && metaPixel && (
+  <script is:inline define:vars={{ metaPixel }}>
+    !(function (f, b, e, v, n, t, s) {
+      if (f.fbq) return; n = f.fbq = function () {
+        n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
+      };
+      if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = "2.0";
+      n.queue = []; t = b.createElement(e); t.async = !0; t.src = v;
+      s = b.getElementsByTagName(e)[0]; s.parentNode.insertBefore(t, s);
+    })(window, document, "script", "https://connect.facebook.net/en_US/fbevents.js");
+    fbq("init", metaPixel);
+    fbq("track", "PageView");
+  </script>
+)}
+
+{enabled && linkedin && (
+  <script is:inline define:vars={{ linkedin }}>
+    window._linkedin_partner_id = linkedin;
+    window._linkedin_data_partner_ids = window._linkedin_data_partner_ids || [];
+    window._linkedin_data_partner_ids.push(linkedin);
+    (function (l) {
+      if (!l) { window.lintrk = function (a, b) { window.lintrk.q.push([a, b]); }; window.lintrk.q = []; }
+      var s = document.getElementsByTagName("script")[0];
+      var b = document.createElement("script");
+      b.type = "text/javascript"; b.async = true;
+      b.src = "https://snap.licdn.com/li.lms-analytics/insight.min.js";
+      s.parentNode.insertBefore(b, s);
+    })(window.lintrk);
+  </script>
+)}

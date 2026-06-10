@@ -1,0 +1,25 @@
+---
+const destinations = [
+  "Harvard", "MIT", "Stanford", "Tec de Monterrey", "Oxford", "Columbia",
+  "UC Berkeley", "UNAM", "Cambridge", "Yale", "UDEM", "Princeton",
+];
+---
+
+<section class="hairline-t hairline-b relative overflow-hidden py-8" aria-label="Universidades destino de nuestros alumnos">
+  <p class="container-edge mb-6 text-center font-mono text-[10px] tracking-[0.3em] text-ink-400 uppercase">
+    Nuestros alumnos estudian en
+  </p>
+  <div class="marquee-track" aria-hidden="true">
+    {[0, 1].map(() => (
+      <div class="flex shrink-0 items-center">
+        {destinations.map((name) => (
+          <span class="mx-8 flex items-center gap-8 font-display text-xl font-medium tracking-tight text-ink-400 transition-colors hover:text-pearl-dim">
+            {name}
+            <span class="size-1 rounded-full bg-teal-600/60"></span>
+          </span>
+        ))}
+      </div>
+    ))}
+  </div>
+  <span class="sr-only">{destinations.join(", ")}</span>
+</section>

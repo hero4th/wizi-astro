@@ -1,0 +1,92 @@
+---
+import { Icon } from "astro-icon/components";
+import Base from "@/layouts/Base.astro";
+import LeadForm from "@/components/LeadForm";
+import { SITE } from "@/data/site";
+import { breadcrumbSchema, localBusinessSchema } from "@/lib/schema";
+
+const channels = [
+  {
+    icon: "ph:phone",
+    label: "Llámanos",
+    value: SITE.phoneDisplay,
+    href: `tel:${SITE.phone.replace(/\s/g, "")}`,
+  },
+  {
+    icon: "simple-icons:whatsapp",
+    label: "WhatsApp",
+    value: SITE.whatsappDisplay,
+    href: `https://wa.me/${SITE.whatsapp}`,
+  },
+  {
+    icon: "ph:map-pin",
+    label: "Visítanos",
+    value: `${SITE.address.street}, ${SITE.address.city}`,
+    href: null,
+  },
+];
+---
+
+<Base
+  title="Agenda tu evaluación gratuita | Professional Academy"
+  description="Agenda tu evaluación diagnóstica gratuita de TOEFL, SAT, GRE, GMAT o PAA. Mide tu nivel real y recibe un plan de preparación personalizado."
+  schema={[localBusinessSchema(), breadcrumbSchema([
+    { name: "Inicio", url: SITE.url },
+    { name: "Contacto", url: `${SITE.url}/contacto` },
+  ])]}
+  stickyCta={false}
+>
+  <section class="relative overflow-hidden pt-36 pb-24">
+    <div class="pointer-events-none absolute -left-40 top-20 h-[26rem] w-[26rem] rounded-full bg-teal-500/8 blur-[120px]" aria-hidden="true"></div>
+
+    <div class="container-edge relative grid gap-16 lg:grid-cols-[1fr_1.3fr]">
+      <div>
+        <h1 class="max-w-md font-display text-4xl leading-[1.05] font-semibold tracking-[-0.03em] sm:text-6xl" data-reveal-line>
+          <span class="line-mask"><span class="line-inner">Tu primera sesión</span></span>
+          <span class="line-mask"><span class="line-inner"><em class="accent-em">va por nuestra cuenta.</em></span></span>
+        </h1>
+        <p class="mt-6 max-w-md text-lg leading-relaxed text-pearl-dim" data-reveal>
+          En 60 minutos mides tu nivel bajo condiciones reales de examen y
+          recibes tu plan de preparación. Sin costo y sin compromiso.
+        </p>
+
+        <ul class="mt-12 space-y-4" data-reveal>
+          {channels.map((ch) => (
+            <li>
+              {ch.href ? (
+                <a
+                  href={ch.href}
+                  target={ch.href.startsWith("http") ? "_blank" : undefined}
+                  rel={ch.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                  class="group flex items-center gap-4 rounded-xl hairline bg-ink-900 px-5 py-4 transition-colors hover:border-teal-500/40"
+                >
+                  <Icon name={ch.icon} class="size-5 text-teal-400" aria-hidden="true" />
+                  <span>
+                    <span class="block font-mono text-[10px] tracking-[0.18em] text-ink-400 uppercase">{ch.label}</span>
+                    <span class="text-[15px] text-pearl transition-colors group-hover:text-teal-300">{ch.value}</span>
+                  </span>
+                </a>
+              ) : (
+                <p class="flex items-center gap-4 rounded-xl hairline bg-ink-900 px-5 py-4">
+                  <Icon name={ch.icon} class="size-5 text-teal-400" aria-hidden="true" />
+                  <span>
+                    <span class="block font-mono text-[10px] tracking-[0.18em] text-ink-400 uppercase">{ch.label}</span>
+                    <span class="text-[15px] text-pearl">{ch.value}</span>
+                  </span>
+                </p>
+              )}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div class="rounded-3xl hairline bg-ink-900 p-7 shadow-panel sm:p-10" data-reveal data-reveal-delay="0.1">
+        <h2 class="font-display text-2xl font-semibold tracking-tight">Agenda tu evaluación</h2>
+        <p class="mt-2 mb-8 text-sm leading-relaxed text-ink-300">
+          Completa el formulario y un asesor te contacta el mismo día.
+        </p>
+        <LeadForm client:visible />
+      </div>
+    </div>
+  </section>
+</Base>

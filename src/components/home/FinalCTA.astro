@@ -1,0 +1,42 @@
+---
+import { SITE } from "@/data/site";
+---
+
+<section class="relative flex min-h-[88svh] items-center overflow-hidden hairline-t" aria-label="Comienza tu preparación">
+  <!-- Glow central -->
+  <div class="pointer-events-none absolute left-1/2 top-1/2 h-[40rem] w-[40rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-teal-500/12 blur-[160px]" aria-hidden="true"></div>
+
+  <div class="container-edge relative z-10 py-28 text-center">
+    <h2
+      class="mx-auto max-w-4xl font-display text-[clamp(2.5rem,7vw,5.5rem)] leading-[1.04] font-semibold tracking-[-0.03em]"
+      data-reveal-line
+    >
+      <span class="line-mask"><span class="line-inner">El puntaje que necesitas</span></span>
+      <span class="line-mask"><span class="line-inner"><em class="accent-em">ya tiene fecha.</em></span></span>
+    </h2>
+
+    <p class="mx-auto mt-8 max-w-lg text-lg leading-relaxed text-pearl-dim" data-reveal>
+      Tu primera evaluación es gratuita: mide tu nivel, conoce tu plan y
+      decide con datos.
+    </p>
+
+    <div class="mt-11 flex flex-wrap items-center justify-center gap-4" data-reveal>
+      <a href="/contacto" class="btn-primary !px-9 !py-4.5" data-magnetic data-event="final_cta_click">
+        Evaluación gratis
+      </a>
+      <a
+        href={`https://wa.me/${SITE.whatsapp}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="btn-ghost"
+        data-magnetic
+      >
+        Hablar por WhatsApp
+      </a>
+    </div>
+
+    <p class="mt-10 font-mono text-[11px] tracking-[0.22em] text-ink-400 uppercase" data-reveal>
+      Sin compromiso. Resultados en la primera sesión.
+    </p>
+  </div>
+</section>

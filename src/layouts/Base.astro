@@ -1,0 +1,65 @@
+---
+import "@/styles/global.css";
+import "@fontsource-variable/bricolage-grotesque";
+import "@fontsource-variable/hanken-grotesk";
+import "@fontsource/ibm-plex-mono/400.css";
+import "@fontsource/ibm-plex-mono/500.css";
+
+import SEO from "@/components/SEO.astro";
+import Analytics from "@/components/Analytics.astro";
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+import WhatsAppFloat from "@/components/WhatsAppFloat.astro";
+import StickyCTA from "@/components/StickyCTA.astro";
+
+interface Props {
+  title: string;
+  description: string;
+  schema?: object[];
+  ogImage?: string;
+  ogType?: "website" | "article";
+  noindex?: boolean;
+  stickyCta?: boolean;
+}
+
+const { title, description, schema, ogImage, ogType, noindex, stickyCta = true } = Astro.props;
+---
+
+<!doctype html>
+<html lang="es-MX">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="alternate" type="application/rss+xml" title="Blog | Professional Academy" href="/rss.xml" />
+    <meta name="theme-color" content="#060a0a" />
+    <SEO {title} {description} {schema} {ogImage} {ogType} {noindex} />
+    <Analytics />
+  </head>
+  <body>
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-teal-400 focus:px-5 focus:py-2.5 focus:font-mono focus:text-xs focus:text-ink-950"
+    >
+      Saltar al contenido
+    </a>
+
+    <Header />
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <Footer />
+    <WhatsAppFloat />
+    {stickyCta && <StickyCTA />}
+
+    <div class="grain" aria-hidden="true"></div>
+
+    <script>
+      import "@/scripts/motion.ts";
+    </script>
+  </body>
+</html>

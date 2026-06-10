@@ -1,0 +1,90 @@
+---
+import { Icon } from "astro-icon/components";
+import Base from "@/layouts/Base.astro";
+import FinalCTA from "@/components/home/FinalCTA.astro";
+import { PROGRAMS } from "@/data/programs";
+import { SITE } from "@/data/site";
+import { breadcrumbSchema } from "@/lib/schema";
+
+const fmt = (n: number) =>
+  new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN", maximumFractionDigits: 0 }).format(n);
+
+const included = [
+  "Diagnóstico inicial bajo condiciones reales",
+  "Plan de estudio personalizado día a día",
+  "Tutorías 1 a 1 con expertos certificados",
+  "Simuladores idénticos al examen oficial",
+  "Retroalimentación individual semanal",
+  "Sesiones grabadas en HD durante todo el curso",
+  "Garantía de Puntaje por contrato",
+];
+---
+
+<Base
+  title="Precios de nuestros cursos | Professional Academy"
+  description="Precios transparentes de los cursos TOEFL iBT, SAT, GRE, GMAT y PAA. Pagos a meses disponibles y Garantía de Puntaje incluida en todos los programas."
+  schema={[breadcrumbSchema([
+    { name: "Inicio", url: SITE.url },
+    { name: "Precios", url: `${SITE.url}/precios` },
+  ])]}
+>
+  <section class="pt-36 pb-16">
+    <div class="container-edge">
+      <h1 class="max-w-3xl font-display text-[clamp(2.5rem,6vw,4.5rem)] leading-[1.04] font-semibold tracking-[-0.03em]" data-reveal-line>
+        <span class="line-mask"><span class="line-inner">Un precio.</span></span>
+        <span class="line-mask"><span class="line-inner"><em class="accent-em">Todo incluido.</em></span></span>
+      </h1>
+      <p class="mt-6 max-w-xl text-lg leading-relaxed text-pearl-dim" data-reveal>
+        Sin costos ocultos ni módulos extra: cada programa incluye el curso
+        completo, los simuladores y la Garantía de Puntaje.
+      </p>
+    </div>
+  </section>
+
+  <section class="pb-20" aria-label="Precios por programa">
+    <div class="container-edge">
+      <div class="hairline-t">
+        {PROGRAMS.map((p) => (
+          <div class="grid items-center gap-x-8 gap-y-4 py-7 hairline-b sm:grid-cols-[1.2fr_1fr_auto_auto]" data-reveal>
+            <div>
+              <h2 class="font-display text-2xl font-semibold tracking-tight sm:text-3xl">{p.exam}</h2>
+              <p class="mt-1 font-mono text-[10px] tracking-[0.18em] text-ink-400 uppercase">{p.fullName}</p>
+            </div>
+            <p class="text-sm leading-relaxed text-ink-300">
+              {p.sessions} sesiones, {p.evaluations} simulacros completos y más de {p.exercises.toLocaleString("es-MX")} ejercicios.
+            </p>
+            <div class="text-left sm:text-right">
+              <p class="font-display text-3xl font-semibold tracking-tight text-pearl">{fmt(p.priceMXN)}</p>
+              <p class="font-mono text-[10px] tracking-widest text-ink-400 uppercase">MXN, pagos a meses</p>
+            </div>
+            <a href={`/cursos/${p.slug}`} class="btn-ghost justify-self-start !px-5 !py-2.5 !text-[11px] sm:justify-self-end" data-event={`pricing_view_${p.slug}`}>
+              Ver programa
+            </a>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="pb-24" aria-label="Qué incluye cada programa">
+    <div class="container-edge grid gap-12 lg:grid-cols-[1fr_1.4fr]">
+      <div>
+        <h2 class="text-3xl sm:text-4xl" data-reveal>Esto incluye<br />cada programa.</h2>
+        <p class="mt-5 max-w-sm text-sm leading-relaxed text-ink-300" data-reveal>
+          El precio que ves es el precio total. La evaluación diagnóstica
+          inicial es gratuita en todos los casos.
+        </p>
+      </div>
+      <ul class="grid gap-3 sm:grid-cols-2" data-reveal>
+        {included.map((item) => (
+          <li class="flex items-start gap-3 rounded-xl hairline bg-ink-900 px-5 py-4 text-sm text-pearl-dim">
+            <Icon name="ph:check" class="mt-0.5 size-4 shrink-0 text-teal-400" aria-hidden="true" />
+            {item}
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <FinalCTA />
+</Base>

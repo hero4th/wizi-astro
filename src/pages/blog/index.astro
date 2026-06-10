@@ -1,0 +1,102 @@
+---
+import { getCollection } from "astro:content";
+import Base from "@/layouts/Base.astro";
+import { CATEGORIES } from "@/data/categories";
+import { SITE } from "@/data/site";
+import { breadcrumbSchema } from "@/lib/schema";
+
+const posts = (await getCollection("blog", ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+const activeCategories = CATEGORIES.filter((c) =>
+  posts.some((p) => p.data.categorySlug === c.slug)
+);
+
+const [featured, ...rest] = posts;
+const formatter = new Intl.DateTimeFormat("es-MX", { day: "numeric", month: "long", year: "numeric" });
+---
+
+<Base
+  title="Blog de preparación académica | Professional Academy"
+  description="Guías de TOEFL, SAT, GRE, GMAT y PAA, técnicas de estudio, procesos de admisión y recursos gratuitos, escritos por nuestros tutores expertos."
+  schema={[breadcrumbSchema([
+    { name: "Inicio", url: SITE.url },
+    { name: "Blog", url: `${SITE.url}/blog` },
+  ])]}
+>
+  <section class="pt-36 pb-16">
+    <div class="container-edge">
+      <h1 class="max-w-3xl font-display text-[clamp(2.5rem,6vw,4.5rem)] leading-[1.04] font-semibold tracking-[-0.03em]" data-reveal-line>
+        <span class="line-mask"><span class="line-inner">Estudia con</span></span>
+        <span class="line-mask"><span class="line-inner"><em class="accent-em">método.</em></span></span>
+      </h1>
+      <p class="mt-6 max-w-xl text-lg leading-relaxed text-pearl-dim" data-reveal>
+        Guías, estrategias y recursos escritos por los mismos tutores que
+        preparan a nuestros alumnos.
+      </p>
+
+      <nav class="mt-10 flex flex-wrap gap-2.5" aria-label="Categorías del blog" data-reveal>
+        {activeCategories.map((cat) => (
+          <a
+            href={`/blog/categoria/${cat.slug}`}
+            class="rounded-full hairline px-4 py-2 font-mono text-[11px] tracking-[0.12em] text-pearl-dim uppercase transition-colors hover:border-teal-400 hover:text-teal-300"
+          >
+            {cat.label}
+          </a>
+        ))}
+      </nav>
+    </div>
+  </section>
+
+  {featured && (
+    <section class="pb-6" aria-label="Artículo destacado">
+      <div class="container-edge">
+        <a
+          href={`/blog/${featured.id}`}
+          class="group relative block overflow-hidden rounded-3xl hairline bg-ink-900 p-8 transition-colors duration-500 hover:border-teal-500/30 sm:p-14"
+          data-reveal
+        >
+          <div class="pointer-events-none absolute -top-24 right-0 h-72 w-72 rounded-full bg-teal-500/10 blur-[100px]" aria-hidden="true"></div>
+          <p class="font-mono text-[11px] tracking-[0.2em] text-teal-400 uppercase">{featured.data.category}</p>
+          <h2 class="mt-5 max-w-3xl font-display text-3xl leading-tight font-semibold tracking-tight transition-colors group-hover:text-teal-300 sm:text-5xl">
+            {featured.data.title}
+          </h2>
+          <p class="mt-5 max-w-2xl text-base leading-relaxed text-ink-300">{featured.data.description}</p>
+          <div class="mt-9 flex items-center gap-5">
+            <span class="btn-ghost !px-5 !py-2.5 !text-[11px] group-hover:border-teal-400 group-hover:text-teal-300">Leer artículo</span>
+            <time datetime={featured.data.pubDate.toISOString()} class="font-mono text-[11px] text-ink-400">
+              {formatter.format(featured.data.pubDate)}
+            </time>
+          </div>
+        </a>
+      </div>
+    </section>
+  )}
+
+  <section class="py-16" aria-label="Todos los artículos">
+    <div class="container-edge">
+      <div class="grid gap-px overflow-hidden rounded-2xl hairline bg-pearl/8 sm:grid-cols-2 lg:grid-cols-3">
+        {rest.map((post, i) => (
+          <a
+            href={`/blog/${post.id}`}
+            class="group flex flex-col justify-between bg-ink-950 p-8 transition-colors duration-500 hover:bg-ink-900"
+            data-reveal
+            data-reveal-delay={String((i % 3) * 0.06)}
+          >
+            <div>
+              <p class="font-mono text-[10px] tracking-[0.2em] text-teal-400 uppercase">{post.data.category}</p>
+              <h3 class="mt-4 font-display text-xl leading-snug font-semibold tracking-tight transition-colors group-hover:text-teal-300">
+                {post.data.title}
+              </h3>
+              <p class="mt-3 line-clamp-3 text-sm leading-relaxed text-ink-300">{post.data.description}</p>
+            </div>
+            <time datetime={post.data.pubDate.toISOString()} class="mt-8 font-mono text-[11px] text-ink-400">
+              {formatter.format(post.data.pubDate)}
+            </time>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</Base>

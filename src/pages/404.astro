@@ -1,0 +1,27 @@
+---
+import Base from "@/layouts/Base.astro";
+---
+
+<Base
+  title="Página no encontrada | Professional Academy"
+  description="La página que buscas no existe o cambió de dirección."
+  noindex
+  stickyCta={false}
+>
+  <section class="flex min-h-[100dvh] items-center">
+    <div class="container-edge py-32 text-center">
+      <p class="font-mono text-sm tracking-[0.3em] text-teal-400 uppercase">Error 404</p>
+      <h1 class="mx-auto mt-6 max-w-2xl font-display text-4xl leading-tight font-semibold tracking-tight sm:text-6xl">
+        Esta página no está<br /><em class="accent-em">en el temario.</em>
+      </h1>
+      <p class="mx-auto mt-6 max-w-md text-lg leading-relaxed text-pearl-dim">
+        La dirección que buscas no existe o cambió de lugar. Vuelve al inicio o
+        explora nuestros cursos.
+      </p>
+      <div class="mt-10 flex flex-wrap items-center justify-center gap-4">
+        <a href="/" class="btn-primary" data-magnetic>Ir al inicio</a>
+        <a href="/cursos" class="btn-ghost" data-magnetic>Ver programas</a>
+      </div>
+    </div>
+  </section>
+</Base>

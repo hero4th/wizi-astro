@@ -1,0 +1,95 @@
+---
+import { getCollection } from "astro:content";
+import Base from "@/layouts/Base.astro";
+import { PROGRAMS } from "@/data/programs";
+import { CATEGORIES } from "@/data/categories";
+import { SITE } from "@/data/site";
+import { breadcrumbSchema } from "@/lib/schema";
+
+const posts = (await getCollection("blog", ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+const groups = [
+  {
+    title: "Cursos",
+    links: [
+      { label: "Todos los cursos", href: "/cursos" },
+      ...PROGRAMS.map((p) => ({ label: `Curso ${p.exam}`, href: `/cursos/${p.slug}` })),
+    ],
+  },
+  {
+    title: "Navegación",
+    links: [
+      { label: "Inicio", href: "/" },
+      { label: "Precios", href: "/precios" },
+      { label: "Testimonios", href: "/testimonios" },
+      { label: "Blog", href: "/blog" },
+      { label: "Preguntas frecuentes", href: "/preguntas-frecuentes" },
+      { label: "Contacto", href: "/contacto" },
+    ],
+  },
+  {
+    title: "Información legal",
+    links: [
+      { label: "Política de privacidad", href: "/politica-de-privacidad" },
+      { label: "Mapa de sitio", href: "/mapa-del-sitio" },
+    ],
+  },
+  {
+    title: "Categorías del blog",
+    links: CATEGORIES.map((c) => ({ label: c.label, href: `/blog/categoria/${c.slug}` })),
+  },
+];
+---
+
+<Base
+  title="Mapa de sitio | Professional Academy"
+  description="Encuentra rápidamente todas las páginas de Professional Academy organizadas por sección: cursos, blog, precios y contacto."
+  schema={[breadcrumbSchema([
+    { name: "Inicio", url: SITE.url },
+    { name: "Mapa de sitio", url: `${SITE.url}/mapa-del-sitio` },
+  ])]}
+  stickyCta={false}
+>
+  <section class="pt-36 pb-24">
+    <div class="container-edge">
+      <h1 class="font-display text-4xl leading-tight font-semibold tracking-tight sm:text-6xl">
+        Mapa de sitio
+      </h1>
+      <p class="mt-5 max-w-xl text-lg leading-relaxed text-pearl-dim">
+        Todas las páginas del sitio, organizadas por sección.
+      </p>
+
+      <div class="mt-14 grid gap-12 sm:grid-cols-2 lg:grid-cols-4">
+        {groups.map((group) => (
+          <nav aria-label={group.title}>
+            <h2 class="eyebrow">{group.title}</h2>
+            <ul class="mt-5 space-y-2.5">
+              {group.links.map((link) => (
+                <li>
+                  <a href={link.href} class="inline-block py-0.5 text-sm text-pearl-dim transition-colors hover:text-teal-300">
+                    {link.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        ))}
+      </div>
+
+      <nav class="mt-16 hairline-t pt-12" aria-label="Artículos del blog">
+        <h2 class="eyebrow">Artículos del blog</h2>
+        <ul class="mt-5 grid gap-2.5 sm:grid-cols-2">
+          {posts.map((post) => (
+            <li>
+              <a href={`/blog/${post.id}`} class="inline-block py-0.5 text-sm text-pearl-dim transition-colors hover:text-teal-300">
+                {post.data.title}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </div>
+  </section>
+</Base>

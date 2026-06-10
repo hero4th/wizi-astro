@@ -1,0 +1,37 @@
+---
+import FAQList from "@/components/FAQList.astro";
+import { FAQS } from "@/data/faqs";
+
+// En la home solo van las preguntas que más influyen en la decisión.
+const featured = FAQS.filter((f) =>
+  [
+    "¿Qué es Professional Academy?",
+    "¿En qué consiste la Garantía de Satisfacción Total?",
+    "¿Puedo pagar a plazos?",
+    "¿Las clases son individuales o grupales?",
+    "¿Ofrecen una evaluación gratis?",
+    "¿Puedo elegir mis horarios?",
+  ].includes(f.q)
+);
+---
+
+<section class="relative py-28" aria-label="Preguntas frecuentes">
+  <div class="container-edge grid gap-14 lg:grid-cols-[1fr_1.6fr]">
+    <div class="lg:sticky lg:top-32 lg:self-start" data-reveal>
+      <h2 class="text-4xl sm:text-5xl">
+        Resolvemos<br /><em class="accent-em">tus dudas.</em>
+      </h2>
+      <p class="mt-6 max-w-sm text-sm leading-relaxed text-ink-300">
+        Las respuestas que más nos piden antes de inscribirse. Si tu pregunta
+        no está aquí, escríbenos y la respondemos en minutos.
+      </p>
+      <a href="/preguntas-frecuentes" class="btn-ghost mt-9 !px-5 !py-2.5 !text-[11px]" data-magnetic>
+        Ver todas las preguntas
+      </a>
+    </div>
+
+    <div data-reveal>
+      <FAQList faqs={featured} name="faq-home" />
+    </div>
+  </div>
+</section>

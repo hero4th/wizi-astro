@@ -1,0 +1,59 @@
+---
+import Base from "@/layouts/Base.astro";
+import FinalCTA from "@/components/home/FinalCTA.astro";
+import { TESTIMONIALS } from "@/data/testimonials";
+import { SITE } from "@/data/site";
+import { breadcrumbSchema } from "@/lib/schema";
+---
+
+<Base
+  title="Testimonios de alumnos | Professional Academy"
+  description="Historias reales de alumnos que alcanzaron su puntaje objetivo en TOEFL, SAT, GRE, GMAT y PAA con Professional Academy."
+  schema={[breadcrumbSchema([
+    { name: "Inicio", url: SITE.url },
+    { name: "Testimonios", url: `${SITE.url}/testimonios` },
+  ])]}
+>
+  <section class="pt-36 pb-16">
+    <div class="container-edge">
+      <h1 class="max-w-3xl font-display text-[clamp(2.5rem,6vw,4.5rem)] leading-[1.04] font-semibold tracking-[-0.03em]" data-reveal-line>
+        <span class="line-mask"><span class="line-inner">Resultados con</span></span>
+        <span class="line-mask"><span class="line-inner"><em class="accent-em">nombre y puntaje.</em></span></span>
+      </h1>
+      <p class="mt-6 max-w-xl text-lg leading-relaxed text-pearl-dim" data-reveal>
+        Más de 10,000 alumnos han alcanzado su puntaje objetivo con nosotros.
+        Estas son algunas de sus historias.
+      </p>
+    </div>
+  </section>
+
+  <section class="pb-24" aria-label="Testimonios">
+    <div class="container-edge columns-1 gap-5 sm:columns-2 lg:columns-3">
+      {TESTIMONIALS.map((t, i) => (
+        <figure
+          class="mb-5 break-inside-avoid rounded-2xl hairline bg-ink-900 p-8 transition-colors duration-500 hover:border-teal-500/30"
+          data-reveal
+          data-reveal-delay={String((i % 3) * 0.06)}
+        >
+          <p class="rounded-full bg-teal-400/10 px-3 py-1.5 font-mono text-[11px] text-teal-300" style="display:inline-block">
+            {t.score}
+          </p>
+          <blockquote class="mt-5 text-[15px] leading-relaxed text-pearl-dim">
+            “{t.quote}”
+          </blockquote>
+          <figcaption class="mt-7 flex items-center gap-3.5">
+            <span class="grid size-11 shrink-0 place-items-center rounded-full bg-teal-900 font-mono text-xs text-teal-300" aria-hidden="true">
+              {t.initials}
+            </span>
+            <span>
+              <span class="block text-sm font-semibold text-pearl">{t.name}</span>
+              <span class="block font-mono text-[10px] tracking-widest text-ink-300 uppercase">Alumno {t.program}</span>
+            </span>
+          </figcaption>
+        </figure>
+      ))}
+    </div>
+  </section>
+
+  <FinalCTA />
+</Base>

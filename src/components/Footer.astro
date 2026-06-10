@@ -1,0 +1,102 @@
+---
+import { Icon } from "astro-icon/components";
+import { SITE } from "@/data/site";
+import { PROGRAMS } from "@/data/programs";
+
+const year = new Date().getFullYear();
+const socials = [
+  { name: "Facebook", icon: "simple-icons:facebook", url: SITE.social.facebook },
+  { name: "Instagram", icon: "simple-icons:instagram", url: SITE.social.instagram },
+  { name: "X", icon: "simple-icons:x", url: SITE.social.twitter },
+];
+---
+
+<footer class="hairline-t relative overflow-hidden">
+  <div class="pointer-events-none absolute -top-40 left-1/2 h-80 w-[60rem] -translate-x-1/2 rounded-full bg-teal-500/6 blur-[120px]" aria-hidden="true"></div>
+
+  <div class="container-edge relative py-20">
+    <div class="grid gap-12 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr]">
+      <div>
+        <a href="/" class="flex items-center gap-2.5" aria-label="Professional Academy, ir al inicio">
+          <span class="grid size-9 place-items-center rounded-lg bg-teal-400 font-display text-lg font-bold text-ink-950">√</span>
+          <span class="font-display text-[15px] leading-tight font-semibold">
+            Professional<br /><span class="text-pearl-dim">Academy<sup class="text-teal-400">®</sup></span>
+          </span>
+        </a>
+        <p class="mt-5 max-w-xs text-sm leading-relaxed text-ink-300">
+          Preparación premium para exámenes de admisión y certificación.
+          Garantía de Puntaje, tutores expertos y simuladores idénticos al examen real.
+        </p>
+        <div class="mt-6 flex gap-3">
+          {socials.map((s) => (
+            <a
+              href={s.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="grid size-11 place-items-center rounded-full hairline text-ink-300 transition-colors hover:border-teal-500/40 hover:text-teal-300"
+              aria-label={`${SITE.name} en ${s.name}`}
+            >
+              <Icon name={s.icon} class="size-4" aria-hidden="true" />
+            </a>
+          ))}
+        </div>
+      </div>
+
+      <nav aria-label="Cursos">
+        <h3 class="eyebrow">Cursos</h3>
+        <ul class="mt-5 space-y-3">
+          {PROGRAMS.map((p) => (
+            <li>
+              <a href={`/cursos/${p.slug}`} class="inline-block py-0.5 text-sm text-pearl-dim transition-colors hover:text-teal-300">
+                Curso {p.exam}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
+      <nav aria-label="Navegación del sitio">
+        <h3 class="eyebrow">Conoce</h3>
+        <ul class="mt-5 space-y-3">
+          <li><a href="/precios" class="inline-block py-0.5 text-sm text-pearl-dim transition-colors hover:text-teal-300">Precios</a></li>
+          <li><a href="/testimonios" class="inline-block py-0.5 text-sm text-pearl-dim transition-colors hover:text-teal-300">Testimonios</a></li>
+          <li><a href="/blog" class="inline-block py-0.5 text-sm text-pearl-dim transition-colors hover:text-teal-300">Blog</a></li>
+          <li><a href="/preguntas-frecuentes" class="inline-block py-0.5 text-sm text-pearl-dim transition-colors hover:text-teal-300">Preguntas frecuentes</a></li>
+          <li><a href="/politica-de-privacidad" class="inline-block py-0.5 text-sm text-pearl-dim transition-colors hover:text-teal-300">Política de privacidad</a></li>
+          <li><a href="/mapa-del-sitio" class="inline-block py-0.5 text-sm text-pearl-dim transition-colors hover:text-teal-300">Mapa de sitio</a></li>
+        </ul>
+      </nav>
+
+      <div>
+        <h3 class="eyebrow">Contacto</h3>
+        <ul class="mt-5 space-y-3 text-sm text-pearl-dim">
+          <li>
+            <a href={`tel:${SITE.phone.replace(/\s/g, "")}`} class="flex items-center gap-2.5 py-0.5 transition-colors hover:text-teal-300">
+              <Icon name="ph:phone" class="size-4 text-teal-400" aria-hidden="true" />
+              {SITE.phoneDisplay}
+            </a>
+          </li>
+          <li>
+            <a href={`https://wa.me/${SITE.whatsapp}`} target="_blank" rel="noopener noreferrer" class="flex items-center gap-2.5 py-0.5 transition-colors hover:text-teal-300">
+              <Icon name="simple-icons:whatsapp" class="size-4 text-teal-400" aria-hidden="true" />
+              WhatsApp: {SITE.whatsappDisplay}
+            </a>
+          </li>
+          <li class="flex items-center gap-2.5 py-0.5">
+            <Icon name="ph:map-pin" class="size-4 text-teal-400" aria-hidden="true" />
+            {SITE.address.street}, {SITE.address.city}
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="hairline-t mt-16 flex flex-col items-center justify-between gap-4 pt-8 sm:flex-row">
+      <p class="font-mono text-[11px] tracking-widest text-ink-400 uppercase">
+        © {year} {SITE.name}. Todos los derechos reservados.
+      </p>
+      <p class="font-mono text-[11px] tracking-widest text-ink-400 uppercase">
+        {SITE.address.city}, {SITE.address.state}, México
+      </p>
+    </div>
+  </div>
+</footer>

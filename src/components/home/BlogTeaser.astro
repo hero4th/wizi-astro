@@ -1,0 +1,53 @@
+---
+import { getCollection } from "astro:content";
+
+const posts = (await getCollection("blog", ({ data }) => !data.draft))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 3);
+
+const formatter = new Intl.DateTimeFormat("es-MX", { day: "numeric", month: "long", year: "numeric" });
+---
+
+<section class="relative py-28" aria-label="Últimos artículos del blog">
+  <div class="container-edge">
+    <div class="flex flex-wrap items-end justify-between gap-6" data-reveal>
+      <h2 class="max-w-xl text-4xl sm:text-5xl">
+        Recursos para <em class="accent-em">estudiar mejor.</em>
+      </h2>
+      <a href="/blog" class="btn-ghost !px-5 !py-2.5 !text-[11px]" data-magnetic>Ver el blog</a>
+    </div>
+
+    <div class="mt-14 grid gap-px overflow-hidden rounded-2xl hairline bg-pearl/8 md:grid-cols-3">
+      {posts.map((post, i) => (
+        <a
+          href={`/blog/${post.id}`}
+          class="group relative flex flex-col justify-between bg-ink-950 p-8 transition-colors duration-500 hover:bg-ink-900"
+          data-reveal
+          data-reveal-delay={String(i * 0.07)}
+        >
+          <div>
+            <p class="font-mono text-[10px] tracking-[0.2em] text-teal-400 uppercase">
+              {post.data.category}
+            </p>
+            <h3 class="mt-4 font-display text-xl leading-snug font-semibold tracking-tight transition-colors group-hover:text-teal-300">
+              {post.data.title}
+            </h3>
+            <p class="mt-3 line-clamp-2 text-sm leading-relaxed text-ink-300">
+              {post.data.description}
+            </p>
+          </div>
+          <div class="mt-8 flex items-center justify-between">
+            <time datetime={post.data.pubDate.toISOString()} class="font-mono text-[11px] text-ink-400">
+              {formatter.format(post.data.pubDate)}
+            </time>
+            <span class="grid size-9 place-items-center rounded-full hairline transition-all duration-500 group-hover:border-teal-400 group-hover:bg-teal-400 group-hover:text-ink-950" aria-hidden="true">
+              <svg class="size-3.5" viewBox="0 0 16 16" fill="none">
+                <path d="M3 13 13 3m0 0H5m8 0v8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </span>
+          </div>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>

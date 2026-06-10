@@ -1,0 +1,65 @@
+---
+import Base from "@/layouts/Base.astro";
+import FAQList from "@/components/FAQList.astro";
+import { FAQS, FAQ_CATEGORIES } from "@/data/faqs";
+import { SITE } from "@/data/site";
+import { breadcrumbSchema, faqSchema } from "@/lib/schema";
+---
+
+<Base
+  title="Preguntas frecuentes | Professional Academy"
+  description="Respuestas sobre nuestros cursos, la Garantía de Puntaje, los pagos a meses y la plataforma de clases de Professional Academy."
+  schema={[
+    faqSchema(FAQS.map(({ q, a }) => ({ q, a }))),
+    breadcrumbSchema([
+      { name: "Inicio", url: SITE.url },
+      { name: "Preguntas frecuentes", url: `${SITE.url}/preguntas-frecuentes` },
+    ]),
+  ]}
+>
+  <section class="pt-36 pb-14">
+    <div class="container-edge">
+      <h1 class="max-w-3xl font-display text-[clamp(2.5rem,6vw,4.5rem)] leading-[1.04] font-semibold tracking-[-0.03em]" data-reveal-line>
+        <span class="line-mask"><span class="line-inner">¿En qué podemos</span></span>
+        <span class="line-mask"><span class="line-inner"><em class="accent-em">ayudarte?</em></span></span>
+      </h1>
+      <p class="mt-6 max-w-xl text-lg leading-relaxed text-pearl-dim" data-reveal>
+        Respuestas rápidas sobre nuestros cursos, la garantía, los pagos y la
+        plataforma.
+      </p>
+    </div>
+  </section>
+
+  <section class="pb-20">
+    <div class="container-edge space-y-16">
+      {FAQ_CATEGORIES.map((category) => (
+        <div class="grid gap-8 lg:grid-cols-[1fr_2fr]" data-reveal>
+          <h2 class="font-display text-2xl font-semibold tracking-tight lg:sticky lg:top-32 lg:self-start">
+            {category}
+          </h2>
+          <FAQList
+            faqs={FAQS.filter((f) => f.category === category)}
+            name={`faq-${category.toLowerCase().replace(/\s/g, "-")}`}
+          />
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="pb-28" aria-label="Contacto directo">
+    <div class="container-edge">
+      <div class="relative overflow-hidden rounded-3xl bg-teal-700 px-8 py-14 text-center sm:px-14" data-reveal>
+        <h2 class="mx-auto max-w-xl font-display text-3xl font-semibold tracking-tight text-pearl sm:text-4xl">
+          ¿No encontraste tu respuesta?
+        </h2>
+        <p class="mx-auto mt-4 max-w-md text-[15px] leading-relaxed text-teal-300/90 text-pearl/85">
+          Nuestro equipo resuelve todas tus dudas y te ayuda a elegir el mejor
+          plan para tu meta.
+        </p>
+        <a href="/contacto" class="mt-8 inline-flex items-center justify-center rounded-full bg-pearl px-8 py-4 font-mono text-[12px] tracking-[0.12em] text-ink-950 uppercase transition-transform hover:scale-[1.03]" data-magnetic>
+          Contáctanos
+        </a>
+      </div>
+    </div>
+  </section>
+</Base>

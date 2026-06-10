@@ -1,0 +1,86 @@
+---
+import { TESTIMONIALS } from "@/data/testimonials";
+---
+
+<section class="relative overflow-hidden py-28" aria-label="Testimonios de alumnos">
+  <div class="container-edge">
+    <div class="flex flex-wrap items-end justify-between gap-6" data-reveal>
+      <div>
+        <p class="eyebrow">Casos de éxito</p>
+        <h2 class="mt-4 max-w-xl text-4xl sm:text-5xl">
+          Ellos ya están <em class="accent-em">del otro lado.</em>
+        </h2>
+      </div>
+      <div class="flex gap-3">
+        <button
+          class="t-prev grid size-12 place-items-center rounded-full hairline text-pearl-dim transition-colors hover:border-teal-400 hover:text-teal-300"
+          aria-label="Testimonio anterior"
+        >
+          <svg class="size-4 rotate-180" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M1 8h14m0 0L9 2m6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </button>
+        <button
+          class="t-next grid size-12 place-items-center rounded-full hairline text-pearl-dim transition-colors hover:border-teal-400 hover:text-teal-300"
+          aria-label="Siguiente testimonio"
+        >
+          <svg class="size-4" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M1 8h14m0 0L9 2m6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- El carrusel sangra fuera del contenedor a la derecha -->
+  <div class="mt-14 pl-[max(1.25rem,calc((100vw-80rem)/2+2.5rem))]" data-reveal>
+    <div class="swiper testimonial-swiper overflow-visible!">
+      <div class="swiper-wrapper">
+        {TESTIMONIALS.map((t) => (
+          <figure class="swiper-slide flex h-auto! w-[21rem]! flex-col justify-between rounded-2xl hairline bg-ink-900 p-8 transition-colors duration-500 hover:border-teal-500/30 sm:w-[24rem]!">
+            <blockquote class="text-[15px] leading-relaxed text-pearl-dim">
+              “{t.quote}”
+            </blockquote>
+            <figcaption class="mt-8 flex items-center justify-between gap-4">
+              <div class="flex items-center gap-3.5">
+                <span class="grid size-11 shrink-0 place-items-center rounded-full bg-teal-900 font-mono text-xs text-teal-300" aria-hidden="true">
+                  {t.initials}
+                </span>
+                <div>
+                  <p class="text-sm font-semibold text-pearl">{t.name}</p>
+                  <p class="font-mono text-[10px] tracking-widest text-ink-300 uppercase">
+                    Alumno {t.program}
+                  </p>
+                </div>
+              </div>
+              <p class="shrink-0 rounded-full bg-teal-400/10 px-3 py-1.5 font-mono text-[11px] text-teal-300">
+                {t.score}
+              </p>
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import Swiper from "swiper";
+  import { Navigation, A11y, Autoplay } from "swiper/modules";
+  import "swiper/css";
+
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  new Swiper(".testimonial-swiper", {
+    modules: [Navigation, A11y, Autoplay],
+    slidesPerView: "auto",
+    spaceBetween: 20,
+    grabCursor: true,
+    a11y: { enabled: true },
+    navigation: { nextEl: ".t-next", prevEl: ".t-prev" },
+    autoplay: reduced
+      ? false
+      : { delay: 4200, disableOnInteraction: true, pauseOnMouseEnter: true },
+    speed: 650,
+  });
+</script>

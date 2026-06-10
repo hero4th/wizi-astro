@@ -1,0 +1,34 @@
+---
+import Base from "@/layouts/Base.astro";
+import Hero from "@/components/home/Hero.astro";
+import Marquee from "@/components/home/Marquee.astro";
+import Stats from "@/components/home/Stats.astro";
+import Programs from "@/components/home/Programs.astro";
+import Methodology from "@/components/home/Methodology.astro";
+import Guarantee from "@/components/home/Guarantee.astro";
+import Testimonials from "@/components/home/Testimonials.astro";
+import BlogTeaser from "@/components/home/BlogTeaser.astro";
+import FAQ from "@/components/home/FAQ.astro";
+import FinalCTA from "@/components/home/FinalCTA.astro";
+
+import { SITE } from "@/data/site";
+import { FAQS } from "@/data/faqs";
+import { faqSchema, localBusinessSchema } from "@/lib/schema";
+---
+
+<Base
+  title="Professional Academy | Cursos TOEFL, SAT, GRE, GMAT y PAA con Garantía"
+  description={SITE.description}
+  schema={[localBusinessSchema(), faqSchema(FAQS.slice(0, 6).map(({ q, a }) => ({ q, a })))]}
+>
+  <Hero />
+  <Marquee />
+  <Stats />
+  <Programs />
+  <Methodology />
+  <Guarantee />
+  <Testimonials />
+  <BlogTeaser />
+  <FAQ />
+  <FinalCTA />
+</Base>

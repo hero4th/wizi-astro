@@ -1,0 +1,52 @@
+---
+import { Icon } from "astro-icon/components";
+
+const terms = [
+  "Aumento mínimo de 10 puntos sobre tu diagnóstico inicial",
+  "Si no lo alcanzas, devolución del 100% de tu inversión",
+  "Por escrito, en tu contrato de inscripción",
+];
+---
+
+<section class="relative py-28" aria-label="Garantía de Puntaje">
+  <div class="container-edge">
+    <div class="relative overflow-hidden rounded-3xl hairline bg-ink-900 px-6 py-16 sm:px-14 lg:py-20" data-reveal>
+      <!-- Glow interno -->
+      <div class="pointer-events-none absolute -top-32 right-0 h-96 w-96 rounded-full bg-teal-500/10 blur-[100px]" aria-hidden="true"></div>
+
+      <div class="relative grid items-center gap-12 lg:grid-cols-[1.1fr_1fr]">
+        <div>
+          <h2 class="max-w-md text-4xl sm:text-5xl">
+            Tu puntaje sube,<br />
+            <em class="accent-em">o no pagas.</em>
+          </h2>
+          <p class="mt-6 max-w-md text-base leading-relaxed text-pearl-dim">
+            La Garantía de Puntaje es un compromiso contractual, no una frase de
+            marketing. Así de seguros estamos de nuestra metodología.
+          </p>
+          <ul class="mt-8 space-y-4">
+            {terms.map((term) => (
+              <li class="flex items-start gap-3 text-[15px] text-pearl-dim">
+                <Icon name="ph:seal-check" class="mt-0.5 size-5 shrink-0 text-teal-400" aria-hidden="true" />
+                {term}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <!-- El sello: número gigante -->
+        <div class="relative text-center lg:text-right" data-parallax="-30" data-parallax-root>
+          <p class="font-display text-[clamp(6rem,16vw,11rem)] leading-none font-bold tracking-[-0.04em] text-teal-400">
+            +10
+          </p>
+          <p class="mt-2 font-mono text-xs tracking-[0.3em] text-pearl-dim uppercase">
+            puntos garantizados
+          </p>
+          <p class="mt-6 inline-block rounded-full hairline px-5 py-2.5 font-mono text-[11px] tracking-widest text-ink-300 uppercase">
+            Avalada por +10,000 alumnos
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
