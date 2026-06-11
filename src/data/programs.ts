@@ -1,4 +1,4 @@
-﻿export interface ProgramSection {
+export interface ProgramSection {
   name: string;
   detail: string;
 }
@@ -69,12 +69,13 @@ export const PROGRAMS: Program[] = [
       { title: "Expertos TOEFL", detail: "Maestros certificados con puntajes superiores a 110 y experiencia pedagógica comprobada." },
     ],
     faqs: [
-      { q: "¿Qué incluye el curso TOEFL iBT?", a: "Acceso a la plataforma con simuladores idénticos al examen real, material oficial de ETS, retroalimentación personalizada 1 a 1 de speaking y writing, y más de 20 horas de sesiones grabadas en HD." },
+      { q: "¿Qué incluye el curso TOEFL iBT?", a: "Acceso a la plataforma con simuladores idénticos al examen real, material oficial de ETS y retroalimentación personalizada 1 a 1 de speaking y writing." },
       { q: "¿Cómo funcionan las sesiones de feedback?", a: "Después de cada simulacro, un experto revisa tus respuestas de speaking y writing con las rúbricas oficiales de ETS y te entrega un plan de mejora puntual para la siguiente semana." },
       { q: "¿Tienen garantía de resultados?", a: "Sí. Garantizamos un aumento mínimo de 10 puntos sobre tu diagnóstico inicial. Si no lo logras al completar el curso, te devolvemos el 100% de tu inversión." },
       { q: "¿Qué nivel de inglés necesito para iniciar?", a: "Ninguno en particular: el diagnóstico inicial define tu punto de partida y el plan se adapta a tu nivel actual, desde B1 hasta C1." },
       { q: "¿Cuánto dura el programa de preparación?", a: "El programa estándar dura de 8 a 12 semanas según tu meta de puntaje y disponibilidad, con horarios totalmente flexibles." },
     ],
+    heroImage: "/sat-hero.png",
   },
   {
     slug: "sat",
@@ -163,12 +164,13 @@ export const PROGRAMS: Program[] = [
       { title: "Expertos GRE", detail: "Maestros certificados con puntajes superiores a 330 y experiencia pedagógica." },
     ],
     faqs: [
-      { q: "¿Qué incluye el curso GRE?", a: "Acceso a la plataforma con simuladores idénticos al examen real, material oficial de ETS, retroalimentación personalizada 1 a 1 de redacción, y más de 20 horas de sesiones grabadas en HD." },
+      { q: "¿Qué incluye el curso GRE?", a: "Acceso a la plataforma con simuladores idénticos al examen real, material oficial de ETS y retroalimentación personalizada 1 a 1 de redacción." },
       { q: "¿Cómo funcionan las sesiones de feedback?", a: "Un experto revisa tus simulacros y ensayos con las rúbricas oficiales y diseña tu plan de mejora semanal." },
       { q: "¿Tienen garantía de resultados?", a: "Sí. Si no incrementas al menos 10 puntos tras completar el curso, te devolvemos el 100% de tu inversión." },
       { q: "¿Qué nivel de inglés necesito para iniciar?", a: "Recomendamos un nivel B2 de inglés. El diagnóstico inicial confirma tu punto de partida y ajusta el plan." },
       { q: "¿Cuánto dura el programa de preparación?", a: "Entre 8 y 12 semanas según tu meta, con 40 sesiones de clase y horarios flexibles." },
     ],
+    heroImage: "/sat-hero.png",
   },
   {
     slug: "gmat",
@@ -215,6 +217,7 @@ export const PROGRAMS: Program[] = [
       { q: "¿Cuánto dura la preparación?", a: "De 10 a 14 semanas en promedio, con 40 sesiones y horarios flexibles para profesionistas." },
       { q: "¿Tienen garantía?", a: "Sí, garantizamos un aumento medible sobre tu diagnóstico inicial o te devolvemos el 100% de tu inversión." },
     ],
+    heroImage: "/sat-hero.png",
   },
   {
     slug: "paa",
@@ -261,6 +264,7 @@ export const PROGRAMS: Program[] = [
       { q: "¿Cuánto tiempo antes debo prepararme?", a: "Recomendamos iniciar de 3 a 4 meses antes de tu fecha de examen para completar las 36 sesiones y los 6 simulacros." },
       { q: "¿Tienen garantía de puntaje?", a: "Sí, garantizamos un aumento mínimo de 100 puntos sobre tu diagnóstico o te devolvemos el 100% de tu inversión." },
     ],
+    heroImage: "/sat-hero.png",
   },
 ];
 

@@ -1,0 +1,105 @@
+---
+const accordionItems = [
+  {
+    id: 1,
+    title: 'Clases en Vivo',
+    imageUrl: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=2070&auto=format&fit=crop',
+  },
+  {
+    id: 2,
+    title: 'Simuladores Reales',
+    imageUrl: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=2070&auto=format&fit=crop',
+  },
+  {
+    id: 3,
+    title: 'Material Exclusivo',
+    imageUrl: 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?q=80&w=1973&auto=format&fit=crop',
+  },
+  {
+    id: 4,
+    title: 'Profesores Expertos',
+    imageUrl: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=2070&auto=format&fit=crop',
+  },
+];
+---
+
+<div class="accordion-container flex flex-row items-center justify-center gap-4 overflow-x-auto py-8 lg:py-0" data-accordion>
+  {accordionItems.map((item, index) => (
+    <div
+      class="accordion-item relative h-[450px] rounded-2xl overflow-hidden cursor-pointer transition-all duration-700 ease-in-out"
+      style={`width: ${index === 3 ? '400px' : '80px'}`}
+      data-index={index}
+    >
+      <img
+        src={item.imageUrl}
+        alt={item.title}
+        class="absolute inset-0 w-full h-full object-cover"
+        onerror={`this.onerror=null; this.src='https://placehold.co/400x450/2d3748/ffffff?text=${encodeURIComponent(item.title)}';`}
+      />
+      <div class={`overlay absolute inset-0 bg-black transition-opacity duration-500 ${index === 3 ? 'opacity-20' : 'opacity-50'}`}></div>
+
+      <span
+        class={`caption absolute text-white text-lg font-display font-semibold whitespace-nowrap transition-all duration-300 ease-in-out ${
+          index === 3
+            ? 'bottom-6 left-1/2 -translate-x-1/2 rotate-0' 
+            : 'w-auto text-left bottom-24 left-1/2 -translate-x-1/2 -rotate-90'
+        }`}
+      >
+        {item.title}
+      </span>
+    </div>
+  ))}
+</div>
+
+<script>
+  function setupAccordion() {
+    const containers = document.querySelectorAll('[data-accordion]');
+    
+    containers.forEach(container => {
+      const items = container.querySelectorAll('.accordion-item');
+      if (!items.length) return;
+      
+      items.forEach(item => {
+        item.addEventListener('mouseenter', () => {
+          // Reset all items
+          items.forEach(el => {
+            if (el instanceof HTMLElement) {
+                el.style.width = '80px';
+                
+                const overlay = el.querySelector('.overlay');
+                if (overlay) {
+                overlay.classList.remove('opacity-20');
+                overlay.classList.add('opacity-50');
+                }
+                
+                const caption = el.querySelector('.caption');
+                if (caption) {
+                caption.className = 'caption absolute text-white text-lg font-display font-semibold whitespace-nowrap transition-all duration-300 ease-in-out w-auto text-left bottom-24 left-1/2 -translate-x-1/2 -rotate-90';
+                }
+            }
+          });
+          
+          // Set active item
+          if (item instanceof HTMLElement) {
+              item.style.width = '400px';
+              
+              const overlay = item.querySelector('.overlay');
+              if (overlay) {
+                overlay.classList.remove('opacity-50');
+                overlay.classList.add('opacity-20');
+              }
+              
+              const caption = item.querySelector('.caption');
+              if (caption) {
+                caption.className = 'caption absolute text-white text-lg font-display font-semibold whitespace-nowrap transition-all duration-300 ease-in-out bottom-6 left-1/2 -translate-x-1/2 rotate-0';
+              }
+          }
+        });
+      });
+    });
+  }
+
+  // Run on load and after view transitions
+  setupAccordion();
+  document.addEventListener('astro:page-load', setupAccordion);
+</script>

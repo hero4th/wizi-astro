@@ -1,9 +1,16 @@
 ---
 import { Icon } from "astro-icon/components";
 import Base from "@/layouts/Base.astro";
-import LeadForm from "@/components/LeadForm";
 import { SITE } from "@/data/site";
 import { breadcrumbSchema, localBusinessSchema } from "@/lib/schema";
+
+const benefits = [
+  "Recibe feedback directo y personalizado en clases particulares",
+  "Simuladores oficiales para ponerte en situaciones reales y así avanzar más rápido",
+  "Gana confianza y seguridad para tu examen oficial",
+  "Completa flexibilidad, estudia cuando y donde te convenga",
+  "Obtén tu puntaje garantizado por contrato"
+];
 
 const channels = [
   {
@@ -36,57 +43,175 @@ const channels = [
   ])]}
   stickyCta={false}
 >
-  <section class="relative overflow-hidden pt-36 pb-24">
-    <div class="pointer-events-none absolute -left-40 top-20 h-[26rem] w-[26rem] rounded-full bg-teal-500/8 blur-[120px]" aria-hidden="true"></div>
-
-    <div class="container-edge relative grid gap-16 lg:grid-cols-[1fr_1.3fr]">
-      <div>
-        <h1 class="max-w-md font-display text-4xl leading-[1.05] font-semibold tracking-[-0.03em] sm:text-6xl" data-reveal-line>
-          <span class="line-mask"><span class="line-inner">Tu primera sesión</span></span>
-          <span class="line-mask"><span class="line-inner"><em class="accent-em">va por nuestra cuenta.</em></span></span>
+  <!-- Main Section matching the screenshot -->
+  <section class="relative overflow-hidden pt-36 pb-20 bg-[#e8f5ed]">
+    <div class="container-edge relative grid gap-12 lg:grid-cols-[1.1fr_0.9fr] items-start">
+      
+      <!-- Left Column: Copy & Benefits -->
+      <div class="pr-0 lg:pr-8">
+        <h1 class="font-display text-[2.5rem] sm:text-[3.25rem] leading-[1.1] font-semibold tracking-tight text-ink-950" data-reveal-line>
+          <span class="line-mask"><span class="line-inner">Progresa más rápido</span></span>
         </h1>
-        <p class="mt-6 max-w-md text-lg leading-relaxed text-ink-500" data-reveal>
-          En 60 minutos mides tu nivel bajo condiciones reales de examen y
-          recibes tu plan de preparación. Sin costo y sin compromiso.
+        <p class="mt-6 text-[18px] font-medium leading-relaxed text-ink-950" data-reveal>
+          Con nuestra experiencia única de aprendizaje virtual.
         </p>
 
-        <ul class="mt-12 space-y-4" data-reveal>
-          {channels.map((ch) => (
-            <li>
-              {ch.href ? (
-                <a
-                  href={ch.href}
-                  target={ch.href.startsWith("http") ? "_blank" : undefined}
-                  rel={ch.href.startsWith("http") ? "noopener noreferrer" : undefined}
-                  class="group flex items-center gap-4 rounded-xl hairline-dim bg-ink-900 px-5 py-4 transition-colors hover:border-teal-500/40"
-                >
-                  <Icon name={ch.icon} class="size-5 text-teal-400" aria-hidden="true" />
-                  <span>
-                    <span class="block font-mono text-[10px] tracking-[0.18em] text-ink-400 uppercase">{ch.label}</span>
-                    <span class="text-[15px] text-pearl transition-colors group-hover:text-teal-300">{ch.value}</span>
-                  </span>
-                </a>
-              ) : (
-                <p class="flex items-center gap-4 rounded-xl hairline-dim bg-ink-900 px-5 py-4">
-                  <Icon name={ch.icon} class="size-5 text-teal-400" aria-hidden="true" />
-                  <span>
-                    <span class="block font-mono text-[10px] tracking-[0.18em] text-ink-400 uppercase">{ch.label}</span>
-                    <span class="text-[15px] text-pearl">{ch.value}</span>
-                  </span>
+        <div class="mt-8 border-t border-ink-950/15" data-reveal>
+          <ul class="flex flex-col">
+            {benefits.map((benefit, i) => (
+              <li class="flex items-center gap-4 border-b border-ink-950/15 py-5">
+                <div class="flex size-7 shrink-0 items-center justify-center rounded-full bg-[#0b8061] text-white">
+                  <Icon name="ph:check" class="size-4" stroke-width="2" />
+                </div>
+                <p class="text-[15px] font-medium leading-relaxed text-ink-900">
+                  {benefit}
                 </p>
-              )}
-            </li>
-          ))}
-        </ul>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
 
-      <div class="rounded-3xl hairline-dim bg-ink-900 p-7 shadow-panel sm:p-10" data-reveal data-reveal-delay="0.1">
-        <h2 class="font-display text-2xl font-semibold tracking-tight">Agenda tu evaluación</h2>
-        <p class="mt-2 mb-8 text-sm leading-relaxed text-ink-300">
-          Completa el formulario y un asesor te contacta el mismo día.
+      <!-- Right Column: Form Card -->
+      <div class="rounded-[4px] bg-white p-8 sm:p-10 shadow-2xl shadow-[#0b8061]/5 lg:ml-auto w-full max-w-[540px]" data-reveal data-reveal-delay="0.1">
+        <p class="font-display text-[18px] font-bold leading-snug text-ink-950">
+          Regístrate para conocer más sobre nuestros planes y precios
         </p>
-        <LeadForm client:visible />
+
+        <form id="contact-page-form" class="mt-8 space-y-4">
+          <input type="text" name="nombre" required placeholder="Nombre de pila*" class="w-full rounded border border-ink-300 bg-white px-4 py-3.5 text-[15px] text-ink-950 outline-none transition-colors placeholder:text-ink-500 focus:border-[#0b8061] focus:ring-1 focus:ring-[#0b8061]" />
+          
+          <input type="text" name="apellidos" required placeholder="Apellido*" class="w-full rounded border border-ink-300 bg-white px-4 py-3.5 text-[15px] text-ink-950 outline-none transition-colors placeholder:text-ink-500 focus:border-[#0b8061] focus:ring-1 focus:ring-[#0b8061]" />
+
+          <input type="email" name="email" required placeholder="Correo electrónico*" class="w-full rounded border border-ink-300 bg-white px-4 py-3.5 text-[15px] text-ink-950 outline-none transition-colors placeholder:text-ink-500 focus:border-[#0b8061] focus:ring-1 focus:ring-[#0b8061]" />
+
+          <div class="flex gap-3">
+            <select class="w-[88px] shrink-0 rounded border border-ink-300 bg-white px-3 py-3.5 text-[15px] text-ink-950 outline-none transition-colors focus:border-[#0b8061] focus:ring-1 focus:ring-[#0b8061]">
+              <option>+52</option>
+              <option>+1</option>
+            </select>
+            <input type="tel" name="telefono" required placeholder="Teléfono*" class="flex-1 rounded border border-ink-300 bg-white px-4 py-3.5 text-[15px] text-ink-950 outline-none transition-colors placeholder:text-ink-500 focus:border-[#0b8061] focus:ring-1 focus:ring-[#0b8061]" />
+          </div>
+
+          <div class="relative">
+            <select name="edad" required class="w-full appearance-none rounded border border-ink-300 bg-white px-4 py-3.5 text-[15px] text-ink-500 outline-none transition-colors focus:border-[#0b8061] focus:text-ink-950 focus:ring-1 focus:ring-[#0b8061] cursor-pointer">
+              <option value="" disabled selected>Edad*</option>
+              <option value="15-18" class="text-ink-950">15 a 18 años</option>
+              <option value="19-25" class="text-ink-950">19 a 25 años</option>
+              <option value="26+" class="text-ink-950">26 años o más</option>
+            </select>
+            <Icon name="ph:caret-down" class="pointer-events-none absolute right-4 top-1/2 size-4 -translate-y-1/2 text-ink-500" />
+          </div>
+
+          <div class="relative">
+            <select name="motivacion" required class="w-full appearance-none rounded border border-ink-300 bg-white px-4 py-3.5 text-[15px] text-ink-500 outline-none transition-colors focus:border-[#0b8061] focus:text-ink-950 focus:ring-1 focus:ring-[#0b8061] cursor-pointer">
+              <option value="" disabled selected>Motivación*</option>
+              <option value="universidad" class="text-ink-950">Admisión a universidad</option>
+              <option value="posgrado" class="text-ink-950">Admisión a posgrado</option>
+              <option value="trabajo" class="text-ink-950">Crecimiento profesional</option>
+            </select>
+            <Icon name="ph:caret-down" class="pointer-events-none absolute right-4 top-1/2 size-4 -translate-y-1/2 text-ink-500" />
+          </div>
+
+          <div class="pt-2 flex items-start gap-3">
+            <input type="checkbox" id="privacy-page" required class="mt-1 size-5 shrink-0 rounded-sm border-ink-300 text-[#0b8061] focus:ring-[#0b8061]" />
+            <label for="privacy-page" class="text-[13px] leading-relaxed text-ink-800">
+              Sí, he leído y entendido cómo procesan mis datos personales según lo establecido en el <a href="/politica-de-privacidad" class="font-semibold text-ink-950 underline hover:text-[#0b8061]">Política de privacidad.</a>
+            </label>
+          </div>
+
+          <div class="pt-4">
+            <button type="submit" id="contact-submit-btn" class="w-auto rounded bg-[#0b8061] px-8 py-3 text-[15px] font-semibold tracking-wide text-white transition-colors hover:bg-teal-800">
+              Enviar
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   </section>
+
+  <!-- Contact Channels Section Below -->
+  <section class="bg-white py-20">
+    <div class="container-edge">
+      <h2 class="text-center font-display text-3xl font-semibold tracking-tight text-ink-950 mb-12">
+        ¿Prefieres contactarnos directamente?
+      </h2>
+      <ul class="grid gap-6 md:grid-cols-3">
+        {channels.map((ch) => (
+          <li>
+            {ch.href ? (
+              <a
+                href={ch.href}
+                target={ch.href.startsWith("http") ? "_blank" : undefined}
+                rel={ch.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                class="group flex flex-col items-center text-center gap-5 rounded-[20px] bg-ink-50 px-6 py-10 transition-all hover:bg-white hover:shadow-xl hover:shadow-[#0b8061]/5 hover:-translate-y-1 border border-transparent hover:border-ink-200"
+              >
+                <div class="flex size-16 items-center justify-center rounded-full bg-[#0b8061]/10 text-[#0b8061] transition-colors group-hover:bg-[#0b8061] group-hover:text-white">
+                  <Icon name={ch.icon} class="size-7" aria-hidden="true" />
+                </div>
+                <div>
+                  <span class="block font-mono text-[11px] tracking-[0.2em] text-ink-500 uppercase mb-2">{ch.label}</span>
+                  <span class="font-display font-medium text-[20px] text-ink-950">{ch.value}</span>
+                </div>
+              </a>
+            ) : (
+              <div class="flex flex-col items-center text-center gap-5 rounded-[20px] bg-ink-50 px-6 py-10">
+                <div class="flex size-16 items-center justify-center rounded-full bg-[#0b8061]/10 text-[#0b8061]">
+                  <Icon name={ch.icon} class="size-7" aria-hidden="true" />
+                </div>
+                <div>
+                  <span class="block font-mono text-[11px] tracking-[0.2em] text-ink-500 uppercase mb-2">{ch.label}</span>
+                  <span class="font-display font-medium text-[20px] text-ink-950">{ch.value}</span>
+                </div>
+              </div>
+            )}
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
 </Base>
+
+<script>
+  document.addEventListener("astro:page-load", () => {
+    const form = document.getElementById("contact-page-form") as HTMLFormElement;
+    if (!form) return;
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      
+      const btn = document.getElementById("contact-submit-btn") as HTMLButtonElement;
+      if (btn) btn.innerText = "Abriendo WhatsApp...";
+
+      const data = new FormData(form);
+      const name = data.get("nombre");
+      const lastName = data.get("apellidos");
+      const email = data.get("email");
+      const phone = data.get("telefono");
+      const age = data.get("edad");
+      const motivation = data.get("motivacion");
+
+      const message = [
+        "Hola, quiero más información sobre sus planes.",
+        `Nombre: ${name} ${lastName}`,
+        `Correo: ${email}`,
+        phone ? `Teléfono: ${phone}` : null,
+        age ? `Edad: ${age}` : null,
+        motivation ? `Motivación: ${motivation}` : null,
+      ].filter(Boolean).join("\n");
+
+      // El número es 523327986275 (definido en LeadForm original)
+      const WHATSAPP = "523327986275";
+      window.open(
+        `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(message)}`,
+        "_blank",
+        "noopener,noreferrer"
+      );
+
+      setTimeout(() => {
+        if (btn) btn.innerText = "Enviado";
+        form.reset();
+      }, 1500);
+    });
+  });
+</script>

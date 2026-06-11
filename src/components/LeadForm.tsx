@@ -42,7 +42,7 @@ export default function LeadForm() {
     return next;
   }
 
-  function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = e.currentTarget;
     const data = new FormData(form);
@@ -85,8 +85,8 @@ export default function LeadForm() {
   }
 
   const inputClass = (hasError: boolean) =>
-    `w-full rounded-xl border bg-ink-950 px-4 py-3.5 text-[15px] text-pearl outline-none transition-colors placeholder:text-ink-400 focus-visible:border-teal-400 ${
-      hasError ? "border-red-400/60" : "border-pearl/12"
+    `w-full rounded-xl border bg-ink-950/50 px-4 py-3.5 text-[15px] text-pearl outline-none transition-all placeholder:text-ink-500 focus-visible:bg-ink-950 focus-visible:ring-1 ${
+      hasError ? "border-red-400/60 focus-visible:ring-red-400" : "border-ink-800 focus-visible:border-teal-500 focus-visible:ring-teal-500"
     }`;
 
   if (status === "done") {
@@ -115,10 +115,10 @@ export default function LeadForm() {
   }
 
   return (
-    <form ref={formRef} onSubmit={handleSubmit} noValidate className="space-y-5">
-      <div className="grid gap-5 sm:grid-cols-2">
-        <div className="flex flex-col gap-2">
-          <label htmlFor="lead-name" className="font-mono text-[11px] tracking-[0.16em] text-pearl-dim uppercase">
+    <form ref={formRef} onSubmit={handleSubmit} noValidate className="space-y-6">
+      <div className="grid gap-6 sm:grid-cols-2">
+        <div className="flex flex-col gap-2.5">
+          <label htmlFor="lead-name" className="font-mono text-[11px] tracking-[0.16em] text-ink-300 uppercase">
             Nombre completo
           </label>
           <input
@@ -133,12 +133,12 @@ export default function LeadForm() {
             aria-describedby={errors.name ? "err-name" : undefined}
           />
           {errors.name && (
-            <p id="err-name" className="text-xs text-red-300">{errors.name}</p>
+            <p id="err-name" className="text-xs text-red-400">{errors.name}</p>
           )}
         </div>
 
-        <div className="flex flex-col gap-2">
-          <label htmlFor="lead-email" className="font-mono text-[11px] tracking-[0.16em] text-pearl-dim uppercase">
+        <div className="flex flex-col gap-2.5">
+          <label htmlFor="lead-email" className="font-mono text-[11px] tracking-[0.16em] text-ink-300 uppercase">
             Correo electrónico
           </label>
           <input
@@ -155,15 +155,15 @@ export default function LeadForm() {
             aria-describedby={errors.email ? "err-email" : undefined}
           />
           {errors.email && (
-            <p id="err-email" className="text-xs text-red-300">{errors.email}</p>
+            <p id="err-email" className="text-xs text-red-400">{errors.email}</p>
           )}
         </div>
       </div>
 
-      <div className="grid gap-5 sm:grid-cols-2">
-        <div className="flex flex-col gap-2">
-          <label htmlFor="lead-phone" className="font-mono text-[11px] tracking-[0.16em] text-pearl-dim uppercase">
-            Teléfono <span className="normal-case text-ink-400">(opcional)</span>
+      <div className="grid gap-6 sm:grid-cols-2">
+        <div className="flex flex-col gap-2.5">
+          <label htmlFor="lead-phone" className="font-mono text-[11px] tracking-[0.16em] text-ink-300 uppercase">
+            Teléfono <span className="normal-case text-ink-500">(opcional)</span>
           </label>
           <input
             id="lead-phone"
@@ -177,12 +177,12 @@ export default function LeadForm() {
             aria-describedby={errors.phone ? "err-phone" : undefined}
           />
           {errors.phone && (
-            <p id="err-phone" className="text-xs text-red-300">{errors.phone}</p>
+            <p id="err-phone" className="text-xs text-red-400">{errors.phone}</p>
           )}
         </div>
 
-        <div className="flex flex-col gap-2">
-          <label htmlFor="lead-exam" className="font-mono text-[11px] tracking-[0.16em] text-pearl-dim uppercase">
+        <div className="flex flex-col gap-2.5">
+          <label htmlFor="lead-exam" className="font-mono text-[11px] tracking-[0.16em] text-ink-300 uppercase">
             Examen de interés
           </label>
           <select
@@ -190,7 +190,7 @@ export default function LeadForm() {
             name="exam"
             required
             defaultValue=""
-            className={`${inputClass(!!errors.exam)} appearance-none bg-ink-950 text-pearl`}
+            className={`${inputClass(!!errors.exam)} appearance-none bg-ink-950/50 text-pearl cursor-pointer`}
             aria-invalid={!!errors.exam}
             aria-describedby={errors.exam ? "err-exam" : undefined}
           >
@@ -198,20 +198,20 @@ export default function LeadForm() {
               Elige una opción…
             </option>
             {EXAMS.map((exam) => (
-              <option key={exam} value={exam}>
+               <option key={exam} value={exam} className="bg-ink-900">
                 {exam}
               </option>
             ))}
           </select>
           {errors.exam && (
-            <p id="err-exam" className="text-xs text-red-300">{errors.exam}</p>
+            <p id="err-exam" className="text-xs text-red-400">{errors.exam}</p>
           )}
         </div>
       </div>
 
-      <div className="flex flex-col gap-2">
-        <label htmlFor="lead-notes" className="font-mono text-[11px] tracking-[0.16em] text-pearl-dim uppercase">
-          Cuéntanos tu meta <span className="normal-case text-ink-400">(opcional)</span>
+      <div className="flex flex-col gap-2.5">
+        <label htmlFor="lead-notes" className="font-mono text-[11px] tracking-[0.16em] text-ink-300 uppercase">
+          Cuéntanos tu meta <span className="normal-case text-ink-500">(opcional)</span>
         </label>
         <textarea
           id="lead-notes"
@@ -228,16 +228,18 @@ export default function LeadForm() {
         <input id="lead-company" name="company" type="text" tabIndex={-1} autoComplete="off" />
       </div>
 
-      <button
-        type="submit"
-        className="btn-primary w-full !py-4 sm:w-auto"
-        disabled={status === "sending"}
-      >
-        {status === "sending" ? "Abriendo WhatsApp…" : "Agendar mi evaluación"}
-      </button>
+      <div className="pt-2">
+        <button
+          type="submit"
+          className="btn-primary w-full shadow-lg shadow-teal-500/20 hover:shadow-teal-500/40 hover:-translate-y-0.5 transition-all !py-4 sm:w-auto"
+          disabled={status === "sending"}
+        >
+          {status === "sending" ? "Abriendo WhatsApp…" : "Agendar mi evaluación"}
+        </button>
+      </div>
       <p className="text-xs leading-relaxed text-ink-400">
         Al enviar aceptas nuestra{" "}
-        <a href="/politica-de-privacidad" className="underline underline-offset-2 transition-colors hover:text-teal-300">
+        <a href="/politica-de-privacidad" className="font-medium text-ink-300 underline underline-offset-2 transition-colors hover:text-teal-400">
           política de privacidad
         </a>
         . Tus datos solo se usan para agendar tu evaluación.

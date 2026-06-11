@@ -63,37 +63,55 @@
         </div>
       </div>
 
-      <!-- Columna derecha: Garantía + resultados representativos -->
+      <!-- Columna derecha: Formulario de registro -->
       <div class="hero-fade hidden lg:block">
-        <!-- Badge de garantía -->
-        <div class="relative flex flex-col items-center justify-center">
-          <div class="relative flex size-64 items-center justify-center rounded-full border border-teal-500/20 bg-gradient-to-br from-teal-500/8 to-teal-400/4">
-            <div class="absolute inset-3 rounded-full border border-teal-500/10"></div>
-            <div class="relative z-10 text-center">
-              <p class="font-display text-[5rem] leading-none font-bold tracking-[-0.04em] text-teal-600">+10</p>
-              <p class="mt-1 font-mono text-[10px] tracking-[0.22em] text-ink-500 uppercase">pts garantizados</p>
-            </div>
-          </div>
-          <p class="mt-4 text-center font-mono text-[10.5px] leading-relaxed tracking-[0.12em] text-ink-400 uppercase">
-            O devolución del 100%
+        <div class="rounded-[20px] bg-white p-8 shadow-2xl shadow-ink-900/5 ring-1 ring-ink-950/5">
+          <p class="font-display text-[17px] font-semibold leading-snug text-ink-950">
+            Regístrate para saber más sobre planes y precios:
           </p>
-        </div>
 
-        <!-- Resultados representativos -->
-        <div class="mt-8 space-y-2">
-          {[
-            { exam: "TOEFL iBT", score: "108/120", gain: "+34 pts" },
-            { exam: "SAT",       score: "1,480",   gain: "Percentil 99" },
-            { exam: "GRE",       score: "330/340",  gain: "+24 pts" },
-          ].map((item) => (
-            <div class="flex items-center justify-between rounded-xl bg-ink-50 px-5 py-4">
-              <div class="flex items-center gap-3">
-                <span class="font-mono text-[10px] tracking-[0.18em] text-ink-400 uppercase">{item.exam}</span>
-                <span class="font-display text-lg font-semibold tracking-tight text-ink-950">{item.score}</span>
-              </div>
-              <span class="rounded-full bg-teal-500/10 px-3 py-1 font-mono text-[10.5px] text-teal-700">{item.gain}</span>
+          <form class="mt-6 space-y-3.5" action="/gracias" method="GET">
+            <input type="text" name="nombre" required placeholder="Nombre*" class="w-full rounded border border-ink-200 bg-white px-4 py-3 text-[14px] outline-none transition-colors placeholder:text-ink-400 focus:border-teal-500 focus:ring-1 focus:ring-teal-500" />
+            
+            <input type="text" name="apellidos" required placeholder="Apellidos*" class="w-full rounded border border-ink-200 bg-white px-4 py-3 text-[14px] outline-none transition-colors placeholder:text-ink-400 focus:border-teal-500 focus:ring-1 focus:ring-teal-500" />
+
+            <input type="email" name="email" required placeholder="Correo Electrónico*" class="w-full rounded border border-ink-200 bg-white px-4 py-3 text-[14px] outline-none transition-colors placeholder:text-ink-400 focus:border-teal-500 focus:ring-1 focus:ring-teal-500" />
+
+            <div class="flex gap-3">
+              <select class="w-[88px] shrink-0 rounded border border-ink-200 bg-white px-3 py-3 text-[14px] outline-none transition-colors focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                <option>+52</option>
+                <option>+1</option>
+              </select>
+              <input type="tel" name="telefono" required placeholder="Número de teléfono*" class="flex-1 rounded border border-ink-200 bg-white px-4 py-3 text-[14px] outline-none transition-colors placeholder:text-ink-400 focus:border-teal-500 focus:ring-1 focus:ring-teal-500" />
             </div>
-          ))}
+
+            <select required class="w-full rounded border border-ink-200 bg-white px-4 py-3 text-[14px] text-ink-400 outline-none transition-colors focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+              <option value="" disabled selected>Edad*</option>
+              <option value="15-18">15 a 18 años</option>
+              <option value="19-25">19 a 25 años</option>
+              <option value="26+">26 años o más</option>
+            </select>
+
+            <select required class="w-full rounded border border-ink-200 bg-white px-4 py-3 text-[14px] text-ink-400 outline-none transition-colors focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+              <option value="" disabled selected>Motivación*</option>
+              <option value="universidad">Admisión a universidad</option>
+              <option value="posgrado">Admisión a posgrado</option>
+              <option value="trabajo">Crecimiento profesional</option>
+            </select>
+
+            <div class="pt-2 flex items-start gap-3">
+              <input type="checkbox" id="privacy" required class="mt-0.5 size-[18px] shrink-0 rounded border-ink-300 text-teal-600 focus:ring-teal-500" />
+              <label for="privacy" class="text-[12px] leading-[1.6] text-ink-600">
+                Sí, he leído y comprendido cómo Professional Academy procesa mis datos personales tal y como establece la <a href="/politica-de-privacidad" class="font-semibold text-ink-950 underline hover:text-teal-600">política de privacidad</a>. *
+              </label>
+            </div>
+
+            <div class="pt-1">
+              <button type="submit" class="w-auto rounded-lg bg-teal-600 px-8 py-3 text-[14px] font-medium text-white transition-colors hover:bg-teal-700">
+                Enviar
+              </button>
+            </div>
+          </form>
         </div>
       </div>
 

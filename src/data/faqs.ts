@@ -13,7 +13,7 @@ export const FAQS: FAQ[] = [
   {
     category: "General",
     q: "¿Puedo tomar las clases en línea?",
-    a: "Sí, todos nuestros programas se imparten 100% en línea con sesiones en vivo. También tienes acceso a las grabaciones en HD de cada clase para repasar cuando quieras.",
+    a: "Sí, todos nuestros programas se imparten 100% en línea con sesiones en vivo.",
   },
   {
     category: "General",
@@ -65,11 +65,7 @@ export const FAQS: FAQ[] = [
     q: "¿Cómo funcionan los simuladores?",
     a: "Nuestros simuladores replican el formato, el tiempo y el tipo de preguntas del examen oficial. Después de cada simulacro recibes un reporte detallado por sección y tipo de pregunta.",
   },
-  {
-    category: "Plataforma y clases",
-    q: "¿Tengo acceso a material grabado?",
-    a: "Sí, todas tus sesiones quedan grabadas en HD y disponibles en tu plataforma durante toda la duración del curso.",
-  },
+
   {
     category: "Plataforma y clases",
     q: "¿Cómo recibo retroalimentación?",
