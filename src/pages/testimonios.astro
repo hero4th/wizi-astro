@@ -14,42 +14,79 @@ import { breadcrumbSchema } from "@/lib/schema";
     { name: "Testimonios", url: `${SITE.url}/testimonios` },
   ])]}
 >
-  <section class="pt-36 pb-16">
+  <section class="pt-36 pb-20">
     <div class="container-edge">
-      <h1 class="max-w-3xl font-display text-[clamp(2.5rem,6vw,4.5rem)] leading-[1.04] font-semibold tracking-[-0.03em]" data-reveal-line>
-        <span class="line-mask"><span class="line-inner">Resultados con</span></span>
-        <span class="line-mask"><span class="line-inner"><em class="accent-em">nombre y puntaje.</em></span></span>
-      </h1>
-      <p class="mt-6 max-w-xl text-lg leading-relaxed text-ink-500" data-reveal>
-        Más de 10,000 alumnos han alcanzado su puntaje objetivo con nosotros.
-        Estas son algunas de sus historias.
-      </p>
+      <div class="max-w-3xl">
+        <p class="eyebrow flex items-center gap-2.5 mb-6" data-reveal>
+          <span class="relative flex size-2" aria-hidden="true">
+            <span class="absolute inline-flex size-full animate-ping rounded-full bg-teal-500 opacity-60"></span>
+            <span class="relative inline-flex size-2 rounded-full bg-teal-500"></span>
+          </span>
+          Casos de Éxito
+        </p>
+        <h1 class="font-display text-[clamp(2.5rem,6vw,4.5rem)] leading-[1.04] font-semibold tracking-[-0.03em]" data-reveal-line>
+          <span class="line-mask"><span class="line-inner">Resultados con</span></span>
+          <span class="line-mask"><span class="line-inner"><em class="accent-em">nombre y puntaje.</em></span></span>
+        </h1>
+        <p class="mt-6 max-w-xl text-lg leading-relaxed text-ink-500" data-reveal>
+          Más de 10,000 alumnos han alcanzado su puntaje objetivo con nosotros.
+          Estas son algunas de sus historias reales.
+        </p>
+        
+        <div class="mt-10 flex flex-wrap gap-3" data-reveal>
+          <span class="inline-flex items-center gap-1.5 rounded-full border border-ink-200 bg-ink-50 px-3.5 py-1.5 text-sm font-medium text-ink-700">
+            <svg class="size-4 text-teal-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+            Garantía por Contrato
+          </span>
+          <span class="inline-flex items-center gap-1.5 rounded-full border border-ink-200 bg-ink-50 px-3.5 py-1.5 text-sm font-medium text-ink-700">
+            <svg class="size-4 text-teal-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            10,000+ Alumnos
+          </span>
+          <span class="inline-flex items-center gap-1.5 rounded-full border border-ink-200 bg-ink-50 px-3.5 py-1.5 text-sm font-medium text-ink-700">
+            <svg class="size-4 text-teal-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            Top Scores Nacionales
+          </span>
+        </div>
+      </div>
     </div>
   </section>
 
-  <section class="pb-24" aria-label="Testimonios">
-    <div class="container-edge columns-1 gap-5 sm:columns-2 lg:columns-3">
+  <section class="relative py-24 bg-ink-950 overflow-hidden" aria-label="Testimonios">
+    <!-- Patrón de fondo sutil para dar profundidad al Wall of Love -->
+    <div class="absolute inset-0 opacity-[0.03] pointer-events-none" aria-hidden="true" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 32px 32px;"></div>
+    
+    <div class="container-edge relative z-10 columns-1 gap-6 sm:columns-2 lg:columns-3">
       {TESTIMONIALS.map((t, i) => (
         <figure
-          class="mb-5 break-inside-avoid rounded-2xl hairline-dim bg-ink-900 p-8 transition-colors duration-500 hover:border-teal-500/30"
+          class="group relative mb-6 break-inside-avoid rounded-[20px] glass-dark p-8 transition-all duration-500 hover:-translate-y-1 hover:border-teal-500/40 hover:shadow-glow overflow-hidden"
           data-reveal
-          data-reveal-delay={String((i % 3) * 0.06)}
+          data-reveal-delay={String((i % 3) * 0.08)}
         >
-          <p class="rounded-full bg-teal-400/10 px-3 py-1.5 font-mono text-[11px] text-teal-300" style="display:inline-block">
-            {t.score}
-          </p>
-          <blockquote class="mt-5 text-[15px] leading-relaxed text-pearl-dim">
-            “{t.quote}”
-          </blockquote>
-          <figcaption class="mt-7 flex items-center gap-3.5">
-            <span class="grid size-11 shrink-0 place-items-center rounded-full bg-teal-900 font-mono text-xs text-teal-300" aria-hidden="true">
-              {t.initials}
-            </span>
-            <span>
-              <span class="block text-sm font-semibold text-pearl">{t.name}</span>
-              <span class="block font-mono text-[10px] tracking-widest text-ink-300 uppercase">Alumno {t.program}</span>
-            </span>
-          </figcaption>
+          <!-- Ícono decorativo de comillas gigantes de fondo -->
+          <svg class="absolute -top-4 -left-4 size-24 text-teal-400/5 transition-transform duration-500 group-hover:scale-110 group-hover:text-teal-400/10 pointer-events-none" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
+          </svg>
+
+          <div class="relative z-10">
+            <p class="inline-flex items-center gap-2 rounded-full border border-teal-500/20 bg-teal-500/10 px-3.5 py-1.5 font-mono text-[13px] font-medium text-teal-300">
+              <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              {t.score}
+            </p>
+            
+            <blockquote class="mt-6 font-display text-[1.0625rem] leading-relaxed text-pearl">
+              “{t.quote}”
+            </blockquote>
+            
+            <figcaption class="mt-8 flex items-center gap-4">
+              <span class="grid size-12 shrink-0 place-items-center rounded-full bg-gradient-to-br from-teal-500 to-teal-700 shadow-inner font-mono text-[13px] font-semibold text-white" aria-hidden="true">
+                {t.initials}
+              </span>
+              <span>
+                <span class="block text-[15px] font-semibold text-white">{t.name}</span>
+                <span class="block mt-0.5 font-mono text-[10.5px] tracking-[0.05em] text-teal-300/80 uppercase">Programa {t.program}</span>
+              </span>
+            </figcaption>
+          </div>
         </figure>
       ))}
     </div>

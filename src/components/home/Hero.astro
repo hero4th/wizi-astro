@@ -1,29 +1,14 @@
 ---
-// Hero — split asimétrico. Fondo claro, sin tarjetas flotantes.
-// Izquierda: copy + CTAs. Derecha: badge de garantía + scores limpios.
+// Hero — Carrusel fotorrealista premium
+// Izquierda: copy + CTAs. Derecha: formulario.
+import HeroBackgroundCarousel from "@/components/react/HeroBackgroundCarousel.tsx";
 ---
 
 <section
   id="hero"
   class="relative flex min-h-[100dvh] items-center overflow-hidden"
 >
-  <!-- Rejilla técnica sutil (dark strokes para fondo claro) -->
-  <div class="absolute inset-0 opacity-[0.4]" aria-hidden="true">
-    <svg class="size-full" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <pattern id="hero-grid" width="64" height="64" patternUnits="userSpaceOnUse">
-          <path d="M64 0H0v64" fill="none" stroke="rgb(6 10 10 / 0.04)" stroke-width="1" />
-        </pattern>
-      </defs>
-      <rect width="100%" height="100%" fill="url(#hero-grid)" />
-    </svg>
-  </div>
-
-  <!-- Glow ambiental (teal, top-right, más sutil para fondo claro) -->
-  <div
-    class="pointer-events-none absolute right-0 top-0 h-[44rem] w-[44rem] translate-x-1/3 -translate-y-1/4 rounded-full bg-teal-400/10 blur-[140px]"
-    aria-hidden="true"
-  ></div>
+  <HeroBackgroundCarousel client:load />
 
   <!-- Contenido -->
   <div class="container-edge relative z-10 pt-24 pb-20">
@@ -31,23 +16,23 @@
 
       <!-- Columna izquierda: Copy -->
       <div>
-        <p class="hero-fade flex items-center gap-2.5 font-mono text-[11px] tracking-[0.22em] text-teal-600 uppercase">
+        <p class="hero-fade flex items-center gap-2.5 font-mono text-[11px] tracking-[0.22em] text-teal-300 uppercase">
           <span class="relative flex size-2" aria-hidden="true">
-            <span class="absolute inline-flex size-full animate-ping rounded-full bg-teal-500 opacity-60"></span>
-            <span class="relative inline-flex size-2 rounded-full bg-teal-500"></span>
+            <span class="absolute inline-flex size-full animate-ping rounded-full bg-teal-400 opacity-60"></span>
+            <span class="relative inline-flex size-2 rounded-full bg-teal-400"></span>
           </span>
           Inscripciones abiertas
         </p>
 
         <h1
-          class="mt-6 max-w-2xl font-display text-[clamp(2.75rem,6.5vw,5.25rem)] leading-[1.04] font-semibold tracking-[-0.03em] text-ink-950"
+          class="mt-6 max-w-2xl font-display text-[clamp(2.75rem,6.5vw,5.25rem)] leading-[1.04] font-semibold tracking-[-0.03em] text-white"
           data-reveal-line
         >
           <span class="line-mask"><span class="line-inner">Tu examen es solo</span></span>
-          <span class="line-mask"><span class="line-inner">el <em class="accent-em">comienzo.</em></span></span>
+          <span class="line-mask"><span class="line-inner">el <em class="text-teal-400 italic">comienzo.</em></span></span>
         </h1>
 
-        <p class="hero-fade mt-7 max-w-[38rem] text-[1.0625rem] leading-relaxed text-ink-600">
+        <p class="hero-fade mt-7 max-w-[38rem] text-[1.0625rem] leading-relaxed text-pearl-dim">
           Entrena con expertos certificados y alcanza el puntaje que exigen las
           mejores universidades, con Garantía de Puntaje por contrato.
         </p>
@@ -59,7 +44,7 @@
               <path d="M1 7h12m0 0L8 2m5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
           </a>
-          <a href="#programas" class="btn-ghost" data-magnetic>Ver programas</a>
+          <a href="#programas" class="btn-ghost !text-white hover:!bg-white/10" data-magnetic>Ver programas</a>
         </div>
       </div>
 

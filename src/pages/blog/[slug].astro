@@ -80,18 +80,22 @@ const schema = [
 
         <!-- Featured Image / Cover Band -->
         <div class="mt-10 w-full overflow-hidden rounded-2xl bg-teal-500/8" aria-hidden="true">
-          <div class="flex h-[240px] sm:h-[320px] items-center justify-center gap-6 px-10">
-            <!-- As a placeholder for an actual featured image, we keep the styled cover band to preserve the design -->
-            <span class="font-display text-[5rem] font-bold leading-none tracking-tighter text-teal-400/25 select-none">
-              {post.data.category.replace(/\s.*/,"").toUpperCase()}
-            </span>
-            <div class="h-20 w-px bg-teal-400/20 hidden sm:block"></div>
-            <div class="hidden sm:flex flex-col gap-2">
-              <div class="h-2 w-32 rounded-full bg-teal-400/25"></div>
-              <div class="h-2 w-20 rounded-full bg-teal-400/15"></div>
-              <div class="h-2 w-24 rounded-full bg-teal-400/20"></div>
+          {post.data.image ? (
+            <img src={post.data.image} alt="" class="w-full h-[240px] sm:h-[320px] md:h-[400px] object-cover" />
+          ) : (
+            <div class="flex h-[240px] sm:h-[320px] items-center justify-center gap-6 px-10">
+              <!-- As a placeholder for an actual featured image, we keep the styled cover band to preserve the design -->
+              <span class="font-display text-[5rem] font-bold leading-none tracking-tighter text-teal-400/25 select-none">
+                {post.data.category.replace(/\s.*/,"").toUpperCase()}
+              </span>
+              <div class="h-20 w-px bg-teal-400/20 hidden sm:block"></div>
+              <div class="hidden sm:flex flex-col gap-2">
+                <div class="h-2 w-32 rounded-full bg-teal-400/25"></div>
+                <div class="h-2 w-20 rounded-full bg-teal-400/15"></div>
+                <div class="h-2 w-24 rounded-full bg-teal-400/20"></div>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
 
