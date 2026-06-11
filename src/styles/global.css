@@ -2,7 +2,7 @@
 
 /* ---------------------------------------------------------------------------
    PROFESSIONAL ACADEMY — Design System
-   "Precisión académica": negro profundo, blanco puro, turquesa sofisticado.
+   "Precisión académica": fondo luminoso, texto profundo, turquesa sofisticado.
 --------------------------------------------------------------------------- */
 
 @theme {
@@ -12,8 +12,12 @@
   --color-ink-800: #101817;
   --color-ink-700: #1a2423;
   --color-ink-600: #2a3736;
+  --color-ink-500: #3d4e4d;
   --color-ink-400: #5c6b6a;
   --color-ink-300: #8a9897;
+  --color-ink-200: #b8c5c3;
+  --color-ink-100: #dfe7e6;
+  --color-ink-50:  #f0f4f3;
 
   --color-pearl: #f7faf9;
   --color-pearl-dim: #c7d2d0;
@@ -35,8 +39,10 @@
   --ease-in-out-soft: cubic-bezier(0.65, 0, 0.35, 1);
 
   /* Shadows ---------------------------------------------------------------*/
-  --shadow-glow: 0 0 60px -12px rgb(20 184 166 / 0.35);
-  --shadow-panel: 0 24px 80px -24px rgb(0 0 0 / 0.7);
+  --shadow-glow: 0 0 60px -12px rgb(20 184 166 / 0.30);
+  --shadow-panel: 0 24px 80px -24px rgb(0 0 0 / 0.14);
+  --shadow-card: 0 1px 3px rgb(0 0 0 / 0.06), 0 8px 24px -8px rgb(0 0 0 / 0.10);
+  --shadow-card-lg: 0 4px 8px rgb(0 0 0 / 0.06), 0 20px 48px -16px rgb(0 0 0 / 0.14);
 }
 
 /* Base ----------------------------------------------------------------- */
@@ -44,7 +50,7 @@
 html {
   scroll-behavior: auto; /* Lenis controls scrolling */
   -webkit-text-size-adjust: 100%;
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 a,
@@ -54,8 +60,8 @@ button {
 }
 
 body {
-  background-color: var(--color-ink-950);
-  color: var(--color-pearl);
+  background-color: var(--color-pearl);
+  color: var(--color-ink-950);
   font-family: var(--font-body);
   font-feature-settings: "ss01" on, "cv11" on;
   text-rendering: optimizeLegibility;
@@ -65,11 +71,11 @@ body {
 
 ::selection {
   background: var(--color-teal-500);
-  color: var(--color-ink-950);
+  color: var(--color-pearl);
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-teal-400);
+  outline: 2px solid var(--color-teal-500);
   outline-offset: 3px;
   border-radius: 2px;
 }
@@ -98,20 +104,40 @@ html.lenis body {
   }
 }
 
-/* Hairline border — the signature line of the whole site */
+/* Hairline — light background (default): subtle dark border */
 @utility hairline {
-  border: 1px solid rgb(247 250 249 / 0.08);
+  border: 1px solid rgb(6 10 10 / 0.10);
 }
 @utility hairline-t {
-  border-top: 1px solid rgb(247 250 249 / 0.08);
+  border-top: 1px solid rgb(6 10 10 / 0.10);
 }
 @utility hairline-b {
+  border-bottom: 1px solid rgb(6 10 10 / 0.10);
+}
+
+/* Hairline — dark background: subtle pearl border */
+@utility hairline-dim {
+  border: 1px solid rgb(247 250 249 / 0.08);
+}
+@utility hairline-t-dim {
+  border-top: 1px solid rgb(247 250 249 / 0.08);
+}
+@utility hairline-b-dim {
   border-bottom: 1px solid rgb(247 250 249 / 0.08);
 }
 
-/* Subtle glass panel */
+/* Light frosted glass panel — for light-bg surfaces */
 @utility glass {
-  background: rgb(16 24 23 / 0.55);
+  background: rgb(247 250 249 / 0.88);
+  backdrop-filter: blur(18px) saturate(1.3);
+  -webkit-backdrop-filter: blur(18px) saturate(1.3);
+  border: 1px solid rgb(6 10 10 / 0.08);
+  box-shadow: var(--shadow-card);
+}
+
+/* Dark frosted glass panel — for dark-bg surfaces */
+@utility glass-dark {
+  background: rgb(10 16 16 / 0.60);
   backdrop-filter: blur(18px) saturate(1.2);
   -webkit-backdrop-filter: blur(18px) saturate(1.2);
   border: 1px solid rgb(247 250 249 / 0.08);
@@ -123,15 +149,15 @@ html.lenis body {
   font-size: 0.6875rem;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--color-teal-400);
+  color: var(--color-teal-600);
 }
 
-/* Emphasis word inside headlines: same family, italic, brand color.
+/* Emphasis word inside headlines: same family, italic, brand teal.
    Reserve descender clearance — italics get clipped by leading-none. */
 @utility accent-em {
   font-style: italic;
   font-weight: 480;
-  color: var(--color-teal-300);
+  color: var(--color-teal-600);
   padding-bottom: 0.06em;
 }
 
@@ -141,7 +167,7 @@ html.lenis body {
   position: fixed;
   inset: -100%;
   z-index: 90;
-  opacity: 0.045;
+  opacity: 0.025;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   animation: grain-shift 9s steps(6) infinite;
 }
@@ -216,18 +242,18 @@ h1, h2, h3, h4 {
 /* Prose for blog/MDX -------------------------------------------------------*/
 .prose-pa {
   max-width: 42rem;
-  color: var(--color-pearl-dim);
+  color: var(--color-ink-600);
   font-size: 1.0625rem;
   line-height: 1.78;
 }
 .prose-pa h2 {
-  color: var(--color-pearl);
+  color: var(--color-ink-950);
   font-size: 1.625rem;
   margin-top: 2.75rem;
   margin-bottom: 1rem;
 }
 .prose-pa h3 {
-  color: var(--color-pearl);
+  color: var(--color-ink-950);
   font-size: 1.25rem;
   margin-top: 2rem;
   margin-bottom: 0.75rem;
@@ -236,14 +262,14 @@ h1, h2, h3, h4 {
   margin-bottom: 1.25rem;
 }
 .prose-pa a {
-  color: var(--color-teal-400);
+  color: var(--color-teal-700);
   text-decoration: underline;
   text-underline-offset: 3px;
-  text-decoration-color: rgb(20 184 166 / 0.4);
+  text-decoration-color: rgb(13 148 136 / 0.35);
   transition: text-decoration-color 0.2s;
 }
 .prose-pa a:hover {
-  text-decoration-color: var(--color-teal-400);
+  text-decoration-color: var(--color-teal-600);
 }
 .prose-pa ul,
 .prose-pa ol {
@@ -253,14 +279,14 @@ h1, h2, h3, h4 {
 .prose-pa ul { list-style: disc; }
 .prose-pa ol { list-style: decimal; }
 .prose-pa li { margin-bottom: 0.5rem; }
-.prose-pa li::marker { color: var(--color-teal-500); }
-.prose-pa strong { color: var(--color-pearl); font-weight: 600; }
+.prose-pa li::marker { color: var(--color-teal-600); }
+.prose-pa strong { color: var(--color-ink-900); font-weight: 600; }
 .prose-pa blockquote {
   border-left: 2px solid var(--color-teal-600);
   padding-left: 1.25rem;
   font-style: italic;
   font-size: 1.125rem;
-  color: var(--color-pearl);
+  color: var(--color-ink-800);
   margin-block: 2rem;
 }
 .prose-pa table {
@@ -275,18 +301,19 @@ h1, h2, h3, h4 {
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: var(--color-teal-400);
+  color: var(--color-teal-600);
   padding: 0.625rem 0.875rem;
-  border-bottom: 1px solid rgb(247 250 249 / 0.15);
+  border-bottom: 1px solid rgb(6 10 10 / 0.12);
 }
 .prose-pa td {
   padding: 0.625rem 0.875rem;
-  border-bottom: 1px solid rgb(247 250 249 / 0.07);
+  border-bottom: 1px solid rgb(6 10 10 / 0.07);
 }
 .prose-pa code {
   font-family: var(--font-mono);
   font-size: 0.875em;
-  background: var(--color-ink-800);
+  background: var(--color-ink-100);
+  color: var(--color-ink-800);
   padding: 0.15em 0.4em;
   border-radius: 4px;
 }
@@ -314,7 +341,7 @@ details.faq-item[open] .faq-icon {
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--color-ink-950);
-  background: var(--color-teal-400);
+  background: var(--color-teal-500);
   padding: 1rem 1.875rem;
   border-radius: 999px;
   overflow: hidden;
@@ -322,11 +349,34 @@ details.faq-item[open] .faq-icon {
     box-shadow 0.3s var(--ease-out-expo), transform 0.3s var(--ease-out-expo);
 }
 .btn-primary:hover {
-  background: var(--color-teal-300);
+  background: var(--color-teal-400);
   box-shadow: var(--shadow-glow);
 }
 
+/* Ghost button — for light-background sections */
 @utility btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-ink-700);
+  padding: 1rem 1.875rem;
+  border-radius: 999px;
+  border: 1px solid rgb(6 10 10 / 0.18);
+  transition: border-color 0.3s, background-color 0.3s, color 0.3s;
+}
+.btn-ghost:hover {
+  border-color: var(--color-teal-600);
+  background: rgb(13 148 136 / 0.06);
+  color: var(--color-teal-700);
+}
+
+/* Ghost button — for dark-background sections */
+@utility btn-ghost-dark {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -341,7 +391,7 @@ details.faq-item[open] .faq-icon {
   border: 1px solid rgb(247 250 249 / 0.18);
   transition: border-color 0.3s, background-color 0.3s;
 }
-.btn-ghost:hover {
+.btn-ghost-dark:hover {
   border-color: var(--color-teal-400);
   background: rgb(20 184 166 / 0.06);
 }

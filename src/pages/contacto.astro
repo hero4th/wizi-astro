@@ -45,7 +45,7 @@ const channels = [
           <span class="line-mask"><span class="line-inner">Tu primera sesión</span></span>
           <span class="line-mask"><span class="line-inner"><em class="accent-em">va por nuestra cuenta.</em></span></span>
         </h1>
-        <p class="mt-6 max-w-md text-lg leading-relaxed text-pearl-dim" data-reveal>
+        <p class="mt-6 max-w-md text-lg leading-relaxed text-ink-500" data-reveal>
           En 60 minutos mides tu nivel bajo condiciones reales de examen y
           recibes tu plan de preparación. Sin costo y sin compromiso.
         </p>
@@ -58,7 +58,7 @@ const channels = [
                   href={ch.href}
                   target={ch.href.startsWith("http") ? "_blank" : undefined}
                   rel={ch.href.startsWith("http") ? "noopener noreferrer" : undefined}
-                  class="group flex items-center gap-4 rounded-xl hairline bg-ink-900 px-5 py-4 transition-colors hover:border-teal-500/40"
+                  class="group flex items-center gap-4 rounded-xl hairline-dim bg-ink-900 px-5 py-4 transition-colors hover:border-teal-500/40"
                 >
                   <Icon name={ch.icon} class="size-5 text-teal-400" aria-hidden="true" />
                   <span>
@@ -67,7 +67,7 @@ const channels = [
                   </span>
                 </a>
               ) : (
-                <p class="flex items-center gap-4 rounded-xl hairline bg-ink-900 px-5 py-4">
+                <p class="flex items-center gap-4 rounded-xl hairline-dim bg-ink-900 px-5 py-4">
                   <Icon name={ch.icon} class="size-5 text-teal-400" aria-hidden="true" />
                   <span>
                     <span class="block font-mono text-[10px] tracking-[0.18em] text-ink-400 uppercase">{ch.label}</span>
@@ -80,7 +80,7 @@ const channels = [
         </ul>
       </div>
 
-      <div class="rounded-3xl hairline bg-ink-900 p-7 shadow-panel sm:p-10" data-reveal data-reveal-delay="0.1">
+      <div class="rounded-3xl hairline-dim bg-ink-900 p-7 shadow-panel sm:p-10" data-reveal data-reveal-delay="0.1">
         <h2 class="font-display text-2xl font-semibold tracking-tight">Agenda tu evaluación</h2>
         <p class="mt-2 mb-8 text-sm leading-relaxed text-ink-300">
           Completa el formulario y un asesor te contacta el mismo día.

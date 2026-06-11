@@ -1,102 +1,102 @@
 ---
-/**
- * Hero — pantalla completa con storytelling de scroll.
- * Capas: rejilla técnica + glow turquesa + tarjetas de puntaje flotantes
- * con parallax a distintas velocidades. Titular con reveal por líneas.
- * Las tarjetas muestran datos reales de la marca (garantía, resultados).
- */
+// Hero — split asimétrico. Fondo claro, sin tarjetas flotantes.
+// Izquierda: copy + CTAs. Derecha: badge de garantía + scores limpios.
 ---
 
 <section
   id="hero"
   class="relative flex min-h-[100dvh] items-center overflow-hidden"
-  data-parallax-root
 >
-  <!-- Capa 0: rejilla técnica -->
-  <div class="absolute inset-0 opacity-[0.55]" aria-hidden="true">
+  <!-- Rejilla técnica sutil (dark strokes para fondo claro) -->
+  <div class="absolute inset-0 opacity-[0.4]" aria-hidden="true">
     <svg class="size-full" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <pattern id="hero-grid" width="72" height="72" patternUnits="userSpaceOnUse">
-          <path d="M72 0H0v72" fill="none" stroke="rgb(247 250 249 / 0.04)" stroke-width="1" />
+        <pattern id="hero-grid" width="64" height="64" patternUnits="userSpaceOnUse">
+          <path d="M64 0H0v64" fill="none" stroke="rgb(6 10 10 / 0.04)" stroke-width="1" />
         </pattern>
       </defs>
       <rect width="100%" height="100%" fill="url(#hero-grid)" />
     </svg>
   </div>
 
-  <!-- Capa 1: glow -->
+  <!-- Glow ambiental (teal, top-right, más sutil para fondo claro) -->
   <div
-    class="absolute -right-40 top-1/4 h-[34rem] w-[34rem] rounded-full bg-teal-500/14 blur-[140px]"
-    data-parallax="-120"
+    class="pointer-events-none absolute right-0 top-0 h-[44rem] w-[44rem] translate-x-1/3 -translate-y-1/4 rounded-full bg-teal-400/10 blur-[140px]"
     aria-hidden="true"
   ></div>
-  <div
-    class="absolute -left-52 bottom-0 h-[26rem] w-[26rem] rounded-full bg-teal-700/10 blur-[120px]"
-    data-parallax="-60"
-    aria-hidden="true"
-  ></div>
-
-  <!-- Capa 2: tarjetas de puntaje flotantes -->
-  <div class="pointer-events-none absolute inset-0 hidden lg:block" aria-hidden="true">
-    <div
-      class="glass hero-card absolute right-[12%] top-[24%] w-56 rounded-2xl p-5 shadow-panel"
-      data-parallax="-150"
-    >
-      <p class="font-mono text-[10px] tracking-[0.2em] text-ink-300 uppercase">TOEFL iBT</p>
-      <p class="mt-2 font-display text-4xl font-semibold text-pearl">108<span class="text-lg text-ink-400">/120</span></p>
-      <p class="mt-2 font-mono text-[10px] text-teal-400">+34 pts vs. diagnóstico</p>
-    </div>
-
-    <div
-      class="glass hero-card absolute right-[27%] top-[56%] w-48 rounded-2xl p-5 shadow-panel"
-      data-parallax="-90"
-    >
-      <p class="font-mono text-[10px] tracking-[0.2em] text-ink-300 uppercase">SAT</p>
-      <p class="mt-2 font-display text-4xl font-semibold text-pearl">1480</p>
-      <p class="mt-2 font-mono text-[10px] text-teal-400">Percentil 99</p>
-    </div>
-
-    <div
-      class="glass hero-card absolute right-[7%] top-[66%] w-44 rounded-2xl p-4 shadow-panel"
-      data-parallax="-40"
-    >
-      <p class="font-mono text-[10px] tracking-[0.2em] text-ink-300 uppercase">Garantía</p>
-      <p class="mt-1.5 font-display text-3xl font-semibold text-teal-300">+10 pts</p>
-      <p class="mt-1 text-[11px] leading-snug text-ink-300">o devolución del 100%</p>
-    </div>
-  </div>
 
   <!-- Contenido -->
   <div class="container-edge relative z-10 pt-24 pb-20">
-    <p class="hero-fade flex items-center gap-2.5 font-mono text-[11px] tracking-[0.22em] text-teal-400 uppercase">
-      <span class="relative flex size-2">
-        <span class="absolute inline-flex size-full animate-ping rounded-full bg-teal-400 opacity-60"></span>
-        <span class="relative inline-flex size-2 rounded-full bg-teal-400"></span>
-      </span>
-      Inscripciones abiertas
-    </p>
+    <div class="grid items-center gap-12 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16">
 
-    <h1
-      class="mt-7 max-w-4xl font-display text-[clamp(2.75rem,8vw,6.25rem)] leading-[1.02] font-semibold tracking-[-0.03em]"
-      data-reveal-line
-    >
-      <span class="line-mask"><span class="line-inner">Tu examen es solo</span></span>
-      <span class="line-mask"><span class="line-inner"><em class="accent-em">el comienzo.</em></span></span>
-    </h1>
+      <!-- Columna izquierda: Copy -->
+      <div>
+        <p class="hero-fade flex items-center gap-2.5 font-mono text-[11px] tracking-[0.22em] text-teal-600 uppercase">
+          <span class="relative flex size-2" aria-hidden="true">
+            <span class="absolute inline-flex size-full animate-ping rounded-full bg-teal-500 opacity-60"></span>
+            <span class="relative inline-flex size-2 rounded-full bg-teal-500"></span>
+          </span>
+          Inscripciones abiertas
+        </p>
 
-    <p class="hero-fade mt-8 max-w-xl text-lg leading-relaxed text-pearl-dim">
-      Entrena con expertos y alcanza el puntaje que las mejores universidades
-      exigen, con Garantía de Puntaje por contrato.
-    </p>
+        <h1
+          class="mt-6 max-w-2xl font-display text-[clamp(2.75rem,6.5vw,5.25rem)] leading-[1.04] font-semibold tracking-[-0.03em] text-ink-950"
+          data-reveal-line
+        >
+          <span class="line-mask"><span class="line-inner">Tu examen es solo</span></span>
+          <span class="line-mask"><span class="line-inner">el <em class="accent-em">comienzo.</em></span></span>
+        </h1>
 
-    <div class="hero-fade mt-10 flex flex-wrap items-center gap-4">
-      <a href="/contacto" class="btn-primary" data-magnetic data-event="hero_cta_primary">
-        Comenzar ahora
-        <svg class="size-3.5" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-          <path d="M1 7h12m0 0L8 2m5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-        </svg>
-      </a>
-      <a href="#programas" class="btn-ghost" data-magnetic>Ver programas</a>
+        <p class="hero-fade mt-7 max-w-[38rem] text-[1.0625rem] leading-relaxed text-ink-600">
+          Entrena con expertos certificados y alcanza el puntaje que exigen las
+          mejores universidades, con Garantía de Puntaje por contrato.
+        </p>
+
+        <div class="hero-fade mt-10 flex flex-wrap items-center gap-4">
+          <a href="/contacto" class="btn-primary" data-magnetic data-event="hero_cta_primary">
+            Comenzar ahora
+            <svg class="size-3.5" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+              <path d="M1 7h12m0 0L8 2m5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </a>
+          <a href="#programas" class="btn-ghost" data-magnetic>Ver programas</a>
+        </div>
+      </div>
+
+      <!-- Columna derecha: Garantía + resultados representativos -->
+      <div class="hero-fade hidden lg:block">
+        <!-- Badge de garantía -->
+        <div class="relative flex flex-col items-center justify-center">
+          <div class="relative flex size-64 items-center justify-center rounded-full border border-teal-500/20 bg-gradient-to-br from-teal-500/8 to-teal-400/4">
+            <div class="absolute inset-3 rounded-full border border-teal-500/10"></div>
+            <div class="relative z-10 text-center">
+              <p class="font-display text-[5rem] leading-none font-bold tracking-[-0.04em] text-teal-600">+10</p>
+              <p class="mt-1 font-mono text-[10px] tracking-[0.22em] text-ink-500 uppercase">pts garantizados</p>
+            </div>
+          </div>
+          <p class="mt-4 text-center font-mono text-[10.5px] leading-relaxed tracking-[0.12em] text-ink-400 uppercase">
+            O devolución del 100%
+          </p>
+        </div>
+
+        <!-- Resultados representativos -->
+        <div class="mt-8 space-y-2">
+          {[
+            { exam: "TOEFL iBT", score: "108/120", gain: "+34 pts" },
+            { exam: "SAT",       score: "1,480",   gain: "Percentil 99" },
+            { exam: "GRE",       score: "330/340",  gain: "+24 pts" },
+          ].map((item) => (
+            <div class="flex items-center justify-between rounded-xl bg-ink-50 px-5 py-4">
+              <div class="flex items-center gap-3">
+                <span class="font-mono text-[10px] tracking-[0.18em] text-ink-400 uppercase">{item.exam}</span>
+                <span class="font-display text-lg font-semibold tracking-tight text-ink-950">{item.score}</span>
+              </div>
+              <span class="rounded-full bg-teal-500/10 px-3 py-1 font-mono text-[10.5px] text-teal-700">{item.gain}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
     </div>
   </div>
 </section>
@@ -104,26 +104,31 @@
 <script>
   import gsap from "gsap";
 
-  // Intro de carga: una sola coreografía con stagger.
   if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     const tl = gsap.timeline({ defaults: { ease: "expo.out" } });
-    tl.to("#hero [data-reveal-line] .line-inner", { y: 0, duration: 1.3, stagger: 0.12, delay: 0.15 })
-      .fromTo("#hero .hero-fade", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 1, stagger: 0.08 }, "-=0.9")
-      .fromTo("#hero .hero-card", { opacity: 0, y: 40, rotate: 2 }, { opacity: 1, y: 0, rotate: 0, duration: 1.2, stagger: 0.14 }, "-=1");
+    tl.to("#hero [data-reveal-line] .line-inner", {
+      y: 0,
+      duration: 1.3,
+      stagger: 0.12,
+      delay: 0.15,
+    }).fromTo(
+      "#hero .hero-fade",
+      { opacity: 0, y: 24 },
+      { opacity: 1, y: 0, duration: 1, stagger: 0.08 },
+      "-=0.9"
+    );
   } else {
-    document.querySelectorAll<HTMLElement>("#hero .hero-fade, #hero .hero-card").forEach((el) => {
+    document.querySelectorAll<HTMLElement>("#hero .hero-fade").forEach((el) => {
       el.style.opacity = "1";
     });
   }
 </script>
 
 <style>
-  .hero-fade,
-  .hero-card {
+  .hero-fade {
     opacity: 0;
   }
-  html.no-motion .hero-fade,
-  html.no-motion .hero-card {
+  html.no-motion .hero-fade {
     opacity: 1;
   }
 </style>

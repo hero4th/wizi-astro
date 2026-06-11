@@ -49,17 +49,17 @@ const schema = [
 
 <Base title={program.metaTitle} description={program.metaDescription} schema={schema}>
   <!-- HERO -->
-  <section class="relative overflow-hidden pt-36 pb-20" data-parallax-root>
+  <section class={`relative overflow-hidden ${program.heroImage ? "pt-36 pb-0" : "pt-36 pb-20"}`} data-parallax-root>
     <div class="pointer-events-none absolute -right-40 top-0 h-[28rem] w-[28rem] rounded-full bg-teal-500/10 blur-[130px]" data-parallax="-80" aria-hidden="true"></div>
 
-    <div class="container-edge relative grid items-end gap-14 lg:grid-cols-[1.5fr_1fr]">
-      <div>
+    <div class={`container-edge grid items-end gap-14 ${program.heroImage ? "lg:grid-cols-[1.1fr_1fr]" : "lg:grid-cols-[1.5fr_1fr]"}`}>
+      <div class={`relative z-10 ${program.heroImage ? "pb-20" : ""}`}>
         <nav aria-label="Ruta de navegación" class="font-mono text-[11px] tracking-[0.18em] text-ink-400 uppercase">
-          <a href="/" class="transition-colors hover:text-teal-300">Inicio</a>
+          <a href="/" class="transition-colors hover:text-teal-600">Inicio</a>
           <span aria-hidden="true"> / </span>
-          <a href="/cursos" class="transition-colors hover:text-teal-300">Cursos</a>
+          <a href="/cursos" class="transition-colors hover:text-teal-600">Cursos</a>
           <span aria-hidden="true"> / </span>
-          <span class="text-teal-400">{program.exam}</span>
+          <span class="text-teal-600">{program.exam}</span>
         </nav>
 
         <h1 class="mt-7 max-w-2xl font-display text-[clamp(2.5rem,6vw,4.75rem)] leading-[1.04] font-semibold tracking-[-0.03em]" data-reveal-line>
@@ -67,7 +67,7 @@ const schema = [
           <span class="line-mask"><span class="line-inner"><em class="accent-em">{program.accent}</em></span></span>
         </h1>
 
-        <p class="mt-7 max-w-xl text-lg leading-relaxed text-pearl-dim" data-reveal>
+        <p class="mt-7 max-w-xl text-lg leading-relaxed text-ink-500" data-reveal>
           {program.subheadline}
         </p>
 
@@ -75,27 +75,42 @@ const schema = [
           <a href="/contacto" class="btn-primary" data-magnetic data-event={`program_cta_${program.slug}`}>
             Evaluación gratis
           </a>
-          <p class="text-sm text-ink-300">
-            Desde <strong class="font-display text-lg text-pearl">{priceFormatted}</strong> MXN
+          <p class="text-sm text-ink-500">
+            Desde <strong class="font-display text-lg text-ink-950">{priceFormatted}</strong> MXN
             <span class="block font-mono text-[10px] tracking-widest text-ink-400 uppercase">pagos a meses disponibles</span>
           </p>
         </div>
       </div>
 
-      <!-- Panel de garantía -->
-      <div class="glass rounded-2xl p-7 shadow-panel" data-reveal data-reveal-delay="0.15">
-        <p class="flex items-center gap-2 font-mono text-[11px] tracking-[0.2em] text-teal-400 uppercase">
-          <Icon name="ph:seal-check" class="size-4" aria-hidden="true" />
-          Garantía de Puntaje
-        </p>
-        <p class="mt-4 text-[15px] leading-relaxed text-pearl">{program.guarantee}</p>
-        <p class="mt-5 hairline-t pt-5 text-sm leading-relaxed text-ink-300">
-          {program.audience}
-        </p>
-        <p class="mt-4 font-mono text-[11px] tracking-widest text-ink-400 uppercase">
-          Escala del examen: {program.scoreScale}
-        </p>
-      </div>
+      {program.heroImage ? (
+        <!-- Hero image — absolutely anchored to the bottom right of the screen -->
+        <div class="relative flex items-end justify-end w-full lg:absolute lg:bottom-0 lg:right-0 lg:h-full lg:w-[45vw] xl:w-[49vw] lg:pointer-events-none" data-reveal data-reveal-delay="0.1">
+          <img
+            src={program.heroImage}
+            alt={`Plataforma de práctica ${program.exam}`}
+            class="w-[115%] lg:w-[122%] xl:w-[102%] max-w-none h-auto object-contain object-right-bottom lg:pointer-events-auto"
+            width="900"
+            height="560"
+            loading="eager"
+            decoding="async"
+          />
+        </div>
+      ) : (
+        <!-- Guarantee panel (default for programs without hero image) -->
+        <div class="glass rounded-2xl p-7 shadow-panel" data-reveal data-reveal-delay="0.15">
+          <p class="flex items-center gap-2 font-mono text-[11px] tracking-[0.2em] text-teal-600 uppercase">
+            <Icon name="ph:seal-check" class="size-4" aria-hidden="true" />
+            Garantía de Puntaje
+          </p>
+          <p class="mt-4 text-[15px] leading-relaxed text-ink-800">{program.guarantee}</p>
+          <p class="mt-5 hairline-t pt-5 text-sm leading-relaxed text-ink-500">
+            {program.audience}
+          </p>
+          <p class="mt-4 font-mono text-[11px] tracking-widest text-ink-400 uppercase">
+            Escala del examen: {program.scoreScale}
+          </p>
+        </div>
+      )}
     </div>
   </section>
 
@@ -103,11 +118,11 @@ const schema = [
   <section class="hairline-t hairline-b" aria-label="El programa en números">
     <div class="container-edge grid grid-cols-2 lg:grid-cols-4">
       {stats.map((s, i) => (
-        <div class:list={["px-6 py-9", i > 0 && "border-l border-pearl/8", i >= 2 && "max-lg:border-t max-lg:border-pearl/8", i === 2 && "max-lg:border-l-0"]} data-reveal data-reveal-delay={String(i * 0.06)}>
+        <div class:list={["px-6 py-9", i > 0 && "border-l border-ink-950/8", i >= 2 && "max-lg:border-t max-lg:border-ink-950/8", i === 2 && "max-lg:border-l-0"]} data-reveal data-reveal-delay={String(i * 0.06)}>
           <p class="font-display text-4xl font-semibold tracking-tight sm:text-5xl">
-            {s.prefix && <span class="text-teal-400">{s.prefix}</span>}<span data-counter={String(s.value)}>0</span>
+            {s.prefix && <span class="text-teal-600">{s.prefix}</span>}<span data-counter={String(s.value)}>0</span>
           </p>
-          <p class="mt-2 font-mono text-[10px] tracking-[0.18em] text-ink-300 uppercase">{s.label}</p>
+          <p class="mt-2 font-mono text-[10px] tracking-[0.18em] text-ink-500 uppercase">{s.label}</p>
         </div>
       ))}
     </div>
@@ -121,25 +136,25 @@ const schema = [
       </h2>
 
       <div class="mt-12 grid gap-5 md:grid-cols-3">
-        <div class="relative overflow-hidden rounded-2xl hairline bg-ink-900 p-8 md:col-span-2" data-reveal>
+        <div class="relative overflow-hidden rounded-2xl hairline bg-white p-8 md:col-span-2" data-reveal>
           <div class="pointer-events-none absolute -top-20 right-0 h-56 w-56 rounded-full bg-teal-500/10 blur-[80px]" aria-hidden="true"></div>
-          <h3 class="font-display text-2xl font-semibold tracking-tight">{program.features[0]!.title}</h3>
-          <p class="mt-3 max-w-md text-[15px] leading-relaxed text-ink-300">{program.features[0]!.detail}</p>
-          <p class="mt-8 inline-block rounded-full bg-teal-400/10 px-4 py-2 font-mono text-[11px] tracking-widest text-teal-300 uppercase">
+          <h3 class="font-display text-2xl font-semibold tracking-tight text-ink-950">{program.features[0]!.title}</h3>
+          <p class="mt-3 max-w-md text-[15px] leading-relaxed text-ink-500">{program.features[0]!.detail}</p>
+          <p class="mt-8 inline-block rounded-full bg-teal-500/10 px-4 py-2 font-mono text-[11px] tracking-widest text-teal-700 uppercase">
             Incluido en tu plan
           </p>
         </div>
-        <div class="rounded-2xl hairline bg-teal-900/40 p-8" data-reveal data-reveal-delay="0.08">
-          <h3 class="font-display text-2xl font-semibold tracking-tight">{program.features[1]!.title}</h3>
-          <p class="mt-3 text-[15px] leading-relaxed text-pearl-dim">{program.features[1]!.detail}</p>
+        <div class="rounded-2xl hairline bg-teal-500/8 p-8" data-reveal data-reveal-delay="0.08">
+          <h3 class="font-display text-2xl font-semibold tracking-tight text-ink-950">{program.features[1]!.title}</h3>
+          <p class="mt-3 text-[15px] leading-relaxed text-ink-600">{program.features[1]!.detail}</p>
         </div>
-        <div class="rounded-2xl hairline bg-ink-900 p-8" data-reveal>
-          <h3 class="font-display text-2xl font-semibold tracking-tight">{program.features[2]!.title}</h3>
-          <p class="mt-3 text-[15px] leading-relaxed text-ink-300">{program.features[2]!.detail}</p>
+        <div class="rounded-2xl hairline bg-white p-8" data-reveal>
+          <h3 class="font-display text-2xl font-semibold tracking-tight text-ink-950">{program.features[2]!.title}</h3>
+          <p class="mt-3 text-[15px] leading-relaxed text-ink-500">{program.features[2]!.detail}</p>
         </div>
-        <div class="relative overflow-hidden rounded-2xl hairline bg-ink-900 p-8 md:col-span-2" data-reveal data-reveal-delay="0.08">
-          <h3 class="font-display text-2xl font-semibold tracking-tight">{program.features[3]!.title}</h3>
-          <p class="mt-3 max-w-md text-[15px] leading-relaxed text-ink-300">{program.features[3]!.detail}</p>
+        <div class="relative overflow-hidden rounded-2xl hairline bg-white p-8 md:col-span-2" data-reveal data-reveal-delay="0.08">
+          <h3 class="font-display text-2xl font-semibold tracking-tight text-ink-950">{program.features[3]!.title}</h3>
+          <p class="mt-3 max-w-md text-[15px] leading-relaxed text-ink-500">{program.features[3]!.detail}</p>
         </div>
       </div>
     </div>
@@ -151,7 +166,7 @@ const schema = [
       <div class="lg:sticky lg:top-32 lg:self-start">
         <p class="eyebrow" data-reveal>Temario {program.exam}</p>
         <h2 class="mt-4 text-3xl sm:text-4xl" data-reveal>Domina cada sección.</h2>
-        <p class="mt-5 max-w-sm text-sm leading-relaxed text-ink-300" data-reveal>
+        <p class="mt-5 max-w-sm text-sm leading-relaxed text-ink-500" data-reveal>
           Cada sección del examen es una habilidad distinta. Tu plan ataca las
           cuatro con un enfoque y ejercicios específicos.
         </p>
@@ -160,7 +175,7 @@ const schema = [
         <div class="hairline-t">
           {program.skills.map((skill) => (
             <details class="faq-item group hairline-b" name={`skills-${program.slug}`}>
-              <summary class="flex cursor-pointer list-none items-center justify-between gap-6 py-6 transition-colors hover:text-teal-300">
+              <summary class="flex cursor-pointer list-none items-center justify-between gap-6 py-6 transition-colors hover:text-teal-600">
                 <span class="font-display text-xl font-medium tracking-tight">{skill.name}</span>
                 <span class="faq-icon grid size-9 shrink-0 place-items-center rounded-full hairline" aria-hidden="true">
                   <svg class="size-3.5" viewBox="0 0 14 14" fill="none">
@@ -168,14 +183,14 @@ const schema = [
                   </svg>
                 </span>
               </summary>
-              <p class="max-w-2xl pb-7 text-[15px] leading-relaxed text-ink-300">{skill.detail}</p>
+              <p class="max-w-2xl pb-7 text-[15px] leading-relaxed text-ink-500">{skill.detail}</p>
             </details>
           ))}
         </div>
 
         <ul class="mt-10 grid gap-3 sm:grid-cols-2">
           {program.outcomes.map((outcome) => (
-            <li class="flex items-start gap-3 rounded-xl hairline bg-ink-900 px-5 py-4 text-sm text-pearl-dim">
+            <li class="flex items-start gap-3 rounded-xl hairline bg-white px-5 py-4 text-sm text-ink-700">
               <Icon name="ph:check" class="mt-0.5 size-4 shrink-0 text-teal-400" aria-hidden="true" />
               {outcome}
             </li>
@@ -197,15 +212,15 @@ const schema = [
           <thead>
             <tr class="hairline-b">
               <th scope="col" class="py-4 pr-6 font-mono text-[11px] tracking-[0.18em] text-ink-400 uppercase">Concepto</th>
-              <th scope="col" class="bg-teal-400/5 px-6 py-4 font-mono text-[11px] tracking-[0.18em] text-teal-300 uppercase">Professional Academy</th>
+              <th scope="col" class="bg-teal-400/5 px-6 py-4 font-mono text-[11px] tracking-[0.18em] text-teal-700 uppercase">Professional Academy</th>
               <th scope="col" class="px-6 py-4 font-mono text-[11px] tracking-[0.18em] text-ink-400 uppercase">Preparación tradicional</th>
             </tr>
           </thead>
           <tbody>
             {comparison.map((row) => (
               <tr class="hairline-b">
-                <th scope="row" class="py-5 pr-6 text-sm font-normal text-ink-300">{row.label}</th>
-                <td class="bg-teal-400/5 px-6 py-5 text-[15px] font-medium text-pearl">{row.pa}</td>
+                <th scope="row" class="py-5 pr-6 text-sm font-normal text-ink-500">{row.label}</th>
+                <td class="bg-teal-400/5 px-6 py-5 text-[15px] font-medium text-ink-950">{row.pa}</td>
                 <td class="px-6 py-5 text-sm text-ink-400">{row.trad}</td>
               </tr>
             ))}

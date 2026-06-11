@@ -13,7 +13,7 @@ import { TESTIMONIALS } from "@/data/testimonials";
       </div>
       <div class="flex gap-3">
         <button
-          class="t-prev grid size-12 place-items-center rounded-full hairline text-pearl-dim transition-colors hover:border-teal-400 hover:text-teal-300"
+          class="t-prev grid size-12 place-items-center rounded-full hairline text-ink-500 transition-colors hover:border-teal-500 hover:text-teal-600"
           aria-label="Testimonio anterior"
         >
           <svg class="size-4 rotate-180" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -21,7 +21,7 @@ import { TESTIMONIALS } from "@/data/testimonials";
           </svg>
         </button>
         <button
-          class="t-next grid size-12 place-items-center rounded-full hairline text-pearl-dim transition-colors hover:border-teal-400 hover:text-teal-300"
+          class="t-next grid size-12 place-items-center rounded-full hairline text-ink-500 transition-colors hover:border-teal-500 hover:text-teal-600"
           aria-label="Siguiente testimonio"
         >
           <svg class="size-4" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -37,7 +37,7 @@ import { TESTIMONIALS } from "@/data/testimonials";
     <div class="swiper testimonial-swiper overflow-visible!">
       <div class="swiper-wrapper">
         {TESTIMONIALS.map((t) => (
-          <figure class="swiper-slide flex h-auto! w-[21rem]! flex-col justify-between rounded-2xl hairline bg-ink-900 p-8 transition-colors duration-500 hover:border-teal-500/30 sm:w-[24rem]!">
+          <figure class="swiper-slide flex h-auto! w-[21rem]! flex-col justify-between rounded-2xl hairline-dim bg-ink-900 p-8 transition-colors duration-500 hover:border-teal-500/30 sm:w-[24rem]!">
             <blockquote class="text-[15px] leading-relaxed text-pearl-dim">
               “{t.quote}”
             </blockquote>
@@ -66,21 +66,50 @@ import { TESTIMONIALS } from "@/data/testimonials";
 
 <script>
   import Swiper from "swiper";
-  import { Navigation, A11y, Autoplay } from "swiper/modules";
+  import { Navigation, A11y, Autoplay, FreeMode } from "swiper/modules";
   import "swiper/css";
 
-  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function initCarousel() {
+    const swiperEl = document.querySelector(".testimonial-swiper");
+    if (!swiperEl) return;
 
-  new Swiper(".testimonial-swiper", {
-    modules: [Navigation, A11y, Autoplay],
-    slidesPerView: "auto",
-    spaceBetween: 20,
-    grabCursor: true,
-    a11y: { enabled: true },
-    navigation: { nextEl: ".t-next", prevEl: ".t-prev" },
-    autoplay: reduced
-      ? false
-      : { delay: 4200, disableOnInteraction: true, pauseOnMouseEnter: true },
-    speed: 650,
-  });
+    // Si ya existe una instancia (por ej. tras navegaciones de Astro), la destruimos
+    if ((swiperEl as any).swiper) {
+      (swiperEl as any).swiper.destroy(true, true);
+    }
+
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    new Swiper(".testimonial-swiper", {
+      modules: [Navigation, A11y, Autoplay, FreeMode],
+      slidesPerView: "auto",
+      spaceBetween: 24,
+      grabCursor: true,
+      loop: true,
+      loopedSlides: 4,
+      a11y: { enabled: true },
+      navigation: { nextEl: ".t-next", prevEl: ".t-prev" },
+      // Continuous belt effect
+      autoplay: reduced
+        ? false
+        : { delay: 0, disableOnInteraction: false, pauseOnMouseEnter: true },
+      speed: reduced ? 600 : 4500,
+      freeMode: reduced ? false : { enabled: true, momentum: false },
+    });
+  }
+
+  // Ejecutar al cargar la página o al navegar usando View Transitions
+  document.addEventListener("astro:page-load", initCarousel);
+  if (document.readyState === "complete" || document.readyState === "interactive") {
+    setTimeout(initCarousel, 0);
+  } else {
+    document.addEventListener("DOMContentLoaded", initCarousel);
+  }
 </script>
+
+<style is:global>
+  /* Obligatorio para que el efecto "cinta continua" no se frene entre slides */
+  .testimonial-swiper .swiper-wrapper {
+    transition-timing-function: linear !important;
+  }
+</style>

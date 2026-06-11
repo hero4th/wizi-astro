@@ -2,20 +2,20 @@
 import { SITE } from "@/data/site";
 ---
 
-<section class="relative flex min-h-[88svh] items-center overflow-hidden hairline-t" aria-label="Comienza tu preparación">
+<section class="relative flex min-h-[88svh] items-center overflow-hidden hairline-t-dim" style="background-color: rgb(6 10 10)" aria-label="Comienza tu preparación">
   <!-- Glow central -->
   <div class="pointer-events-none absolute left-1/2 top-1/2 h-[40rem] w-[40rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-teal-500/12 blur-[160px]" aria-hidden="true"></div>
 
   <div class="container-edge relative z-10 py-28 text-center">
     <h2
-      class="mx-auto max-w-4xl font-display text-[clamp(2.5rem,7vw,5.5rem)] leading-[1.04] font-semibold tracking-[-0.03em]"
+      class="mx-auto max-w-4xl font-display text-[clamp(2.5rem,7vw,5.5rem)] leading-[1.04] font-semibold tracking-[-0.03em] text-pearl"
       data-reveal-line
     >
       <span class="line-mask"><span class="line-inner">El puntaje que necesitas</span></span>
       <span class="line-mask"><span class="line-inner"><em class="accent-em">ya tiene fecha.</em></span></span>
     </h2>
 
-    <p class="mx-auto mt-8 max-w-lg text-lg leading-relaxed text-pearl-dim" data-reveal>
+    <p class="mx-auto mt-8 max-w-lg text-lg leading-relaxed text-ink-300" data-reveal>
       Tu primera evaluación es gratuita: mide tu nivel, conoce tu plan y
       decide con datos.
     </p>
@@ -28,14 +28,14 @@ import { SITE } from "@/data/site";
         href={`https://wa.me/${SITE.whatsapp}`}
         target="_blank"
         rel="noopener noreferrer"
-        class="btn-ghost"
+        class="btn-ghost-dark"
         data-magnetic
       >
         Hablar por WhatsApp
       </a>
     </div>
 
-    <p class="mt-10 font-mono text-[11px] tracking-[0.22em] text-ink-400 uppercase" data-reveal>
+    <p class="mt-10 font-mono text-[11px] tracking-[0.22em] text-ink-300 uppercase" data-reveal>
       Sin compromiso. Resultados en la primera sesión.
     </p>
   </div>

@@ -34,7 +34,7 @@ const included = [
         <span class="line-mask"><span class="line-inner">Un precio.</span></span>
         <span class="line-mask"><span class="line-inner"><em class="accent-em">Todo incluido.</em></span></span>
       </h1>
-      <p class="mt-6 max-w-xl text-lg leading-relaxed text-pearl-dim" data-reveal>
+      <p class="mt-6 max-w-xl text-lg leading-relaxed text-ink-500" data-reveal>
         Sin costos ocultos ni módulos extra: cada programa incluye el curso
         completo, los simuladores y la Garantía de Puntaje.
       </p>
@@ -50,11 +50,11 @@ const included = [
               <h2 class="font-display text-2xl font-semibold tracking-tight sm:text-3xl">{p.exam}</h2>
               <p class="mt-1 font-mono text-[10px] tracking-[0.18em] text-ink-400 uppercase">{p.fullName}</p>
             </div>
-            <p class="text-sm leading-relaxed text-ink-300">
+            <p class="text-sm leading-relaxed text-ink-500">
               {p.sessions} sesiones, {p.evaluations} simulacros completos y más de {p.exercises.toLocaleString("es-MX")} ejercicios.
             </p>
             <div class="text-left sm:text-right">
-              <p class="font-display text-3xl font-semibold tracking-tight text-pearl">{fmt(p.priceMXN)}</p>
+              <p class="font-display text-3xl font-semibold tracking-tight text-ink-950">{fmt(p.priceMXN)}</p>
               <p class="font-mono text-[10px] tracking-widest text-ink-400 uppercase">MXN, pagos a meses</p>
             </div>
             <a href={`/cursos/${p.slug}`} class="btn-ghost justify-self-start !px-5 !py-2.5 !text-[11px] sm:justify-self-end" data-event={`pricing_view_${p.slug}`}>
@@ -70,14 +70,14 @@ const included = [
     <div class="container-edge grid gap-12 lg:grid-cols-[1fr_1.4fr]">
       <div>
         <h2 class="text-3xl sm:text-4xl" data-reveal>Esto incluye<br />cada programa.</h2>
-        <p class="mt-5 max-w-sm text-sm leading-relaxed text-ink-300" data-reveal>
+        <p class="mt-5 max-w-sm text-sm leading-relaxed text-ink-500" data-reveal>
           El precio que ves es el precio total. La evaluación diagnóstica
           inicial es gratuita en todos los casos.
         </p>
       </div>
       <ul class="grid gap-3 sm:grid-cols-2" data-reveal>
         {included.map((item) => (
-          <li class="flex items-start gap-3 rounded-xl hairline bg-ink-900 px-5 py-4 text-sm text-pearl-dim">
+          <li class="flex items-start gap-3 rounded-xl hairline bg-white px-5 py-4 text-sm text-ink-700">
             <Icon name="ph:check" class="mt-0.5 size-4 shrink-0 text-teal-400" aria-hidden="true" />
             {item}
           </li>

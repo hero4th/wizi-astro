@@ -14,7 +14,7 @@ const { faqs, name = "faq" } = Astro.props;
 <div class="hairline-t">
   {faqs.map((faq, i) => (
     <details class="faq-item group hairline-b" name={name} open={i === 0}>
-      <summary class="flex cursor-pointer list-none items-center justify-between gap-6 py-6 text-left transition-colors hover:text-teal-300">
+      <summary class="flex cursor-pointer list-none items-center justify-between gap-6 py-6 text-left transition-colors hover:text-teal-600">
         <span class="font-display text-lg font-medium tracking-tight sm:text-xl">{faq.q}</span>
         <span class="faq-icon grid size-9 shrink-0 place-items-center rounded-full hairline" aria-hidden="true">
           <svg class="size-3.5" viewBox="0 0 14 14" fill="none">
@@ -22,7 +22,7 @@ const { faqs, name = "faq" } = Astro.props;
           </svg>
         </span>
       </summary>
-      <p class="max-w-2xl pb-7 text-[15px] leading-relaxed text-ink-300">
+      <p class="max-w-2xl pb-7 text-[15px] leading-relaxed text-ink-600">
         {faq.a}
       </p>
     </details>

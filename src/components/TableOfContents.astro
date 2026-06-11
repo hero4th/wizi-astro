@@ -1,0 +1,66 @@
+---
+export interface Props {
+  headings: { depth: number; slug: string; text: string }[];
+}
+
+const { headings } = Astro.props;
+const filteredHeadings = headings.filter((heading) => heading.depth <= 3);
+---
+
+{filteredHeadings.length > 0 && (
+  <nav class="toc" aria-label="Tabla de contenidos">
+    <h2 class="mb-5 font-mono text-[11px] font-bold tracking-widest text-ink-950 uppercase">Índice</h2>
+    <ul class="space-y-3.5">
+      {filteredHeadings.map((heading) => (
+        <li class={heading.depth === 3 ? "ml-4" : ""}>
+          <a
+            href={`#${heading.slug}`}
+            class="toc-link block text-[13.5px] font-medium leading-snug text-ink-400 transition-colors hover:text-teal-600 data-[active=true]:text-ink-950"
+            data-slug={heading.slug}
+          >
+            {heading.text}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+)}
+
+<script>
+  function initTOC() {
+    const headings = document.querySelectorAll(".prose-pa h2, .prose-pa h3");
+    if (!headings.length) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const id = entry.target.id;
+            const links = document.querySelectorAll(".toc-link");
+            links.forEach((link) => {
+              if (link.getAttribute("data-slug") === id) {
+                link.setAttribute("data-active", "true");
+              } else {
+                link.setAttribute("data-active", "false");
+              }
+            });
+          }
+        });
+      },
+      {
+        rootMargin: "-10% 0px -80% 0px",
+      }
+    );
+
+    headings.forEach((heading) => observer.observe(heading));
+  }
+
+  // Initialize on view transitions and full page loads
+  document.addEventListener("astro:page-load", initTOC);
+  
+  if (document.readyState === "complete" || document.readyState === "interactive") {
+    setTimeout(initTOC, 0);
+  } else {
+    document.addEventListener("DOMContentLoaded", initTOC);
+  }
+</script>

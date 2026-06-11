@@ -1,6 +1,7 @@
 ---
 import { getCollection, render } from "astro:content";
 import Base from "@/layouts/Base.astro";
+import TableOfContents from "@/components/TableOfContents.astro";
 import { SITE } from "@/data/site";
 import { articleSchema, breadcrumbSchema } from "@/lib/schema";
 
@@ -13,7 +14,7 @@ export async function getStaticPaths() {
 }
 
 const { post } = Astro.props;
-const { Content } = await render(post);
+const { Content, headings } = await render(post);
 
 const url = `${SITE.url}/blog/${post.id}`;
 const formatter = new Intl.DateTimeFormat("es-MX", { day: "numeric", month: "long", year: "numeric" });
@@ -21,6 +22,9 @@ const formatter = new Intl.DateTimeFormat("es-MX", { day: "numeric", month: "lon
 const related = (await getCollection("blog", ({ data, id }) => !data.draft && id !== post.id))
   .filter((p) => p.data.categorySlug === post.data.categorySlug)
   .slice(0, 2);
+
+const shortFmt = new Intl.DateTimeFormat("es-MX", { day: "numeric", month: "short", year: "numeric" });
+const READ_TIME = 5;
 
 const schema = [
   articleSchema({
@@ -39,58 +43,134 @@ const schema = [
 ---
 
 <Base title={`${post.data.title} | Professional Academy`} description={post.data.description} schema={schema} ogType="article">
-  <article class="pt-36 pb-24">
+  <article class="pt-36 pb-28">
     <div class="container-edge">
-      <header class="mx-auto max-w-2xl">
+
+      <!-- Top Header Section (Full Width / Centered) -->
+      <div class="mx-auto max-w-3xl flex flex-col items-center text-center">
+        <!-- Breadcrumb -->
         <nav aria-label="Ruta de navegación" class="font-mono text-[11px] tracking-[0.18em] text-ink-400 uppercase">
-          <a href="/blog" class="transition-colors hover:text-teal-300">Blog</a>
-          <span aria-hidden="true"> / </span>
-          <a href={`/blog/categoria/${post.data.categorySlug}`} class="text-teal-400 transition-colors hover:text-teal-300">
+          <a href="/blog" class="transition-colors hover:text-teal-600">Blog</a>
+          <span aria-hidden="true" class="mx-2 opacity-40">/</span>
+          <a href={`/blog/categoria/${post.data.categorySlug}`} class="text-teal-600 transition-colors hover:text-teal-700">
             {post.data.category}
           </a>
         </nav>
-        <h1 class="mt-6 font-display text-3xl leading-tight font-semibold tracking-tight text-balance sm:text-5xl">
-          {post.data.title}
-        </h1>
-        <div class="mt-6 flex items-center gap-4 font-mono text-[11px] tracking-widest text-ink-400 uppercase">
-          <time datetime={post.data.pubDate.toISOString()}>{formatter.format(post.data.pubDate)}</time>
-          {post.data.updatedDate && (
-            <span>Actualizado: {formatter.format(post.data.updatedDate)}</span>
-          )}
-        </div>
-      </header>
 
-      <div class="prose-pa mx-auto mt-14">
-        <Content />
+        <!-- Article header -->
+        <header class="mt-6">
+          <h1 class="font-display text-[clamp(1.875rem,4vw,3rem)] leading-tight font-semibold tracking-tight text-balance text-ink-950">
+            {post.data.title}
+          </h1>
+          <div class="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 font-mono text-[11px] tracking-widest text-ink-400 uppercase">
+            <time datetime={post.data.pubDate.toISOString()}>{formatter.format(post.data.pubDate)}</time>
+            {post.data.updatedDate && (
+              <span>Actualizado: {formatter.format(post.data.updatedDate)}</span>
+            )}
+            <span class="flex items-center gap-1.5">
+              <svg class="size-3 text-teal-500" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                <circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.4"/>
+                <path d="M6 3.5V6l1.5 1.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+              </svg>
+              {READ_TIME} min lectura
+            </span>
+          </div>
+          <p class="mt-6 text-lg leading-relaxed text-ink-500 text-balance">{post.data.description}</p>
+        </header>
+
+        <!-- Featured Image / Cover Band -->
+        <div class="mt-10 w-full overflow-hidden rounded-2xl bg-teal-500/8" aria-hidden="true">
+          <div class="flex h-[240px] sm:h-[320px] items-center justify-center gap-6 px-10">
+            <!-- As a placeholder for an actual featured image, we keep the styled cover band to preserve the design -->
+            <span class="font-display text-[5rem] font-bold leading-none tracking-tighter text-teal-400/25 select-none">
+              {post.data.category.replace(/\s.*/,"").toUpperCase()}
+            </span>
+            <div class="h-20 w-px bg-teal-400/20 hidden sm:block"></div>
+            <div class="hidden sm:flex flex-col gap-2">
+              <div class="h-2 w-32 rounded-full bg-teal-400/25"></div>
+              <div class="h-2 w-20 rounded-full bg-teal-400/15"></div>
+              <div class="h-2 w-24 rounded-full bg-teal-400/20"></div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <!-- CTA de conversión dentro del artículo -->
-      <aside class="mx-auto mt-16 max-w-2xl rounded-2xl hairline bg-ink-900 p-8 sm:p-10" aria-label="Agenda tu evaluación">
-        <h2 class="font-display text-2xl font-semibold tracking-tight">
-          ¿Quieres saber tu puntaje actual?
-        </h2>
-        <p class="mt-3 text-[15px] leading-relaxed text-ink-300">
-          Tu primera evaluación diagnóstica es gratuita: mide tu nivel real y
-          recibe un plan de preparación a tu medida.
-        </p>
-        <a href="/contacto" class="btn-primary mt-7" data-event="blog_inline_cta">Evaluación gratis</a>
-      </aside>
-
-      {related.length > 0 && (
-        <section class="mx-auto mt-20 max-w-2xl" aria-label="Artículos relacionados">
-          <h2 class="font-mono text-[11px] tracking-[0.2em] text-ink-400 uppercase">Sigue leyendo</h2>
-          <div class="mt-6 grid gap-4 sm:grid-cols-2">
-            {related.map((p) => (
-              <a href={`/blog/${p.id}`} class="group rounded-xl hairline bg-ink-950 p-6 transition-colors hover:bg-ink-900">
-                <p class="font-mono text-[10px] tracking-[0.2em] text-teal-400 uppercase">{p.data.category}</p>
-                <h3 class="mt-3 font-display text-lg leading-snug font-semibold tracking-tight transition-colors group-hover:text-teal-300">
-                  {p.data.title}
-                </h3>
-              </a>
-            ))}
+      <!-- Split Layout Section -->
+      <div class="mx-auto mt-16 max-w-[1024px] lg:flex lg:gap-12 xl:gap-16">
+        
+        <!-- Sidebar -->
+        <aside class="hidden lg:block lg:w-[240px] shrink-0">
+          <div class="sticky top-32">
+            <TableOfContents headings={headings} />
           </div>
-        </section>
-      )}
+        </aside>
+
+        <!-- Main Content -->
+        <div class="min-w-0 flex-1 max-w-2xl mx-auto lg:mx-0">
+          
+          <!-- Prose content -->
+          <div class="prose-pa">
+            <Content />
+          </div>
+
+          <!-- Inline CTA -->
+          <aside
+            class="mt-16 overflow-hidden rounded-2xl bg-teal-500/8"
+            aria-label="Agenda tu evaluación"
+          >
+            <div class="h-1 w-full bg-teal-400/60"></div>
+            <div class="p-8 sm:p-10">
+              <h2 class="font-display text-2xl font-semibold tracking-tight text-ink-950">
+                ¿Quieres saber tu puntaje actual?
+              </h2>
+              <p class="mt-3 text-[15px] leading-relaxed text-ink-500">
+                Tu primera evaluación diagnóstica es gratuita: mide tu nivel real y
+                recibe un plan de preparación a tu medida.
+              </p>
+              <a href="/contacto" class="btn-primary mt-7 inline-flex" data-event="blog_inline_cta">
+                Evaluación gratis
+              </a>
+            </div>
+          </aside>
+
+          <!-- Related posts -->
+          {related.length > 0 && (
+            <section class="mt-20" aria-label="Artículos relacionados">
+              <h2 class="font-mono text-[11px] tracking-[0.2em] text-ink-400 uppercase">
+                Sigue leyendo
+              </h2>
+              <div class="mt-6 grid gap-4 sm:grid-cols-2">
+                {related.map((p) => (
+                  <a
+                    href={`/blog/${p.id}`}
+                    class="group flex flex-col overflow-hidden rounded-xl hairline bg-white transition-all duration-300 hover:shadow-[0_4px_20px_-6px_rgb(0_0_0/0.10)] hover:-translate-y-0.5"
+                  >
+                    <div class="h-1 w-full bg-teal-400/60"></div>
+                    <div class="flex flex-1 flex-col p-5">
+                      <p class="font-mono text-[10px] tracking-[0.2em] text-teal-600 uppercase">
+                        {p.data.category}
+                      </p>
+                      <h3 class="mt-2.5 font-display text-lg leading-snug font-semibold tracking-tight text-ink-950 transition-colors group-hover:text-teal-600">
+                        {p.data.title}
+                      </h3>
+                      <div class="mt-4 flex items-center justify-between">
+                        <time datetime={p.data.pubDate.toISOString()} class="font-mono text-[10.5px] text-ink-400">
+                          {shortFmt.format(p.data.pubDate)}
+                        </time>
+                        <span class="font-mono text-[10.5px] text-ink-400 transition-colors group-hover:text-teal-600">
+                          {READ_TIME} min →
+                        </span>
+                      </div>
+                    </div>
+                  </a>
+                ))}
+              </div>
+            </section>
+          )}
+
+        </div>
+      </div>
+
     </div>
   </article>
 </Base>

@@ -25,6 +25,7 @@ export interface Program {
   features: { title: string; detail: string }[];
   faqs: { q: string; a: string }[];
   scoreScale: string;
+  heroImage?: string;
 }
 
 export const PROGRAMS: Program[] = [
@@ -120,6 +121,7 @@ export const PROGRAMS: Program[] = [
       { q: "¿Cuántos simulacros incluye?", a: "Seis evaluaciones completas cronometradas más simulacros parciales por sección, todos con reporte detallado de desempeño." },
       { q: "¿Tienen garantía de puntaje?", a: "Garantizamos un aumento mínimo de 100 puntos sobre tu diagnóstico inicial o te devolvemos el 100% de tu inversión." },
     ],
+    heroImage: "/sat-hero.png",
   },
   {
     slug: "gre",
