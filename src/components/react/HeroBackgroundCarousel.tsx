@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 
 const originalImages = [
-  "/images/bg-hero-1.jpg",
-  "/images/bg-hero-2.jpg",
-  "/images/bg-hero-3.jpg",
-  "/images/bg-hero-4.jpg",
+  "/images/bg-hero-1.webp",
+  "/images/bg-hero-2.webp",
+  "/images/bg-hero-3.webp",
+  "/images/bg-hero-4.webp",
 ];
 
 // Append first image to end for infinite slide loop
