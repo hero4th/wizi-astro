@@ -1,0 +1,379 @@
+---
+import { Icon } from "astro-icon/components";
+import Base from "@/layouts/Base.astro";
+import FAQList from "@/components/FAQList.astro";
+import { SITE } from "@/data/site";
+import { breadcrumbSchema, faqSchema } from "@/lib/schema";
+
+const EXAM = "TOEFL iBT";
+
+const heroBadges = [
+  "Recibe retroalimentación en clases particulares",
+  "Estudia con materiales y simuladores actualizados",
+  "Planes flexibles, cuando y donde quieras",
+];
+
+type Feature = string | { label: string; note: string };
+
+interface Tier {
+  name: string;
+  description: string;
+  priceNote: string;
+  price: string;
+  priceUnit: string;
+  includesTitle: string;
+  features: Feature[];
+  guarantee: string;
+  dark?: boolean;
+  recommended?: boolean;
+  tag?: [string, string];
+  students?: string;
+}
+
+const tiers: Tier[] = [
+  {
+    name: "Pro Essentials",
+    description: "Para estudiantes disciplinados que buscan material de alta calidad.",
+    priceNote: "Pago único, acceso por 6 meses",
+    price: "$2,200",
+    priceUnit: "MXN",
+    includesTitle: "¿Qué incluye este plan?",
+    features: [
+      "Acceso a la plataforma digital",
+      "+10 exámenes de simulación",
+      "Tutor de IA Integrado",
+      "+2,000 preguntas de práctica",
+      "Lecciones en video",
+    ],
+    guarantee: "Si logras menos del 80% de tu puntaje objetivo, te devolvemos tu dinero.",
+  },
+  {
+    name: "Pro Advanced",
+    recommended: true,
+    description: "Evalúa tu nivel y trabaja en tus debilidades con la ayuda de nuestros expertos.",
+    priceNote: "A partir de 5 horas por:",
+    price: "$3,490",
+    priceUnit: "MXN",
+    includesTitle: "Incluye todo del plan Essentials, más:",
+    features: [
+      "Diagnóstico de tu nivel",
+      "Plan de estudio personalizado",
+      { label: "Clases 1:1 en vivo", note: "Contrata horas extra si lo necesitas" },
+      "20 exámenes de simulación",
+      "Horarios flexibles adaptables",
+    ],
+    guarantee: "Si logras menos del 85% de tu puntaje objetivo, te devolvemos tu dinero.",
+  },
+  {
+    name: "Pro Plus",
+    dark: true,
+    description: "Programa intensivo con acompañamiento constante para resultados garantizados.",
+    priceNote: "A partir de:",
+    price: "$14,990",
+    priceUnit: "/MXN",
+    tag: ["Paga de contado", "Ahorra 15%"],
+    includesTitle: "Incluye todo del plan Advanced, más:",
+    features: [
+      "20 horas de clase en vivo 1:1",
+      "Maestros certificados",
+      "Retroalimentación detallada",
+      "Kit de estrategia para el día del examen",
+    ],
+    guarantee: "Si logras menos del 90% de tu puntaje objetivo, te rembolsamos el 100% de tu dinero.",
+    students: "+1,500",
+  },
+];
+
+const waLink = (plan: string) =>
+  `https://wa.me/${SITE.whatsapp}?text=${encodeURIComponent(
+    `Hola, me interesa el plan ${plan} del curso ${EXAM}. ¿Me pueden dar más información?`,
+  )}`;
+
+const faqs = [
+  {
+    q: `¿Qué incluye el curso ${EXAM} de Professional Academy?`,
+    a: "Dependiendo del plan, tendrás acceso completo a la plataforma con simuladores idénticos al examen real, material oficial de ETS, +2,000 ejercicios para practicar, retroalimentación personalizada 1 a 1 y más de 20 horas lecciones en video.",
+  },
+  {
+    q: "¿Qué nivel de inglés necesito para tomar estos cursos?",
+    a: "Aceptamos desde nivel intermedio (B1). En tu diagnóstico inicial medimos tu punto de partida y ajustamos el plan para llevarte al puntaje objetivo, sin importar dónde empieces en el formato TOEFL iBT.",
+  },
+  {
+    q: "¿Por cuánto tiempo tengo acceso a la plataforma digital?",
+    a: "El plan Essentials incluye 6 meses de acceso. En los planes Advanced y Plus el acceso se mantiene durante todo tu programa de preparación, hasta la fecha de tu examen.",
+  },
+  {
+    q: "¿Cómo funciona la garantía de puntaje?",
+    a: "Si al terminar tu curso y presentar el examen no alcanzas el porcentaje de tu puntaje objetivo indicado en tu plan, te reembolsamos tu inversión según lo estipulado. Aplican nuestros Términos y Condiciones.",
+  },
+];
+
+const schema = [
+  faqSchema(faqs),
+  breadcrumbSchema([
+    { name: "Inicio", url: SITE.url },
+    { name: "Cursos", url: `${SITE.url}/cursos` },
+    { name: EXAM, url: `${SITE.url}/cursos/toefl-ibt` },
+    { name: "Precios", url: `${SITE.url}/cursos/toefl-ibt/precios` },
+  ]),
+];
+---
+
+<Base
+  title={`Precios del curso ${EXAM} | Professional Academy`}
+  description={`Elige tu modalidad de estudio para el ${EXAM}: Pro Essentials, Pro Advanced o Pro Plus. Simuladores oficiales, clases 1 a 1 y Garantía de Puntaje.`}
+  schema={schema}
+  stickyCta={false}
+>
+  <!-- HERO (oscuro) -->
+  <section class="relative overflow-hidden" style="background-color: rgb(6 10 10)">
+    <div class="pointer-events-none absolute -right-24 top-0 h-[42rem] w-[42rem] rounded-full bg-teal-600/12 blur-[140px]" aria-hidden="true"></div>
+    <div class="pointer-events-none absolute -left-40 bottom-[-22rem] h-[42rem] w-[42rem] rounded-full bg-teal-900/40 blur-[120px]" aria-hidden="true"></div>
+
+    <div class="container-edge relative pt-40 pb-24">
+      <div class="pp-hero">
+        <div>
+          <h1 class="font-display text-[clamp(2.75rem,5.6vw,4.6rem)] leading-[1.02] font-semibold tracking-[-0.03em] text-pearl" data-reveal-line>
+            <span class="line-mask"><span class="line-inner">La mejor opción</span></span>
+            <span class="line-mask"><span class="line-inner"><em class="font-display italic font-medium text-teal-400 pr-2">para aprobar.</em></span></span>
+          </h1>
+          <p class="mt-7 max-w-lg text-[17px] leading-relaxed text-ink-300" data-reveal>
+            Selecciona tu modalidad de estudio y asegura el mejor puntaje. Preparación enfocada, estratégica y garantizada.
+          </p>
+        </div>
+
+        <div class="pp-badges" data-reveal>
+          {heroBadges.map((text, i) => (
+            <div class:list={["inline-flex items-center gap-3.5 rounded-2xl bg-white px-5 py-3.5 shadow-[0_20px_46px_-18px_rgba(0,0,0,0.75)]", `pp-badge-${i}`]}>
+              <span class="grid size-6 shrink-0 place-items-center rounded-full bg-teal-600" aria-hidden="true">
+                <Icon name="ph:check" class="size-3.5 text-white" />
+              </span>
+              <span class="text-[14px] font-medium text-ink-800">{text}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRECIOS (claro) -->
+  <section class="bg-pearl py-20" aria-label={`Planes del curso ${EXAM}`}>
+    <div class="container-edge !max-w-[88rem]">
+      <div class="flex items-center justify-center gap-2.5 sm:gap-3 text-center" data-reveal>
+        <Icon name="ph:seal-percent-fill" class="size-6 sm:size-7 shrink-0 text-[#00bda0]" aria-hidden="true" />
+        <p class="text-lg sm:text-xl">
+          <span class="font-extrabold tracking-tight text-[#00a88f]">Disponible por tiempo limitado</span>
+          <span class="font-medium text-ink-600"> — Solo quedan 5 cupos este mes</span>
+        </p>
+      </div>
+
+      <div class="pp-cards mt-12">
+        {tiers.map((t, idx) => (
+          <div
+            class:list={[
+              "pp-card relative flex flex-col rounded-3xl p-6 sm:p-8 xl:p-9",
+              `pp-card-${idx}`,
+              t.dark 
+                ? "pp-card-dark text-pearl shadow-2xl shadow-black/30" 
+                : "bg-[#f1f3f5] text-ink-950",
+              !t.dark && idx === 1 && "lg:border-l lg:border-ink-950/[0.06]",
+              idx === 2 && "lg:!pt-[3.5rem] xl:!pt-[3.75rem]",
+            ]}
+            style={t.dark ? "background-image: linear-gradient(158deg, #112b26 0%, #0d211d 52%, #081714 100%)" : undefined}
+            data-reveal
+            data-reveal-delay={String(idx * 0.06)}
+          >
+            {t.recommended && (
+              <span class="absolute right-7 top-0 -translate-y-1/2 whitespace-nowrap rounded-full bg-[#008f7a] px-3.5 py-1 font-mono text-[10px] font-bold tracking-[0.16em] text-white shadow-md uppercase">
+                Recomendado
+              </span>
+            )}
+
+            <div class="min-h-[6.5rem] sm:min-h-[7rem] lg:min-h-[7.5rem] flex flex-col justify-start">
+              <h2 class:list={["font-display text-[1.7rem] font-semibold tracking-tight leading-none", t.dark ? "text-pearl" : "text-ink-950"]}>{t.name}</h2>
+              <p class:list={["mt-3 max-w-[27ch] text-[14px] leading-relaxed", t.dark ? "text-ink-300" : "text-ink-500"]}>{t.description}</p>
+            </div>
+
+            <!-- Precio -->
+            <div class="mt-7 min-h-[5.5rem] lg:min-h-[5.75rem] flex flex-col justify-start">
+              <p class:list={["text-[13px]", t.dark ? "text-ink-300" : "text-ink-400"]}>{t.priceNote}</p>
+              <div class="mt-2 flex items-center justify-between gap-2 sm:gap-3 xl:gap-4">
+                <p class:list={["font-display font-semibold tracking-tight whitespace-nowrap shrink-0", t.dark ? "text-pearl" : "text-ink-950"]}>
+                  <span class="text-[2.35rem] sm:text-[2.6rem] xl:text-[2.75rem] leading-none">{t.price}</span>
+                  <span class:list={["ml-1 text-sm font-normal", t.dark ? "text-ink-300" : "text-ink-400"]}>{t.priceUnit}</span>
+                </p>
+                {t.tag && (
+                  <span
+                    class="inline-flex flex-col justify-center items-center text-center pl-[26px] sm:pl-[30px] xl:pl-[32px] pr-[14px] sm:pr-[16px] xl:pr-[18px] py-[10px] sm:py-[11px] xl:py-[12px] shrink-0"
+                    style="background-color: #354245; border-radius: 12px; clip-path: polygon(15px 0%, 100% 0%, 100% 100%, 15px 100%, 0% 50%);"
+                  >
+                    <span class="font-display text-[11px] sm:text-[11.5px] xl:text-[12px] font-bold tracking-[0.03em] text-white uppercase leading-none">{t.tag[0]}</span>
+                    <span class="font-display text-[15px] sm:text-[16.5px] xl:text-[18px] font-extrabold tracking-normal text-white uppercase leading-none mt-1">{t.tag[1]}</span>
+                  </span>
+                )}
+              </div>
+            </div>
+
+            <a
+              href={waLink(t.name)}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="mt-6 inline-flex self-start items-center justify-center rounded-full bg-[#00cfab] px-8 sm:px-10 py-3.5 font-display text-[13px] font-bold tracking-widest text-ink-950 shadow-sm transition-colors hover:bg-[#00bda0] uppercase"
+              data-magnetic
+              data-event={`pricing_contact_${t.name.toLowerCase().replace(/\s+/g, "_")}`}
+            >
+              CONTÁCTANOS
+            </a>
+
+            <!-- Incluye -->
+            <p class:list={["mt-8 min-h-[2rem] font-mono text-[11px] font-bold tracking-[0.16em] uppercase flex items-center", t.dark ? "text-[#00cfab]" : "text-[#008f7a]"]}>{t.includesTitle}</p>
+            <div class:list={["mt-3.5 h-px w-full", t.dark ? "bg-white/10" : "bg-ink-950/[0.08]"]} aria-hidden="true"></div>
+            <ul class="mt-4 space-y-3.5 mb-10 sm:mb-12 xl:mb-14">
+              {t.features.map((f) => {
+                const label = typeof f === "string" ? f : f.label;
+                const note = typeof f === "string" ? undefined : f.note;
+                return (
+                  <li class="flex items-start gap-3">
+                    {t.dark ? (
+                      <span class="mt-px grid size-5 shrink-0 place-items-center rounded-full bg-[#1c3e37] text-white" aria-hidden="true">
+                        <Icon name="ph:check" class="size-3" />
+                      </span>
+                    ) : (
+                      <Icon name="ph:check-circle" class="mt-px size-5 shrink-0 text-[#009485]" aria-hidden="true" />
+                    )}
+                    <span class="min-w-0">
+                      <span class:list={["block text-[14px] leading-snug", t.dark ? "text-ink-100" : "text-ink-800"]}>{label}</span>
+                      {note && <span class="mt-0.5 block text-[12px] leading-snug text-ink-400">{note}</span>}
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+
+            <!-- Garantía -->
+            <div class:list={[
+              "mt-auto rounded-3xl p-6 sm:p-7 shadow-sm",
+              t.dark ? "bg-[#13332e] border border-white/10" : "bg-[#e2f8f3]",
+            ]}>
+              <div class="flex items-center gap-3">
+                <Icon name="ph:seal-check" class:list={["size-7 shrink-0", t.dark ? "text-white" : "text-[#008f7a]"]} aria-hidden="true" />
+                <p class:list={["font-display text-[19px] sm:text-[21px] font-bold tracking-tight leading-none", t.dark ? "text-white" : "text-[#007f6d]"]}>Garantía de puntaje</p>
+              </div>
+              <p class:list={["mt-3 text-[13.5px] sm:text-[14px] leading-relaxed", t.dark ? "text-ink-300" : "text-ink-600"]}>{t.guarantee}</p>
+              <p class:list={["mt-2 text-[11px] sm:text-[12px]", t.dark ? "text-ink-400" : "text-ink-400"]}>
+                *Sujeto a nuestros <span class:list={["font-semibold", t.dark ? "text-ink-200" : "text-ink-700"]}>Términos y Condiciones</span>
+              </p>
+              {t.students && (
+                <div class="mt-4 flex flex-wrap items-center gap-2 sm:gap-2.5 border-t border-white/10 pt-3.5">
+                  <span class="font-mono text-[10px] sm:text-[10.5px] font-bold tracking-[0.14em] text-ink-300 uppercase">Han tomado este curso</span>
+                  <span class="font-display text-lg sm:text-xl font-extrabold text-[#00cfab]">{t.students}</span>
+                  <span class="text-[12px] sm:text-[13px] text-ink-200">Estudiantes</span>
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- RESOLVEMOS TUS DUDAS (oscuro) -->
+  <section class="relative overflow-hidden py-24" style="background-color: rgb(6 10 10)" aria-label="Preguntas frecuentes">
+    <div class="pointer-events-none absolute -left-64 bottom-[-28rem] h-[56rem] w-[56rem] rounded-full bg-teal-900/25 blur-[8px]" aria-hidden="true"></div>
+
+    <div class="container-edge relative">
+      <div class="pp-faq">
+        <div class="pp-faq-aside" data-reveal>
+          <h2 class="font-display text-4xl font-semibold leading-[1.05] tracking-tight text-pearl sm:text-5xl">
+            Resolvemos<br />
+            <span class="text-teal-400">tus dudas.</span>
+          </h2>
+          <p class="mt-5 max-w-sm text-[15px] leading-relaxed text-ink-300">
+            Las respuestas que más nos piden antes de inscribirse. Si tu pregunta no está aquí, ponte en contacto con nosotros.
+          </p>
+          <a href="/preguntas-frecuentes" class="btn-primary mt-8 !font-display !text-sm !font-bold !tracking-widest" data-magnetic>
+            CONOCER MÁS
+          </a>
+        </div>
+
+        <div data-reveal>
+          <FAQList faqs={faqs} name="faq-precios-toefl" variant="dark" />
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* ---- HERO ---- */
+  .pp-hero {
+    display: grid;
+    gap: 3rem;
+    align-items: center;
+  }
+  @media (min-width: 1024px) {
+    .pp-hero {
+      grid-template-columns: 1fr 1fr;
+      gap: 2.5rem;
+    }
+  }
+
+  .pp-badges {
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+  }
+  @media (min-width: 1024px) {
+    .pp-badges {
+      margin-left: auto;
+      width: fit-content;
+      align-items: flex-start;
+    }
+    .pp-badge-0 { margin-left: 0; width: calc(100% - 2.5rem); }
+    .pp-badge-1 { margin-left: 2.5rem; }
+    .pp-badge-2 { margin-left: 0; width: calc(100% - 2.5rem); }
+  }
+
+  /* ---- PRICING CARDS ---- */
+  .pp-cards {
+    display: grid;
+    gap: 1.25rem;
+  }
+  @media (min-width: 1024px) {
+    .pp-cards {
+      grid-template-columns: 1fr 1fr 1.16fr;
+      gap: 0;
+      align-items: stretch;
+    }
+    .pp-card-0 {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+      border-right: 0;
+    }
+    .pp-card-1 {
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+    }
+    .pp-card-2 {
+      margin: -1.5rem 0 -1.5rem 1.25rem;
+      z-index: 10;
+    }
+  }
+
+  /* ---- FAQ ---- */
+  .pp-faq {
+    display: grid;
+    gap: 3rem;
+    align-items: start;
+  }
+  @media (min-width: 1024px) {
+    .pp-faq {
+      grid-template-columns: 0.85fr 1.15fr;
+      gap: 5rem;
+    }
+    .pp-faq-aside {
+      position: sticky;
+      top: 7rem;
+    }
+  }
+</style>

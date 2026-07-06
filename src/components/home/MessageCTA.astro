@@ -1,0 +1,181 @@
+---
+import { SITE } from "@/data/site";
+
+const cursos = ["TOEFL iBT", "SAT", "GRE", "GMAT", "PAA"];
+---
+
+<section
+  class="relative overflow-hidden py-28 hairline-t-dim"
+  style="background-color: rgb(8 13 13)"
+  aria-label="Inicia tu estudio con un mensaje"
+>
+  <div class="pointer-events-none absolute -left-40 bottom-0 h-96 w-96 rounded-full bg-teal-600/8 blur-[120px]" aria-hidden="true"></div>
+
+  <div class="container-edge relative">
+    <div class="grid items-center gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
+
+      <!-- Izquierda: imagen -->
+      <div class="flex justify-center lg:justify-start" data-reveal>
+        <img
+          src="/images/cta-lead.webp"
+          alt="Estudiante enviando un mensaje para pedir informes"
+          width="1200"
+          height="807"
+          loading="lazy"
+          decoding="async"
+          class="w-full max-w-md rounded-3xl object-cover shadow-panel"
+        />
+      </div>
+
+      <!-- Derecha: mensaje editable -->
+      <div data-reveal>
+        <h2 class="font-display text-[clamp(2rem,4vw,3.25rem)] font-semibold leading-[1.05] tracking-tight text-pearl">
+          Inicia tu estudio <em class="font-display italic font-medium text-teal-400">con un mensaje.</em>
+        </h2>
+
+        <form id="msg-cta-form" class="mt-9 max-w-3xl mx-auto text-center" novalidate>
+          <p class="text-[clamp(1.125rem,1.8vw,1.5rem)] leading-[1.8] font-display font-medium text-ink-100">
+            Hola, me llamo <input
+              name="nombre"
+              type="text"
+              required
+              autocomplete="name"
+              aria-label="Tu nombre completo"
+              placeholder="nombre completo"
+              class="msg-field w-[18ch]"
+            />, quiero <br class="hidden sm:block" />
+            informes del <span class="msg-select-wrap"><select name="curso" aria-label="Curso de interés" class="msg-field msg-select w-[17ch]">
+                {cursos.map((c) => (
+                  <option value={c}>curso {c}</option>
+                ))}
+              </select></span>. Pueden escribirme a <br class="hidden sm:block" />
+            <input
+              name="correo"
+              type="email"
+              required
+              inputmode="email"
+              autocomplete="email"
+              spellcheck="false"
+              aria-label="Tu correo electrónico"
+              placeholder="tu@correo.com"
+              class="msg-field w-[17ch]"
+            /> o llamarme al <input
+              name="telefono"
+              type="tel"
+              inputmode="tel"
+              autocomplete="tel"
+              aria-label="Tu número de teléfono"
+              placeholder="tu número"
+              class="msg-field w-[11ch]"
+            />.
+          </p>
+
+          <button type="submit" class="btn-primary mt-8 !font-display !text-[15px] !font-bold !tracking-widest" data-magnetic>
+            ENVIAR MENSAJE
+          </button>
+          <p id="msg-cta-status" class="mt-4 text-sm text-teal-300" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<style>
+  .msg-field {
+    display: inline-block;
+    background: transparent;
+    border: 0;
+    border-bottom: 2px dashed rgb(20 184 166 / 0.8);
+    color: var(--color-teal-400);
+    padding: 0 0.35em 0.12em;
+    outline: none;
+    text-align: center;
+    transition: border-color 0.25s, background-color 0.25s;
+    font: inherit;
+  }
+  .msg-field::placeholder {
+    color: rgb(20 184 166 / 0.6);
+  }
+  .msg-field:focus {
+    border-bottom-color: var(--color-teal-400);
+    background: rgb(20 184 166 / 0.06);
+  }
+  .msg-select-wrap {
+    position: relative;
+    display: inline-block;
+  }
+  .msg-select {
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+    padding-right: 1.4em;
+    text-align: left;
+    width: auto;
+  }
+  .msg-select-wrap::after {
+    content: "";
+    position: absolute;
+    right: 0.45em;
+    top: 50%;
+    transform: translateY(-25%);
+    border-left: 0.3em solid transparent;
+    border-right: 0.3em solid transparent;
+    border-top: 0.4em solid var(--color-teal-500);
+    pointer-events: none;
+  }
+  .msg-select option {
+    background: var(--color-ink-900);
+    color: var(--color-pearl);
+  }
+  .msg-field[aria-invalid="true"] {
+    border-bottom-color: #f87171;
+  }
+</style>
+
+<script define:vars={{ whatsapp: SITE.whatsapp }}>
+  function initMsgCta() {
+    const form = document.getElementById("msg-cta-form");
+    if (!form || form.dataset.bound) return;
+    form.dataset.bound = "true";
+    const status = document.getElementById("msg-cta-status");
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const data = new FormData(form);
+      const nombre = String(data.get("nombre") || "").trim();
+      const curso = String(data.get("curso") || "");
+      const correo = String(data.get("correo") || "").trim();
+      const telefono = String(data.get("telefono") || "").trim();
+
+      const setError = (name, msg) => {
+        const el = form.querySelector(`[name="${name}"]`);
+        el?.setAttribute("aria-invalid", "true");
+        el?.focus();
+        if (status) status.textContent = msg;
+      };
+
+      if (nombre.length < 2) return setError("nombre", "Escribe tu nombre para continuar.");
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo))
+        return setError("correo", "Escribe un correo válido, por ejemplo nombre@correo.com.");
+
+      form.querySelectorAll("[aria-invalid]").forEach((el) => el.removeAttribute("aria-invalid"));
+      if (status) status.textContent = "Abriendo WhatsApp…";
+
+      const msg = [
+        `Hola, me llamo ${nombre}.`,
+        `Quiero informes del curso ${curso}.`,
+        correo ? `Mi correo: ${correo}` : null,
+        telefono ? `Mi teléfono: ${telefono}` : null,
+      ]
+        .filter(Boolean)
+        .join("\n");
+
+      window.dataLayer?.push({ event: "generate_lead", lead_exam: curso });
+      window.open(`https://wa.me/${whatsapp}?text=${encodeURIComponent(msg)}`, "_blank", "noopener,noreferrer");
+    });
+  }
+
+  initMsgCta();
+  document.addEventListener("astro:page-load", initMsgCta);
+</script>

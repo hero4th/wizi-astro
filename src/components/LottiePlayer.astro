@@ -1,0 +1,95 @@
+---
+/**
+ * Reproductor Lottie ligero. Carga lottie-web e inicializa la animación solo
+ * cuando entra en viewport (IntersectionObserver) para no afectar el TTI.
+ *
+ * Estas animaciones son "movie-to-lottie" (secuencia de fotogramas a baja tasa):
+ *   - Normalizamos la velocidad a ~14 fps para que no se vea trabada.
+ *   - Repetimos con una pausa (el trazo se redibuja) para dar continuidad.
+ *   - `blend` (mix-blend-multiply) funde el fondo blanco del JPEG con el color
+ *     de la sección. Importante: NO debe haber ancestros con transform/opacity
+ *     que aíslen el contexto de mezcla (por eso evitamos opacity en el contenedor).
+ * Respeta prefers-reduced-motion: muestra el último fotograma fijo.
+ */
+interface Props {
+  src: string;
+  class?: string;
+  /** Funde el fondo blanco con la sección (multiply). */
+  blend?: boolean;
+  ["aria-label"]?: string;
+}
+const { src, class: className, blend = false, "aria-label": ariaLabel } = Astro.props;
+---
+
+<div
+  class:list={[className, blend && "lottie-blend"]}
+  data-lottie={src}
+  role={ariaLabel ? "img" : undefined}
+  aria-label={ariaLabel}
+  aria-hidden={ariaLabel ? undefined : "true"}
+></div>
+
+<style>
+  .lottie-blend {
+    mix-blend-mode: multiply;
+  }
+</style>
+
+<script>
+  import lottie from "lottie-web/build/player/lottie_light";
+
+  const TARGET_FPS = 14; // velocidad de reproducción deseada
+  const HOLD_MS = 1600; // pausa con la ilustración completa antes de redibujar
+
+  function setup(el: HTMLElement) {
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const anim = lottie.loadAnimation({
+      container: el,
+      renderer: "svg",
+      loop: false,
+      autoplay: !reduced,
+      path: el.dataset.lottie!,
+      rendererSettings: { progressiveLoad: false },
+    });
+
+    anim.addEventListener("DOMLoaded", () => {
+      if (anim.frameRate) anim.setSpeed(TARGET_FPS / anim.frameRate);
+      if (reduced) anim.goToAndStop(Math.max(0, anim.totalFrames - 1), true);
+    });
+
+    if (reduced) return;
+
+    // Bucle suave: dibuja → mantiene → redibuja desde cero (sin cortes bruscos)
+    let timer: number;
+    anim.addEventListener("complete", () => {
+      timer = window.setTimeout(() => {
+        anim.goToAndStop(0, true);
+        anim.play();
+      }, HOLD_MS);
+    });
+
+    // Pausa cuando no está a la vista para ahorrar recursos
+    new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) anim.play();
+      else { anim.pause(); clearTimeout(timer); }
+    }, { threshold: 0.1 }).observe(el);
+  }
+
+  function initLottie() {
+    document.querySelectorAll<HTMLElement>("[data-lottie]").forEach((el) => {
+      if ((el as any)._lottieReady) return;
+      const io = new IntersectionObserver((entries, obs) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          (el as any)._lottieReady = true;
+          setup(el);
+          obs.disconnect();
+        });
+      }, { rootMargin: "300px" });
+      io.observe(el);
+    });
+  }
+
+  initLottie();
+  document.addEventListener("astro:page-load", initLottie);
+</script>
