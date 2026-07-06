@@ -5,11 +5,11 @@ import Marquee from "@/components/home/Marquee.astro";
 import Stats from "@/components/home/Stats.astro";
 import Programs from "@/components/home/Programs.astro";
 import Methodology from "@/components/home/Methodology.astro";
-import Guarantee from "@/components/home/Guarantee.astro";
 import Testimonials from "@/components/home/Testimonials.astro";
 import BlogTeaser from "@/components/home/BlogTeaser.astro";
 import FAQ from "@/components/home/FAQ.astro";
 import FinalCTA from "@/components/home/FinalCTA.astro";
+import MessageCTA from "@/components/home/MessageCTA.astro";
 
 import { SITE } from "@/data/site";
 import { FAQS } from "@/data/faqs";
@@ -25,10 +25,10 @@ import { faqSchema, localBusinessSchema } from "@/lib/schema";
   <Marquee />
   <Stats />
   <Programs />
-  <Methodology />
-  <Guarantee />
   <Testimonials />
-  <BlogTeaser />
-  <FAQ />
+  <Methodology />
   <FinalCTA />
+  <BlogTeaser />
+  <MessageCTA />
+  <FAQ />
 </Base>

@@ -7,24 +7,88 @@ interface Props {
   faqs: { q: string; a: string }[];
   /** Nombre del grupo para que solo un item esté abierto a la vez. */
   name?: string;
+  /** Tono visual: "light" (por defecto) para fondos claros, "dark" para fondos oscuros. */
+  variant?: "light" | "dark";
 }
-const { faqs, name = "faq" } = Astro.props;
+const { faqs, name = "faq", variant = "light" } = Astro.props;
+
+const dark = variant === "dark";
+const styles = {
+  wrap: dark ? "hairline-t-dim" : "hairline-t",
+  item: dark ? "hairline-b-dim" : "hairline-b",
+  summary: dark
+    ? "text-pearl hover:text-teal-300"
+    : "hover:text-teal-600",
+  icon: dark ? "hairline-dim text-pearl" : "hairline",
+  answer: dark ? "text-ink-300" : "text-ink-600",
+};
 ---
 
-<div class="hairline-t">
+<div class={styles.wrap} data-faq-list>
   {faqs.map((faq, i) => (
-    <details class="faq-item group hairline-b" name={name} open={i === 0}>
-      <summary class="flex cursor-pointer list-none items-center justify-between gap-6 py-6 text-left transition-colors hover:text-teal-600">
+    <div class={`faq-item group ${styles.item}`} data-faq-item data-active={i === 0 ? "true" : "false"}>
+      <button class={`faq-toggle w-full flex cursor-pointer list-none items-center justify-between gap-6 py-6 text-left transition-colors ${styles.summary}`} data-faq-toggle aria-expanded={i === 0 ? "true" : "false"}>
         <span class="font-display text-lg font-medium tracking-tight sm:text-xl">{faq.q}</span>
-        <span class="faq-icon grid size-9 shrink-0 place-items-center rounded-full hairline" aria-hidden="true">
+        <span class={`faq-icon grid size-9 shrink-0 place-items-center rounded-full transition-all duration-500 ease-out ${styles.icon}`} aria-hidden="true">
           <svg class="size-3.5" viewBox="0 0 14 14" fill="none">
             <path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
           </svg>
         </span>
-      </summary>
-      <p class="max-w-2xl pb-7 text-[15px] leading-relaxed text-ink-600">
-        {faq.a}
-      </p>
-    </details>
+      </button>
+      <div class="faq-panel">
+        <div class="overflow-hidden">
+          <p class={`max-w-2xl pb-7 text-[15px] leading-relaxed ${styles.answer}`}>
+            {faq.a}
+          </p>
+        </div>
+      </div>
+    </div>
   ))}
 </div>
+
+<style>
+  .faq-panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .faq-item[data-active="true"] .faq-panel {
+    grid-template-rows: 1fr;
+  }
+  .faq-item[data-active="true"] .faq-icon {
+    transform: rotate(45deg);
+    border-color: var(--color-teal-400, #2dd4bf);
+    background-color: var(--color-teal-400, #2dd4bf);
+    color: var(--color-ink-950, #080d0d);
+  }
+</style>
+
+<script>
+  function initFAQ() {
+    const lists = document.querySelectorAll("[data-faq-list]");
+    lists.forEach((list) => {
+      const items = Array.from(list.querySelectorAll<HTMLElement>("[data-faq-item]"));
+      items.forEach((item) => {
+        const toggle = item.querySelector("[data-faq-toggle]");
+        toggle?.addEventListener("click", () => {
+          const isActive = item.dataset.active === "true";
+          
+          // Cerrar todos
+          items.forEach(i => {
+            i.dataset.active = "false";
+            i.querySelector("[data-faq-toggle]")?.setAttribute("aria-expanded", "false");
+          });
+
+          // Si no estaba activo, abrirlo
+          if (!isActive) {
+            item.dataset.active = "true";
+            toggle.setAttribute("aria-expanded", "true");
+          }
+        });
+      });
+    });
+  }
+
+  initFAQ();
+  document.addEventListener("astro:page-load", initFAQ);
+</script>

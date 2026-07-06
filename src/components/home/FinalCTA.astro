@@ -1,52 +1,229 @@
 ---
 import { SITE } from "@/data/site";
 import InteractiveImageAccordion from "@/components/ui/InteractiveImageAccordion.astro";
+
+// Cada examen es un diagnóstico distinto. El campo `href` se llenará cuando las
+// pruebas estén listas para descargar; mientras tanto queda la lógica dinámica.
+const diagnostics = [
+  { slug: "toefl-ibt", name: "TOEFL iBT", full: "Test of English as a Foreign Language", parts: "Reading, Listening, Speaking, Writing", time: "~3 hrs", href: "" },
+  { slug: "sat", name: "SAT", full: "Scholastic Assessment Test", parts: "Reading & Writing, Math", time: "~2 hrs 14 min", href: "" },
+  { slug: "gre", name: "GRE", full: "Graduate Record Examination", parts: "Verbal, Quantitative, Analytical Writing", time: "~1 hr 58 min", href: "" },
+  { slug: "gmat", name: "GMAT", full: "Graduate Management Admission Test", parts: "Quantitative, Verbal, Data Insights", time: "~2 hrs 15 min", href: "" },
+  { slug: "paa", name: "PAA", full: "Prueba de Aptitud Académica", parts: "Aptitud Verbal, Aptitud Matemática", time: "~3 hrs", href: "" },
+];
 ---
 
-<section class="relative flex min-h-[88svh] items-center overflow-hidden hairline-t-dim" style="background-color: rgb(6 10 10)" aria-label="Comienza tu preparación">
+<section
+  id="diagnostico"
+  class="relative flex min-h-[88svh] items-center overflow-hidden hairline-t-dim"
+  style="background-color: rgb(6 10 10)"
+  aria-label="Prueba de diagnóstico gratuita"
+>
+  <!-- Halo decorativo -->
+  <div class="pointer-events-none absolute -right-32 top-0 h-[34rem] w-[34rem] rounded-full bg-teal-600/10 blur-[130px]" aria-hidden="true"></div>
+
   <div class="container-edge relative z-10 py-24">
-    <div class="flex flex-col lg:flex-row items-center justify-between gap-16 lg:gap-10">
-      
-      <!-- Left Side: Text Content -->
-      <div class="w-full lg:w-[45%] text-center lg:text-left">
+    <div class="flex flex-col items-center justify-between gap-16 lg:flex-row lg:gap-10">
+
+      <!-- Izquierda: copy -->
+      <div class="w-full text-center lg:w-[45%] lg:text-left">
         <h2
           class="font-display text-[clamp(2.5rem,5vw,4.25rem)] leading-[1.04] font-semibold tracking-[-0.03em] text-pearl"
           data-reveal-line
         >
-          <span class="line-mask"><span class="line-inner">El puntaje que necesitas</span></span>
-          <span class="line-mask"><span class="line-inner"><em class="accent-em">ya tiene fecha.</em></span></span>
+          <span class="line-mask"><span class="line-inner">¿Listo para un</span></span>
+          <span class="line-mask"><span class="line-inner">diagnóstico?</span></span>
+          <span class="line-mask"><span class="line-inner"><em class="font-display italic font-medium text-teal-400">Pruébate gratis.</em></span></span>
         </h2>
 
-        <p class="mt-8 text-lg leading-relaxed text-ink-300 max-w-xl mx-auto lg:mx-0" data-reveal>
-          Tu primera evaluación es gratuita: mide tu nivel, conoce tu plan y
-          decide con datos.
+        <p class="mx-auto mt-8 max-w-xl text-lg leading-relaxed text-ink-300 lg:mx-0" data-reveal>
+          Conoce tu puntaje actual y prepárate para tu examen con nuestra prueba
+          de diagnóstico gratuita.
         </p>
 
-        <div class="mt-11 flex flex-wrap items-center justify-center lg:justify-start gap-4" data-reveal>
-          <a href="/contacto" class="btn-primary !px-9 !py-4.5" data-magnetic data-event="final_cta_click">
-            Evaluación gratis
-          </a>
+        <div class="mt-11 flex flex-wrap items-center justify-center gap-4 lg:justify-start" data-reveal>
+          <button type="button" class="btn-primary !font-display !text-sm !font-bold !tracking-widest" data-magnetic data-event="final_cta_click" data-open-diagnostic>
+            DIAGNÓSTICO GRATIS
+          </button>
           <a
             href={`https://wa.me/${SITE.whatsapp}`}
             target="_blank"
             rel="noopener noreferrer"
-            class="btn-ghost-dark"
+            class="btn-ghost-dark !font-display !text-sm !font-bold !tracking-widest"
             data-magnetic
           >
-            Hablar por WhatsApp
+            <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M3 21l1.65 -3.8a9 9 0 1 1 3.4 2.9l-5.05 .9" />
+              <path d="M9 10a.5 .5 0 0 0 1 0v-1a.5 .5 0 0 0 -1 0v1a5 5 0 0 0 5 5h1a.5 .5 0 0 0 0 -1h-1a.5 .5 0 0 0 0 1" />
+            </svg>
+            CONTÁCTANOS
           </a>
         </div>
-
-        <p class="mt-10 font-mono text-[11px] tracking-[0.22em] text-ink-300 uppercase" data-reveal>
-          Sin compromiso. Resultados en la primera sesión.
-        </p>
       </div>
 
-      <!-- Right Side: Image Accordion -->
-      <div class="w-full lg:w-[55%] flex justify-end">
+      <!-- Derecha: galería interactiva -->
+      <div class="flex w-full justify-center lg:w-[55%] lg:justify-end">
         <InteractiveImageAccordion />
       </div>
 
     </div>
   </div>
 </section>
+
+<!-- Modal: selector de diagnóstico -->
+<div
+  id="diag-modal"
+  class="fixed inset-0 z-[110] flex items-center justify-center p-4 opacity-0 invisible transition-opacity duration-300"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="diag-title"
+  aria-hidden="true"
+>
+  <div class="diag-backdrop absolute inset-0 bg-ink-950/75 backdrop-blur-sm" data-diag-close></div>
+
+  <div class="diag-panel relative w-full max-w-4xl scale-95 overflow-hidden rounded-3xl bg-ink-900 p-8 shadow-panel transition-transform duration-300 hairline-dim sm:p-10" style="background-color: rgb(10 16 16)">
+    <button
+      type="button"
+      class="absolute right-5 top-5 grid size-9 place-items-center rounded-full bg-pearl/10 text-pearl/80 transition-colors hover:bg-teal-500 hover:text-ink-950"
+      aria-label="Cerrar"
+      data-diag-close
+    >
+      <svg class="size-4" viewBox="0 0 16 16" fill="none">
+        <path d="M3 3l10 10M13 3 3 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+      </svg>
+    </button>
+
+    <p class="eyebrow !text-teal-400">Diagnóstico gratuito</p>
+    <h3 id="diag-title" class="mt-2 font-display text-2xl font-semibold tracking-tight text-pearl sm:text-3xl">
+      ¿Qué examen quieres preparar?
+    </h3>
+    <p class="mt-2 text-[15px] text-ink-300">
+      Selecciona el examen y comenzamos tu prueba de diagnóstico gratis.
+    </p>
+
+    <div class="mt-7 hairline-t-dim pt-7">
+      <div class="grid gap-4 sm:grid-cols-2" data-diag-options>
+        {diagnostics.map((d, i) => (
+          <button
+            type="button"
+            class="diag-option group relative rounded-2xl border py-3 px-5 text-left transition-all duration-300"
+            data-diag-option
+            data-slug={d.slug}
+            data-href={d.href}
+            aria-pressed={i === 0 ? "true" : "false"}
+          >
+            <span class="diag-check absolute right-4 top-1/2 grid size-6 -translate-y-1/2 place-items-center rounded-full text-teal-400 opacity-0 transition-opacity duration-300" aria-hidden="true">
+              <svg class="size-5" viewBox="0 0 20 20" fill="none">
+                <circle cx="10" cy="10" r="8.25" stroke="currentColor" stroke-width="1.4" />
+                <path d="m6.5 10 2.3 2.3 4.7-4.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </span>
+            <p class="pr-7 font-display text-lg font-semibold tracking-tight text-pearl">
+              {d.name} <span class="font-body text-sm font-normal text-ink-300">— {d.full}</span>
+            </p>
+            <p class="mt-1 text-[13px] leading-relaxed text-ink-400">
+              {d.parts} · {d.time}
+            </p>
+          </button>
+        ))}
+
+        <!-- Botón comenzar (ocupa la 6ª celda) -->
+        <button
+          type="button"
+          class="diag-go flex self-center h-14 w-full items-center justify-center gap-2.5 rounded-full bg-teal-500 px-6 font-sans text-[14px] font-bold uppercase tracking-wider text-ink-950 transition-all duration-300 hover:bg-teal-400 hover:shadow-glow"
+          data-diag-go
+        >
+          Comenzar diagnóstico
+          <svg class="size-4" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M3 8h10m0 0l-4-4m4 4l-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </button>
+      </div>
+      <p class="mt-4 text-center text-[13px] text-ink-400 sm:text-left" data-diag-status aria-live="polite"></p>
+    </div>
+  </div>
+</div>
+
+<style>
+  .diag-option {
+    border-color: rgb(247 250 249 / 0.1);
+    background-color: rgb(247 250 249 / 0.02);
+  }
+  .diag-option:hover {
+    border-color: rgb(247 250 249 / 0.22);
+    background-color: rgb(247 250 249 / 0.05);
+  }
+  .diag-option[aria-pressed="true"] {
+    border-color: var(--color-teal-500);
+    background-color: rgb(20 184 166 / 0.08);
+  }
+  .diag-option[aria-pressed="true"] .diag-check {
+    opacity: 1;
+  }
+  #diag-modal[aria-hidden="false"] {
+    opacity: 1;
+    visibility: visible;
+  }
+  #diag-modal[aria-hidden="false"] .diag-panel {
+    transform: scale(1);
+  }
+</style>
+
+<script>
+  // Diagnósticos por examen. Llena cada href cuando la prueba esté lista.
+  const DIAGNOSTICS: Record<string, string> = {
+    "toefl-ibt": "",
+    sat: "",
+    gre: "",
+    gmat: "",
+    paa: "",
+  };
+
+  function initDiagnostic() {
+    const modal = document.getElementById("diag-modal");
+    const openBtns = Array.from(document.querySelectorAll("[data-open-diagnostic]"));
+    if (!modal || openBtns.length === 0 || modal.dataset.bound) return;
+    modal.dataset.bound = "true";
+
+    const options = Array.from(modal.querySelectorAll<HTMLElement>("[data-diag-option]"));
+    const goBtn = modal.querySelector<HTMLElement>("[data-diag-go]");
+    const status = modal.querySelector<HTMLElement>("[data-diag-status]");
+    let selected = options[0]?.dataset.slug ?? "toefl-ibt";
+
+    const select = (el: HTMLElement) => {
+      selected = el.dataset.slug ?? selected;
+      options.forEach((o) => o.setAttribute("aria-pressed", String(o === el)));
+      if (status) status.textContent = "";
+    };
+
+    const open = () => {
+      modal.setAttribute("aria-hidden", "false");
+      document.documentElement.classList.add("lenis-stopped");
+      (options[0] as HTMLElement)?.focus();
+    };
+    const close = () => {
+      modal.setAttribute("aria-hidden", "true");
+      document.documentElement.classList.remove("lenis-stopped");
+    };
+
+    openBtns.forEach((btn) => btn.addEventListener("click", open));
+    options.forEach((o) => o.addEventListener("click", () => select(o)));
+    modal.querySelectorAll("[data-diag-close]").forEach((el) => el.addEventListener("click", close));
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && modal.getAttribute("aria-hidden") === "false") close();
+    });
+
+    // Lógica dinámica: cada examen abre su propio diagnóstico (cuando exista).
+    goBtn?.addEventListener("click", () => {
+      const href = DIAGNOSTICS[selected];
+      if (href) {
+        window.open(href, "_blank", "noopener,noreferrer");
+      } else if (status) {
+        status.textContent = "Tu diagnóstico estará disponible muy pronto. ¡Déjanos tus datos y te avisamos!";
+      }
+    });
+  }
+
+  initDiagnostic();
+  document.addEventListener("astro:page-load", initDiagnostic);
+</script>

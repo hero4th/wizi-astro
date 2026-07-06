@@ -1,5 +1,6 @@
 ---
 import { NAV_LINKS } from "@/data/site";
+const pathname = Astro.url.pathname;
 ---
 
 <header
@@ -18,48 +19,72 @@ import { NAV_LINKS } from "@/data/site";
       </a>
 
       <ul class="hidden items-center gap-2 lg:flex">
-        {NAV_LINKS.map((link) =>
-          "children" in link && link.children ? (
-            <li class="group relative">
-              <a
-                href={link.href}
-                class="flex items-center gap-1.5 rounded-full px-4 py-2 font-display text-[15px] font-semibold text-pearl/80 transition-colors hover:text-teal-300"
-                aria-haspopup="true"
-              >
-                {link.label}
-                <svg class="size-3.5 transition-transform duration-300 group-hover:rotate-180" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-                  <path d="M2.5 4.5 6 8l3.5-3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-                </svg>
-              </a>
-              <div class="invisible absolute left-1/2 top-full -translate-x-1/2 pt-3 opacity-0 transition-all duration-300 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
-                <ul class="glass-dark min-w-52 rounded-2xl p-2 shadow-panel">
-                  {link.children.map((child) => (
-                    <li>
-                      <a
-                        href={child.href}
-                        class="block rounded-xl px-4 py-2.5 text-sm font-medium text-pearl/70 transition-colors hover:bg-teal-400/8 hover:text-teal-300"
-                      >
-                        {child.label}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </li>
-          ) : (
-            <li>
-              <a
-                href={link.href}
-                class="rounded-full px-4 py-2 font-display text-[15px] font-semibold text-pearl/80 transition-colors hover:text-teal-300"
-              >
-                {link.label}
-              </a>
-            </li>
-          )
-        )}
+        {NAV_LINKS.map((link) => (
+          <>
+            {"children" in link && link.children ? (
+              <li class="group relative">
+                <a
+                  href={link.href}
+                  class="flex items-center gap-1.5 rounded-full px-4 py-2 font-display text-[15px] font-semibold text-pearl/80 transition-colors hover:text-teal-300"
+                  aria-haspopup="true"
+                >
+                  {link.label}
+                  <svg class="size-3.5 transition-transform duration-300 group-hover:rotate-180" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                    <path d="M2.5 4.5 6 8l3.5-3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                  </svg>
+                </a>
+                <div class="invisible absolute left-1/2 top-full -translate-x-1/2 pt-3 opacity-0 transition-all duration-300 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+                  <ul class="glass-dark min-w-52 rounded-2xl p-2 shadow-panel">
+                    {link.children.map((child) => (
+                      <li>
+                        <a
+                          href={child.href}
+                          class="block rounded-xl px-4 py-2.5 text-sm font-medium text-pearl/70 transition-colors hover:bg-teal-400/8 hover:text-teal-300"
+                        >
+                          {child.label}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </li>
+            ) : (
+              <li>
+                <a
+                  href={link.href}
+                  class="rounded-full px-4 py-2 font-display text-[15px] font-semibold text-pearl/80 transition-colors hover:text-teal-300"
+                >
+                  {link.label}
+                </a>
+              </li>
+            )}
+            {link.label === "Cursos" && pathname.includes("/toefl-ibt") && (
+              <li>
+                <a
+                  href="/cursos/toefl-ibt/precios"
+                  class:list={[
+                    "rounded-full px-4 py-2 font-display text-[15px] transition-colors hover:text-teal-300",
+                    pathname.includes("/precios") ? "text-teal-300 font-bold" : "font-semibold text-pearl/80"
+                  ]}
+                >
+                  Precios
+                </a>
+              </li>
+            )}
+          </>
+        ))}
       </ul>
 
       <div class="flex items-center gap-3">
+        <a
+          href="/contacto"
+          class="hidden items-center gap-2 rounded-full bg-teal-400 px-5 py-2 font-display text-[13px] font-bold tracking-widest text-ink-950 transition-colors hover:bg-teal-300 lg:flex uppercase"
+        >
+          CONTACTO
+          <svg class="size-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M5 12h14m0 0l-6-6m6 6l-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </a>
         <button
           id="menu-toggle"
           class="grid size-10 place-items-center rounded-full border border-pearl/15 lg:hidden"
@@ -81,24 +106,40 @@ import { NAV_LINKS } from "@/data/site";
   >
     <div class="container-edge flex h-full flex-col justify-center gap-2 pt-20">
       {NAV_LINKS.map((link, i) => (
-        <div>
-          <a
-            href={link.href}
-            class="block font-display text-4xl font-semibold tracking-tight text-pearl transition-colors hover:text-teal-300"
-            style={`transition-delay: ${i * 40}ms`}
-          >
-            {link.label}
-          </a>
-          {"children" in link && link.children && (
-            <div class="mt-2 flex flex-wrap gap-x-5 gap-y-1 pl-1">
-              {link.children.map((child) => (
-                <a href={child.href} class="font-display text-base font-medium text-ink-300 hover:text-teal-300">
-                  {child.label}
-                </a>
-              ))}
+        <>
+          <div>
+            <a
+              href={link.href}
+              class="block font-display text-4xl font-semibold tracking-tight text-pearl transition-colors hover:text-teal-300"
+              style={`transition-delay: ${i * 40}ms`}
+            >
+              {link.label}
+            </a>
+            {"children" in link && link.children && (
+              <div class="mt-2 flex flex-wrap gap-x-5 gap-y-1 pl-1">
+                {link.children.map((child) => (
+                  <a href={child.href} class="font-display text-base font-medium text-ink-300 hover:text-teal-300">
+                    {child.label}
+                  </a>
+                ))}
+              </div>
+            )}
+          </div>
+          {link.label === "Cursos" && pathname.includes("/toefl-ibt") && (
+            <div>
+              <a
+                href="/cursos/toefl-ibt/precios"
+                class:list={[
+                  "block font-display text-4xl tracking-tight transition-colors hover:text-teal-300",
+                  pathname.includes("/precios") ? "text-teal-300 font-bold" : "font-semibold text-pearl"
+                ]}
+                style={`transition-delay: 20ms`}
+              >
+                Precios
+              </a>
             </div>
           )}
-        </div>
+        </>
       ))}
       <a href="/contacto" class="btn-primary mt-8 self-start">Evaluación gratis</a>
     </div>

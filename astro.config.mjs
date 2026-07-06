@@ -20,7 +20,7 @@ export default defineConfig({
     mdx(),
     icon({
       include: {
-        ph: ["phone", "map-pin", "arrow-right", "arrow-up-right", "plus", "check", "caret-down", "list", "x", "clock", "pencil-simple-line", "files", "chats-circle", "seal-check"],
+        ph: ["phone", "map-pin", "arrow-right", "arrow-up-right", "plus", "check", "caret-down", "list", "x", "clock", "pencil-simple-line", "files", "chats-circle", "seal-check", "seal-percent", "seal-percent-fill", "book-open", "headphones", "pencil-simple", "microphone", "clipboard-text", "graduation-cap", "check-circle"],
         "simple-icons": ["facebook", "instagram", "x", "whatsapp"],
       },
     }),

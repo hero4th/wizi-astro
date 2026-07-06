@@ -28,12 +28,25 @@ const stats = [
   { value: program.hours, label: "horas grabadas en HD", prefix: "+" },
 ];
 
+const featureIcons = ["ph:book-open", "ph:clipboard-text", "ph:graduation-cap", "ph:seal-check"];
+const examIcons = ["ph:book-open", "ph:headphones", "ph:pencil-simple", "ph:microphone"];
+const academicIntro = program.academicIntro ?? program.audience;
+const examShort = program.exam.split(" ")[0];
+
 const comparison = [
-  { label: "Precio total", pa: priceFormatted, trad: "Hasta $30,000", good: true },
-  { label: "Modelo de clase", pa: "1 a 1 personalizado", trad: "Grupos de 10 o más", good: true },
-  { label: "Preguntas de práctica", pa: `Más de ${program.exercises.toLocaleString("es-MX")}`, trad: "Material limitado", good: true },
-  { label: "Simuladores idénticos al examen", pa: "Incluidos", trad: "No incluidos", good: true },
-  { label: "Garantía de puntaje", pa: "Por contrato", trad: "Sin garantía", good: true },
+  { label: "Precio total", pa: priceFormatted, trad: "+$30,000" },
+  { label: "Duración del curso", pa: `${program.hours} horas`, trad: "8 semanas" },
+  { label: "Preguntas de práctica", pa: `más de ${program.exercises.toLocaleString("es-MX")}`, trad: "Libro limitado" },
+  { label: "Calificación de ensayos", pa: "Evaluación profesional", trad: "Inteligencia artificial" },
+  { label: "Garantía de puntuación", pa: "+15 puntos", trad: "Varía" },
+  { label: `Simuladores ${examShort}`, pa: "Incluidos", trad: "Varía" },
+];
+
+const benefits = [
+  "Recibe retroalimentación en clases particulares",
+  "Estudia con materiales y simuladores oficiales",
+  "Planes flexibles, cuando y donde quieras",
+  "Obtén el puntaje que necesitas… ¡garantizado!",
 ];
 
 const schema = [
@@ -47,79 +60,67 @@ const schema = [
 ];
 ---
 
-<Base title={program.metaTitle} description={program.metaDescription} schema={schema}>
-  <!-- HERO -->
-  <section class={`relative overflow-hidden ${program.heroImage ? "pt-36 pb-0" : "pt-36 pb-20"}`} data-parallax-root>
-    <div class="pointer-events-none absolute -right-40 top-0 h-[28rem] w-[28rem] rounded-full bg-teal-500/10 blur-[130px]" data-parallax="-80" aria-hidden="true"></div>
+<Base title={program.metaTitle} description={program.metaDescription} schema={schema} stickyCta={false}>
+  <!-- HERO (oscuro) -->
+  <section class="relative overflow-hidden hairline-b-dim" style="background-color: rgb(6 10 10)">
+    <div class="pointer-events-none absolute -right-32 top-0 h-[34rem] w-[34rem] rounded-full bg-teal-600/12 blur-[130px]" aria-hidden="true"></div>
 
-    <div class={`container-edge grid items-end gap-14 ${program.heroImage ? "lg:grid-cols-[1.1fr_1fr]" : "lg:grid-cols-[1.5fr_1fr]"}`}>
-      <div class={`relative z-10 ${program.heroImage ? "pb-20" : ""}`}>
+    <div class="container-edge relative pt-36 pb-16 lg:min-h-[44rem] lg:pb-0">
+      <div class="relative z-10 max-w-xl lg:max-w-[49%] lg:pt-12">
         <nav aria-label="Ruta de navegación" class="font-mono text-[11px] tracking-[0.18em] text-ink-400 uppercase">
-          <a href="/" class="transition-colors hover:text-teal-600">Inicio</a>
+          <a href="/" class="transition-colors hover:text-teal-300">Inicio</a>
           <span aria-hidden="true"> / </span>
-          <a href="/cursos" class="transition-colors hover:text-teal-600">Cursos</a>
+          <a href="/cursos" class="transition-colors hover:text-teal-300">Cursos</a>
           <span aria-hidden="true"> / </span>
-          <span class="text-teal-600">{program.exam}</span>
+          <span class="text-teal-400">{program.exam}</span>
         </nav>
 
-        <h1 class="mt-7 max-w-2xl font-display text-[clamp(2.5rem,6vw,4.75rem)] leading-[1.04] font-semibold tracking-[-0.03em]" data-reveal-line>
-          <span class="line-mask"><span class="line-inner">{program.headline}</span></span>
-          <span class="line-mask"><span class="line-inner"><em class="accent-em">{program.accent}</em></span></span>
+        <h1 class="mt-6 font-display text-[clamp(2.75rem,5.6vw,4.5rem)] leading-[1.02] font-semibold tracking-[-0.03em] text-pearl" data-reveal-line>
+          <span class="line-mask"><span class="line-inner">Curso {program.exam}</span></span>
+          <span class="line-mask"><span class="line-inner"><em class="font-display italic font-medium text-teal-400">¡garantizado!</em></span></span>
         </h1>
 
-        <p class="mt-7 max-w-xl text-lg leading-relaxed text-ink-500" data-reveal>
+        <p class="mt-6 max-w-lg text-lg leading-relaxed text-ink-300" data-reveal>
           {program.subheadline}
         </p>
 
         <div class="mt-9 flex flex-wrap items-center gap-4" data-reveal>
-          <a href="/contacto" class="btn-primary" data-magnetic data-event={`program_cta_${program.slug}`}>
-            Evaluación gratis
+          <a href="/contacto" class="btn-primary !font-display !text-sm !font-bold !tracking-widest" data-magnetic data-event={`program_cta_${program.slug}`}>
+            Inscríbete ahora
           </a>
-          <p class="text-sm text-ink-500">
-            Desde <strong class="font-display text-lg text-ink-950">{priceFormatted}</strong> MXN
-            <span class="block font-mono text-[10px] tracking-widest text-ink-400 uppercase">pagos a meses disponibles</span>
-          </p>
+          <a href="/contacto" class="btn-ghost-dark !font-display !text-sm !font-bold !tracking-widest" data-magnetic>
+            Diagnóstico gratis
+          </a>
         </div>
       </div>
 
-      {program.heroImage ? (
-        <!-- Hero image — absolutely anchored to the bottom right of the screen -->
-        <div class="relative flex items-end justify-end w-full lg:absolute lg:bottom-0 lg:right-0 lg:h-full lg:w-[45vw] xl:w-[49vw] lg:pointer-events-none" data-reveal data-reveal-delay="0.1">
-          <img
-            src={program.heroImage}
-            alt={`Plataforma de práctica ${program.exam}`}
-            class="w-[115%] lg:w-[122%] xl:w-[102%] max-w-none h-auto object-contain object-right-bottom lg:pointer-events-auto"
-            width="900"
-            height="560"
-            loading="eager"
-            decoding="async"
-          />
-        </div>
-      ) : (
-        <!-- Guarantee panel (default for programs without hero image) -->
-        <div class="glass rounded-2xl p-7 shadow-panel" data-reveal data-reveal-delay="0.15">
-          <p class="flex items-center gap-2 font-mono text-[11px] tracking-[0.2em] text-teal-600 uppercase">
-            <Icon name="ph:seal-check" class="size-4" aria-hidden="true" />
-            Garantía de Puntaje
-          </p>
-          <p class="mt-4 text-[15px] leading-relaxed text-ink-800">{program.guarantee}</p>
-          <p class="mt-5 hairline-t pt-5 text-sm leading-relaxed text-ink-500">
-            {program.audience}
-          </p>
-          <p class="mt-4 font-mono text-[11px] tracking-widest text-ink-400 uppercase">
-            Escala del examen: {program.scoreScale}
-          </p>
-        </div>
+      {program.heroImage && (
+        <img
+          src={program.heroImage}
+          alt={`Plataforma de práctica ${program.exam}`}
+          width="1200"
+          height="577"
+          loading="eager"
+          decoding="async"
+          class:list={[
+            "pointer-events-none mx-auto mt-12 w-full drop-shadow-2xl lg:absolute lg:bottom-0 lg:mx-0 lg:mt-0",
+            program.slug === 'toefl-ibt'
+              ? "max-w-2xl lg:right-[calc(50%-50vw)] lg:w-[65%] lg:max-w-[1100px]"
+              : "max-w-xl lg:right-[-2vw] lg:w-[56%] lg:max-w-[920px]"
+          ]}
+          data-reveal
+          data-reveal-delay="0.1"
+        />
       )}
     </div>
   </section>
 
-  <!-- MÉTRICAS DEL PROGRAMA -->
-  <section class="hairline-t hairline-b" aria-label="El programa en números">
+  <!-- MÉTRICAS -->
+  <section class="hairline-b" aria-label="El programa en números">
     <div class="container-edge grid grid-cols-2 lg:grid-cols-4">
       {stats.map((s, i) => (
         <div class:list={["px-6 py-9", i > 0 && "border-l border-ink-950/8", i >= 2 && "max-lg:border-t max-lg:border-ink-950/8", i === 2 && "max-lg:border-l-0"]} data-reveal data-reveal-delay={String(i * 0.06)}>
-          <p class="font-display text-4xl font-semibold tracking-tight sm:text-5xl">
+          <p class="font-display text-4xl font-semibold tracking-tight text-ink-950 sm:text-5xl">
             {s.prefix && <span class="text-teal-600">{s.prefix}</span>}<span data-counter={String(s.value)}>0</span>
           </p>
           <p class="mt-2 font-mono text-[10px] tracking-[0.18em] text-ink-500 uppercase">{s.label}</p>
@@ -128,138 +129,346 @@ const schema = [
     </div>
   </section>
 
-  <!-- PILARES (bento asimétrico) -->
+  <!-- PREPARACIÓN ACADÉMICA -->
   <section class="py-24">
     <div class="container-edge">
-      <h2 class="max-w-2xl text-3xl sm:text-5xl" data-reveal>
-        Un plan de estudios <em class="accent-em">a tu medida.</em>
+      <h2 class="text-3xl sm:text-5xl" data-reveal>
+        Preparación académica <em class="accent-em">a tu medida.</em>
       </h2>
+      <p class="mt-5 max-w-2xl text-base leading-relaxed text-ink-600" data-reveal>{academicIntro}</p>
 
-      <div class="mt-12 grid gap-5 md:grid-cols-3">
-        <div class="relative overflow-hidden rounded-2xl hairline bg-white p-8 md:col-span-2" data-reveal>
-          <div class="pointer-events-none absolute -top-20 right-0 h-56 w-56 rounded-full bg-teal-500/10 blur-[80px]" aria-hidden="true"></div>
-          <h3 class="font-display text-2xl font-semibold tracking-tight text-ink-950">{program.features[0]!.title}</h3>
-          <p class="mt-3 max-w-md text-[15px] leading-relaxed text-ink-500">{program.features[0]!.detail}</p>
-          <p class="mt-8 inline-block rounded-full bg-teal-500/10 px-4 py-2 font-mono text-[11px] tracking-widest text-teal-700 uppercase">
-            Incluido en tu plan
-          </p>
-        </div>
-        <div class="rounded-2xl hairline bg-teal-500/8 p-8" data-reveal data-reveal-delay="0.08">
-          <h3 class="font-display text-2xl font-semibold tracking-tight text-ink-950">{program.features[1]!.title}</h3>
-          <p class="mt-3 text-[15px] leading-relaxed text-ink-600">{program.features[1]!.detail}</p>
-        </div>
-        <div class="rounded-2xl hairline bg-white p-8" data-reveal>
-          <h3 class="font-display text-2xl font-semibold tracking-tight text-ink-950">{program.features[2]!.title}</h3>
-          <p class="mt-3 text-[15px] leading-relaxed text-ink-500">{program.features[2]!.detail}</p>
-        </div>
-        <div class="relative overflow-hidden rounded-2xl hairline bg-white p-8 md:col-span-2" data-reveal data-reveal-delay="0.08">
-          <h3 class="font-display text-2xl font-semibold tracking-tight text-ink-950">{program.features[3]!.title}</h3>
-          <p class="mt-3 max-w-md text-[15px] leading-relaxed text-ink-500">{program.features[3]!.detail}</p>
-        </div>
+      <div class="mt-12 grid gap-5 lg:grid-cols-12">
+        {program.features.map((f, i) => {
+          const isWide = i === 0 || i === program.features.length - 1;
+          const img = i === 0 ? program.guideImage : i === program.features.length - 1 ? program.guaranteeImage : undefined;
+          return (
+            <div class:list={["relative flex flex-col justify-center overflow-hidden rounded-3xl border border-ink-950/[0.06] bg-ink-50 p-6 sm:p-8", isWide ? "lg:col-span-7" : "lg:col-span-5"]} data-reveal data-reveal-delay={String((i % 2) * 0.07)}>
+              <div class="relative z-10 max-w-sm lg:max-w-[17rem] xl:max-w-xs">
+                <div class="flex items-center gap-4">
+                  <span class="grid size-12 shrink-0 place-items-center rounded-full bg-teal-600 text-white">
+                    <Icon name={featureIcons[i] ?? "ph:check"} class="size-6" aria-hidden="true" />
+                  </span>
+                  <h3 class="font-display text-xl font-semibold tracking-tight text-ink-950">{f.title}</h3>
+                </div>
+                <p class="mt-4 text-[15px] leading-relaxed text-ink-600">{f.detail}</p>
+              </div>
+              {img && (
+                <img
+                  src={img}
+                  alt=""
+                  width="360"
+                  height="280"
+                  loading="lazy"
+                  decoding="async"
+                  class:list={[
+                    "pointer-events-none absolute object-contain opacity-30 transition-opacity sm:opacity-100",
+                    i === 0
+                      ? "-bottom-6 -right-4 w-48 sm:bottom-auto sm:right-0 sm:top-1/2 sm:w-56 sm:-translate-y-1/2 lg:w-60"
+                      : "bottom-0 -right-4 w-64 sm:-right-2 sm:w-80 lg:w-96"
+                  ]}
+                  aria-hidden="true"
+                />
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   </section>
 
-  <!-- SECCIONES DEL EXAMEN -->
-  <section class="py-24 hairline-t">
-    <div class="container-edge grid gap-14 lg:grid-cols-[1fr_1.5fr]">
-      <div class="lg:sticky lg:top-32 lg:self-start">
-        <p class="eyebrow" data-reveal>Temario {program.exam}</p>
-        <h2 class="mt-4 text-3xl sm:text-4xl" data-reveal>Domina cada sección.</h2>
-        <p class="mt-5 max-w-sm text-sm leading-relaxed text-ink-500" data-reveal>
-          Cada sección del examen es una habilidad distinta. Tu plan ataca las
-          cuatro con un enfoque y ejercicios específicos.
-        </p>
-      </div>
-      <div data-reveal>
-        <div class="hairline-t">
-          {program.skills.map((skill) => (
-            <details class="faq-item group hairline-b" name={`skills-${program.slug}`}>
-              <summary class="flex cursor-pointer list-none items-center justify-between gap-6 py-6 transition-colors hover:text-teal-600">
-                <span class="font-display text-xl font-medium tracking-tight">{skill.name}</span>
-                <span class="faq-icon grid size-9 shrink-0 place-items-center rounded-full hairline" aria-hidden="true">
-                  <svg class="size-3.5" viewBox="0 0 14 14" fill="none">
-                    <path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-                  </svg>
-                </span>
-              </summary>
-              <p class="max-w-2xl pb-7 text-[15px] leading-relaxed text-ink-500">{skill.detail}</p>
-            </details>
-          ))}
-        </div>
+  <!-- DOMINA TU EXAMEN (oscuro) -->
+  <section class="relative overflow-hidden pt-12 pb-8 hairline-t-dim" style="background-color: rgb(8 13 13)" aria-label={`Secciones del examen ${program.exam}`}>
+    <!-- Fondo abstracto -->
+    <div class="pointer-events-none absolute -left-40 top-0 h-[40rem] w-[40rem] rounded-full bg-[#0a1f1c] blur-[60px]" aria-hidden="true"></div>
 
-        <ul class="mt-10 grid gap-3 sm:grid-cols-2">
-          {program.outcomes.map((outcome) => (
-            <li class="flex items-start gap-3 rounded-xl hairline bg-white px-5 py-4 text-sm text-ink-700">
-              <Icon name="ph:check" class="mt-0.5 size-4 shrink-0 text-teal-400" aria-hidden="true" />
-              {outcome}
+    <!-- Imagen Desktop (pegada a pantalla) -->
+    {program.skillsImage && (
+      <img src={program.skillsImage} alt={`Estudiantes preparándose para el ${program.exam}`} width="1100" height="1093" loading="lazy" decoding="async" class="pointer-events-none absolute bottom-0 left-0 z-10 hidden w-[50vw] max-w-[950px] object-contain object-bottom lg:block 2xl:w-[45vw]" style="mask-image: linear-gradient(to right, black 75%, transparent 100%), linear-gradient(to top, black 80%, transparent 100%); mask-composite: intersect; -webkit-mask-image: linear-gradient(to right, black 75%, transparent 100%), linear-gradient(to top, black 80%, transparent 100%); -webkit-mask-composite: source-in;" data-reveal />
+    )}
+
+    <div class="container-edge grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
+      <div class="self-end lg:-ml-12 xl:-ml-24" data-reveal>
+        {program.skillsImage ? (
+          <img src={program.skillsImage} alt={`Estudiantes preparándose para el ${program.exam}`} width="1100" height="1093" loading="lazy" decoding="async" class="relative z-10 mx-auto w-full max-w-md object-contain object-bottom lg:hidden" style="mask-image: linear-gradient(to top, black 85%, transparent 100%); -webkit-mask-image: linear-gradient(to top, black 85%, transparent 100%);" />
+        ) : (
+          <div class="pointer-events-none aspect-square rounded-3xl bg-gradient-to-br from-teal-500/15 to-transparent lg:hidden" aria-hidden="true"></div>
+        )}
+      </div>
+
+      <div class="relative z-10 lg:pt-10 lg:pb-6" data-reveal>
+        <h2 class="font-display text-4xl font-semibold leading-[1.05] tracking-tight text-pearl sm:text-5xl">
+          Domina tu examen.<br />
+          <em class="font-display italic font-medium text-teal-400">Todas las secciones.</em>
+        </h2>
+        <p class="mt-5 max-w-lg text-base leading-relaxed text-ink-300">
+          Cada sección del examen es una habilidad distinta. Tu plan ataca las cuatro con un enfoque y ejercicios específicos.
+        </p>
+
+        {program.examSections ? (
+          <div class="mt-8" data-exam-tabs>
+            <div class="flex gap-1.5 rounded-[2rem] border border-white/5 bg-[#0b1613]/50 p-2" role="tablist" aria-label="Secciones del examen">
+              {program.examSections.map((s, i) => (
+                <button
+                  type="button"
+                  role="tab"
+                  class="exam-tab flex flex-1 items-center justify-center gap-2 rounded-full px-2 py-2.5 font-display text-sm font-semibold text-ink-400 transition-all border border-transparent"
+                  data-exam-tab
+                  data-index={i}
+                  aria-selected={i === 0 ? "true" : "false"}
+                >
+                  <Icon name={examIcons[i] ?? "ph:circle"} class="size-[1.125rem] shrink-0 opacity-70 transition-opacity" aria-hidden="true" />
+                  <span>{s.name}</span>
+                </button>
+              ))}
+            </div>
+
+            {program.examSections.map((s, i) => (
+              <div class="exam-panel mt-4 overflow-hidden rounded-[1.5rem] border border-white/[0.04] bg-transparent backdrop-blur-xl shadow-2xl shadow-black/20" data-exam-panel data-index={i} hidden={i !== 0}>
+                <!-- Mitad superior azul/turquesa -->
+                <div class="bg-[#172c26]/75 p-7 sm:p-8">
+                  <h3 class="font-display text-2xl font-semibold tracking-tight text-pearl sm:text-[1.7rem]">
+                    {s.name} <span class="font-body text-[1.125rem] font-normal text-pearl/80">— {s.label}</span>
+                  </h3>
+                  <p class="mt-3.5 max-w-2xl text-[15px] leading-relaxed text-pearl/70">{s.description}</p>
+
+                  <div class="mt-8 flex flex-wrap gap-x-12 gap-y-4">
+                    <div>
+                      <p class="font-mono text-[9px] font-bold tracking-[0.2em] text-pearl/40 uppercase">Tiempo total</p>
+                      <p class="mt-1 font-display text-[17px] font-semibold text-pearl">{s.time}</p>
+                    </div>
+                    <div>
+                      <p class="font-mono text-[9px] font-bold tracking-[0.2em] text-pearl/40 uppercase">Puntaje de sección</p>
+                      <p class="mt-1 font-display text-[17px] font-semibold text-teal-400">
+                        {s.scoreRange} 
+                        {program.slug === 'toefl-ibt' && <span class="text-[13px] font-normal text-pearl/40 ml-1">(equiv. 0 - 30 pts)</span>}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Mitad inferior oscura -->
+                <div class="bg-[#121413]/75 p-7 pt-6 sm:px-8 sm:pb-8 sm:pt-7">
+                  <p class="font-mono text-[9px] font-bold tracking-[0.2em] text-pearl/40 uppercase">Actividades de la sección</p>
+                  <ul class="mt-5 space-y-6">
+                    {s.activities.map((a, j) => (
+                      <li class="flex gap-4">
+                        <span class="grid size-8 shrink-0 place-items-center rounded-full bg-[#1e3c33] font-mono text-[13px] font-semibold text-teal-400">{j + 1}</span>
+                        <div class="pt-0.5">
+                          <p class="font-display text-[15px] font-semibold tracking-wide text-pearl">{a.title}</p>
+                          <p class="mt-1 text-[14px] leading-relaxed text-pearl/60">{a.detail}</p>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <ul class="mt-8 space-y-4">
+            {program.skills.map((skill) => (
+              <li class="rounded-2xl glass-dark p-6">
+                <h3 class="font-display text-lg font-semibold tracking-tight text-pearl">{skill.name}</h3>
+                <p class="mt-2 text-sm leading-relaxed text-ink-300">{skill.detail}</p>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
+  </section>
+
+  <!-- LA MEJOR OPCIÓN / COMPARATIVA -->
+  <section class="bg-pearl py-24">
+    <div class="container-edge grid items-center gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
+      <div data-reveal>
+        <h2 class="text-3xl sm:text-5xl">
+          La mejor opción <em class="accent-em">para aprobar.</em>
+        </h2>
+        <p class="mt-5 max-w-md text-base leading-relaxed text-ink-600">
+          En nuestro curso {program.exam} diseñamos una metodología flexible con la que aseguras que cada hora de estudio se traduzca en un puntaje real y medible.
+        </p>
+        <ul class="mt-8 space-y-3.5">
+          {benefits.map((b) => (
+            <li class="flex items-center gap-3.5 text-[15px] text-ink-800">
+              <span class="grid size-6 shrink-0 place-items-center rounded-full bg-teal-600 text-white" aria-hidden="true">
+                <Icon name="ph:check" class="size-3.5" />
+              </span>
+              {b}
             </li>
           ))}
         </ul>
+        <a href="/contacto" class="btn-primary mt-9 !font-display !text-sm !font-bold !tracking-widest" data-magnetic>
+          Inscríbete ahora
+        </a>
+      </div>
+
+      <!-- Tabla comparativa -->
+      <div class="overflow-hidden rounded-3xl border border-ink-950/[0.06] bg-white shadow-panel" data-reveal>
+        <div class="grid grid-cols-[1.1fr_1fr_1fr] text-sm">
+          <!-- Encabezado -->
+          <div class="px-5 pb-5 pt-10 sm:px-6"></div>
+          <div class="relative border-x border-ink-950/[0.06] bg-teal-500/[0.06] px-4 pb-5 pt-10 text-center sm:px-6">
+            <span class="absolute left-1/2 top-3.5 -translate-x-1/2 whitespace-nowrap rounded-full bg-teal-500 px-3 py-1 font-mono text-[9px] font-bold tracking-[0.15em] text-ink-950 uppercase">Mejor oferta</span>
+            <p class="font-display text-base font-semibold tracking-tight text-ink-950">Professional Academy</p>
+            <p class="font-mono text-[10px] tracking-widest text-teal-700 uppercase">Curso a tu medida</p>
+          </div>
+          <div class="px-4 pb-5 pt-10 text-center sm:px-6">
+            <p class="font-display text-base font-semibold tracking-tight text-ink-700">Tradicional</p>
+            <p class="font-mono text-[10px] tracking-widest text-ink-400 uppercase">Cursos presenciales</p>
+          </div>
+
+          {comparison.map((row) => (
+            <>
+              <div class="flex items-center border-t border-ink-950/[0.06] px-5 py-4 text-ink-500 sm:px-6">{row.label}</div>
+              <div class="flex items-center justify-center gap-2 border-x border-t border-ink-950/[0.06] bg-teal-500/[0.06] px-4 py-4 text-center font-medium text-ink-950">
+                <Icon name="ph:check" class="size-4 shrink-0 text-teal-600" aria-hidden="true" />
+                {row.pa}
+              </div>
+              <div class="flex items-center justify-center gap-2 border-t border-ink-950/[0.06] px-4 py-4 text-center text-ink-400">
+                <Icon name="ph:x" class="size-4 shrink-0 text-ink-300" aria-hidden="true" />
+                {row.trad}
+              </div>
+            </>
+          ))}
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- COMPARATIVA -->
-  <section class="py-24 hairline-t">
-    <div class="container-edge">
-      <h2 class="max-w-2xl text-3xl sm:text-4xl" data-reveal>
-        Compara antes de decidir.
-      </h2>
-      <div class="mt-12 overflow-x-auto" data-reveal>
-        <table class="w-full min-w-[36rem] border-collapse text-left">
-          <caption class="sr-only">Comparación entre Professional Academy y la preparación tradicional</caption>
-          <thead>
-            <tr class="hairline-b">
-              <th scope="col" class="py-4 pr-6 font-mono text-[11px] tracking-[0.18em] text-ink-400 uppercase">Concepto</th>
-              <th scope="col" class="bg-teal-400/5 px-6 py-4 font-mono text-[11px] tracking-[0.18em] text-teal-700 uppercase">Professional Academy</th>
-              <th scope="col" class="px-6 py-4 font-mono text-[11px] tracking-[0.18em] text-ink-400 uppercase">Preparación tradicional</th>
-            </tr>
-          </thead>
-          <tbody>
-            {comparison.map((row) => (
-              <tr class="hairline-b">
-                <th scope="row" class="py-5 pr-6 text-sm font-normal text-ink-500">{row.label}</th>
-                <td class="bg-teal-400/5 px-6 py-5 text-[15px] font-medium text-ink-950">{row.pa}</td>
-                <td class="px-6 py-5 text-sm text-ink-400">{row.trad}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </section>
-
-  <!-- FAQ -->
+  <!-- RESOLVEMOS TUS DUDAS -->
   <section class="py-24 hairline-t" aria-label={`Preguntas frecuentes sobre el curso ${program.exam}`}>
-    <div class="container-edge grid gap-14 lg:grid-cols-[1fr_1.6fr]">
-      <div class="lg:sticky lg:top-32 lg:self-start">
-        <h2 class="text-3xl sm:text-4xl" data-reveal>
-          Preguntas sobre<br />el curso {program.exam}.
-        </h2>
+    <div class="container-edge grid items-start gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
+      <div class="lg:sticky lg:top-28" data-reveal>
+        {program.faqImage ? (
+          <div class="relative">
+            <!-- Animación GIF (Sin fondo, detrás a la izquierda) -->
+            <img src="/images/animation-faq-trans.gif" alt="" width="300" height="300" class="absolute -left-0 top-[10%] z-0 w-[35%] max-w-[220px] sm:-left-4 lg:-left-6" aria-hidden="true" />
+            
+            <!-- Imagen de la laptop -->
+            <img src={program.faqImage} alt="" width="980" height="785" loading="lazy" decoding="async" class="relative z-10 w-full drop-shadow-2xl" aria-hidden="true" />
+          </div>
+        ) : (
+          <h2 class="text-3xl sm:text-4xl">Resolvemos<br /><em class="accent-em">tus dudas.</em></h2>
+        )}
       </div>
       <div data-reveal>
+        {program.faqImage && (
+          <h2 class="mb-8 text-3xl sm:text-4xl">Resolvemos <em class="accent-em">tus dudas.</em></h2>
+        )}
         <FAQList faqs={program.faqs} name={`faq-${program.slug}`} />
       </div>
     </div>
   </section>
 
-  <!-- CTA -->
-  <section class="relative overflow-hidden py-28 hairline-t">
-    <div class="pointer-events-none absolute left-1/2 top-1/2 h-[30rem] w-[30rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-teal-500/10 blur-[140px]" aria-hidden="true"></div>
+  <!-- MENSAJE CTA (oscuro) -->
+  <section class="relative overflow-hidden py-24 hairline-t-dim" style="background-color: rgb(6 10 10)" aria-label="Comienza con un mensaje">
+    <div class="pointer-events-none absolute left-1/2 top-0 h-[30rem] w-[30rem] -translate-x-1/2 rounded-full bg-teal-600/10 blur-[130px]" aria-hidden="true"></div>
+
     <div class="container-edge relative text-center">
-      <h2 class="mx-auto max-w-3xl text-3xl sm:text-5xl" data-reveal>
+      <h2 class="mx-auto max-w-2xl font-display text-[clamp(2rem,4vw,3.25rem)] font-semibold leading-[1.05] tracking-tight text-pearl" data-reveal>
         Tu preparación {program.exam} comienza<br />
-        <em class="accent-em">con una sesión gratuita.</em>
+        <em class="font-display italic font-medium text-teal-400">con un mensaje.</em>
       </h2>
-      <div class="mt-10 flex flex-wrap items-center justify-center gap-4" data-reveal>
-        <a href="/contacto" class="btn-primary" data-magnetic data-event={`program_final_cta_${program.slug}`}>
-          Evaluación gratis
-        </a>
-        <a href={`https://wa.me/${SITE.whatsapp}`} target="_blank" rel="noopener noreferrer" class="btn-ghost" data-magnetic>
-          Hablar por WhatsApp
-        </a>
-      </div>
+
+      <form id="course-msg-form" class="mx-auto mt-9 max-w-3xl" novalidate data-reveal>
+        <p class="text-[clamp(1.125rem,1.8vw,1.5rem)] leading-[2] font-display font-medium text-ink-100">
+          Hola, me llamo <input name="nombre" type="text" required autocomplete="name" aria-label="Tu nombre completo" placeholder="nombre completo" class="cm-field w-[14ch]" />.
+          Quiero informes del <span class="font-semibold text-teal-400">curso {program.exam}</span>.
+          Pueden escribirme a <input name="correo" type="email" required inputmode="email" autocomplete="email" spellcheck="false" aria-label="Tu correo electrónico" placeholder="tu@correo.com" class="cm-field w-[14ch]" />
+          o llamarme al <input name="telefono" type="tel" inputmode="tel" autocomplete="tel" aria-label="Tu número de teléfono" placeholder="tu número" class="cm-field w-[10ch]" />.
+        </p>
+        <button type="submit" class="btn-primary mt-9 !font-display !text-sm !font-bold !tracking-widest" data-magnetic>
+          Enviar mensaje
+        </button>
+        <p id="course-msg-status" class="mt-4 text-sm text-teal-300" role="status" aria-live="polite"></p>
+      </form>
     </div>
   </section>
 </Base>
+
+<style>
+  .exam-tab[aria-selected="true"] {
+    background: #132a24;
+    border-color: rgba(255, 255, 255, 0.08);
+    color: var(--color-pearl);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+  .exam-tab[aria-selected="true"] svg {
+    color: var(--color-teal-400);
+    opacity: 1;
+  }
+  .exam-tab:not([aria-selected="true"]):hover {
+    color: var(--color-pearl);
+    background: rgba(255, 255, 255, 0.03);
+  }
+  .cm-field {
+    display: inline-block;
+    background: transparent;
+    border: 0;
+    border-bottom: 2px dashed rgb(20 184 166 / 0.6);
+    color: var(--color-teal-300);
+    padding: 0 0.3em 0.1em;
+    outline: none;
+    text-align: center;
+    transition: border-color 0.25s, background-color 0.25s;
+    font: inherit;
+  }
+  .cm-field::placeholder { color: rgb(127 231 217 / 0.55); }
+  .cm-field:focus { border-bottom-color: var(--color-teal-400); background: rgb(20 184 166 / 0.06); }
+  .cm-field[aria-invalid="true"] { border-bottom-color: #f87171; }
+</style>
+
+<script define:vars={{ whatsapp: SITE.whatsapp, exam: program.exam }}>
+  function initCoursePage() {
+    // Tabs de secciones del examen
+    const tabsRoot = document.querySelector("[data-exam-tabs]");
+    if (tabsRoot && !tabsRoot.dataset.bound) {
+      tabsRoot.dataset.bound = "true";
+      const tabs = Array.from(tabsRoot.querySelectorAll("[data-exam-tab]"));
+      const panels = Array.from(tabsRoot.querySelectorAll("[data-exam-panel]"));
+      tabs.forEach((tab) => {
+        tab.addEventListener("click", () => {
+          const idx = tab.dataset.index;
+          tabs.forEach((t) => t.setAttribute("aria-selected", String(t === tab)));
+          panels.forEach((p) => (p.hidden = p.dataset.index !== idx));
+        });
+      });
+    }
+
+    // Formulario de mensaje
+    const form = document.getElementById("course-msg-form");
+    if (form && !form.dataset.bound) {
+      form.dataset.bound = "true";
+      const status = document.getElementById("course-msg-status");
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const data = new FormData(form);
+        const nombre = String(data.get("nombre") || "").trim();
+        const correo = String(data.get("correo") || "").trim();
+        const telefono = String(data.get("telefono") || "").trim();
+        const setError = (name, msg) => {
+          const el = form.querySelector(`[name="${name}"]`);
+          el?.setAttribute("aria-invalid", "true");
+          el?.focus();
+          if (status) status.textContent = msg;
+        };
+        if (nombre.length < 2) return setError("nombre", "Escribe tu nombre para continuar.");
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) return setError("correo", "Escribe un correo válido.");
+        form.querySelectorAll("[aria-invalid]").forEach((el) => el.removeAttribute("aria-invalid"));
+        if (status) status.textContent = "Abriendo WhatsApp…";
+        const msg = [
+          `Hola, me llamo ${nombre}.`,
+          `Quiero informes del curso ${exam}.`,
+          correo ? `Mi correo: ${correo}` : null,
+          telefono ? `Mi teléfono: ${telefono}` : null,
+        ].filter(Boolean).join("\n");
+        window.dataLayer?.push({ event: "generate_lead", lead_exam: exam });
+        window.open(`https://wa.me/${whatsapp}?text=${encodeURIComponent(msg)}`, "_blank", "noopener,noreferrer");
+      });
+    }
+  }
+
+  initCoursePage();
+  document.addEventListener("astro:page-load", initCoursePage);
+</script>

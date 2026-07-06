@@ -3,6 +3,15 @@ export interface ProgramSection {
   detail: string;
 }
 
+export interface ExamSection {
+  name: string;
+  label: string;
+  description: string;
+  time: string;
+  scoreRange: string;
+  activities: { title: string; detail: string }[];
+}
+
 export interface Program {
   slug: string;
   exam: string;
@@ -26,6 +35,15 @@ export interface Program {
   faqs: { q: string; a: string }[];
   scoreScale: string;
   heroImage?: string;
+  /** Imágenes específicas para la página de curso rediseñada. */
+  guideImage?: string;
+  guaranteeImage?: string;
+  skillsImage?: string;
+  faqImage?: string;
+  /** Intro de la sección "Preparación académica". */
+  academicIntro?: string;
+  /** Secciones del examen con detalle interactivo (tabs). */
+  examSections?: ExamSection[];
 }
 
 export const PROGRAMS: Program[] = [
@@ -65,17 +83,76 @@ export const PROGRAMS: Program[] = [
     features: [
       { title: "Materiales ETS", detail: "Acceso a preguntas basadas en los materiales oficiales de los desarrolladores del examen." },
       { title: "Simuladores reales", detail: "Practica con el formato, tiempo y preguntas del examen oficial durante toda tu preparación." },
-      { title: "Estudio flexible", detail: "Crea un plan de estudio y un horario personalizado, solo con los temas que necesitas." },
-      { title: "Expertos TOEFL", detail: "Maestros certificados con puntajes superiores a 110 y experiencia pedagógica comprobada." },
+      { title: "Expertos en el TOEFL", detail: "Maestros certificados con puntajes superiores a 110 y experiencia pedagógica comprobada." },
+      { title: "Garantía de puntaje", detail: "Si tu puntaje no sube al menos 10 puntos durante nuestro curso, te devolvemos el 100% de tu inversión." },
     ],
     faqs: [
       { q: "¿Qué incluye el curso TOEFL iBT?", a: "Acceso a la plataforma con simuladores idénticos al examen real, material oficial de ETS y retroalimentación personalizada 1 a 1 de speaking y writing." },
-      { q: "¿Cómo funcionan las sesiones de feedback?", a: "Después de cada simulacro, un experto revisa tus respuestas de speaking y writing con las rúbricas oficiales de ETS y te entrega un plan de mejora puntual para la siguiente semana." },
       { q: "¿Tienen garantía de resultados?", a: "Sí. Garantizamos un aumento mínimo de 10 puntos sobre tu diagnóstico inicial. Si no lo logras al completar el curso, te devolvemos el 100% de tu inversión." },
       { q: "¿Qué nivel de inglés necesito para iniciar?", a: "Ninguno en particular: el diagnóstico inicial define tu punto de partida y el plan se adapta a tu nivel actual, desde B1 hasta C1." },
       { q: "¿Cuánto dura el programa de preparación?", a: "El programa estándar dura de 8 a 12 semanas según tu meta de puntaje y disponibilidad, con horarios totalmente flexibles." },
     ],
-    heroImage: "/sat-hero.png",
+    heroImage: "/images/hero-toefl-ibt.webp",
+    guideImage: "/images/ibt-guia.webp",
+    guaranteeImage: "/images/ibt-garantias.webp",
+    skillsImage: "/images/domina-toefl.webp",
+    faqImage: "/images/ibt-laptop.webp",
+    academicIntro:
+      "La certificación del TOEFL iBT es un requisito obligatorio para la titulación en muchas universidades nacionales. Nuestro plan de estudio está diseñado para que mejores en poco tiempo.",
+    examSections: [
+      {
+        name: "Reading",
+        label: "Comprensión Lectora",
+        description:
+          "Evalúa tu capacidad para entender, procesar y analizar textos académicos. La dificultad del segundo bloque cambia según tu desempeño en el primero.",
+        time: "~30 min",
+        scoreRange: "1.0 - 6.0",
+        activities: [
+          { title: "Complete the Words", detail: "Rellenar las letras que faltan en palabras de un párrafo." },
+          { title: "Read in Daily Life", detail: "Responder preguntas sobre anuncios, artículos cortos o notas cotidianas del campus." },
+          { title: "Read an Academic Passage", detail: "Responder preguntas sobre un fragmento de texto académico tipo universitario." },
+        ],
+      },
+      {
+        name: "Listening",
+        label: "Comprensión Auditiva",
+        description:
+          "Mide tu capacidad para entender conversaciones, indicaciones y clases en inglés académico, tomando notas mientras escuchas una sola vez.",
+        time: "~35 min",
+        scoreRange: "1.0 - 6.0",
+        activities: [
+          { title: "Listen for the Main Idea", detail: "Identificar el tema central de conversaciones y anuncios del campus." },
+          { title: "Listen in Daily Life", detail: "Responder preguntas sobre instrucciones, mensajes y diálogos cotidianos." },
+          { title: "Academic Lecture", detail: "Comprender y sintetizar una conferencia universitaria con toma de notas." },
+        ],
+      },
+      {
+        name: "Writing",
+        label: "Expresión Escrita",
+        description:
+          "Desarrolla respuestas claras y bien estructuradas. Revisamos cada texto 1 a 1 con las rúbricas oficiales para que escribas como un nativo académico.",
+        time: "~30 min",
+        scoreRange: "1.0 - 6.0",
+        activities: [
+          { title: "Build a Sentence", detail: "Ordenar y completar oraciones aplicando gramática y vocabulario correctos." },
+          { title: "Email Writing", detail: "Redactar un correo formal respondiendo a una situación del campus." },
+          { title: "Opinion Essay", detail: "Argumentar una postura con introducción, desarrollo y conclusión." },
+        ],
+      },
+      {
+        name: "Speaking",
+        label: "Expresión Oral",
+        description:
+          "Practica respuestas independientes e integradas con grabación y análisis. Ganas fluidez, pronunciación y seguridad para hablar bajo presión.",
+        time: "~16 min",
+        scoreRange: "1.0 - 6.0",
+        activities: [
+          { title: "Read Aloud", detail: "Leer un texto en voz alta cuidando ritmo y pronunciación." },
+          { title: "Personal Response", detail: "Dar tu opinión sobre un tema cotidiano en tiempo cronometrado." },
+          { title: "Integrated Task", detail: "Resumir y responder combinando información de lectura y audio." },
+        ],
+      },
+    ],
   },
   {
     slug: "sat",

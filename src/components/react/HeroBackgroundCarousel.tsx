@@ -21,8 +21,15 @@ export default function HeroBackgroundCarousel() {
     // start timer
     const startTimer = () => {
       timeoutRef.current = setTimeout(() => {
-        setIsTransitioning(true);
-        setCurrentIndex((prev) => prev + 1);
+        setCurrentIndex((prev) => {
+          if (prev >= slides.length - 1) {
+            // Failsafe: si transitionEnd no se dispara (pestaña inactiva)
+            setIsTransitioning(false);
+            return 0;
+          }
+          setIsTransitioning(true);
+          return prev + 1;
+        });
       }, 5000);
     };
 

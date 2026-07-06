@@ -1,170 +1,141 @@
 ---
-import { Icon } from "astro-icon/components";
 import Base from "@/layouts/Base.astro";
 import { SITE } from "@/data/site";
 import { breadcrumbSchema, localBusinessSchema } from "@/lib/schema";
 
+const cursos = ["TOEFL iBT", "SAT", "GRE", "GMAT", "PAA"];
+
 const benefits = [
   "Recibe feedback directo y personalizado en clases particulares",
-  "Simuladores oficiales para ponerte en situaciones reales y así avanzar más rápido",
-  "Gana confianza y seguridad para tu examen oficial",
-  "Completa flexibilidad, estudia cuando y donde te convenga",
-  "Obtén tu puntaje garantizado por contrato"
+  "Estudia con materiales en línea y simuladores oficiales",
+  "Planes flexibles, estudia cuando y donde te convenga",
+  "Obtén el puntaje que necesitas en tu examen… ¡garantizado!",
 ];
 
 const channels = [
   {
-    icon: "ph:phone",
     label: "Llámanos",
-    value: SITE.phoneDisplay,
-    href: `tel:${SITE.phone.replace(/\s/g, "")}`,
+    lines: ["(33) 27 98 62 75", "(33) 45 23 33 77"],
+    icon: '<path d="M4.5 3h3l1.2 3.2-1.6 1.1a11 11 0 0 0 4.6 4.6l1.1-1.6L16 12v3a1.5 1.5 0 0 1-1.6 1.5A12.5 12.5 0 0 1 3 5.1 1.5 1.5 0 0 1 4.5 3Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>',
   },
   {
-    icon: "simple-icons:whatsapp",
-    label: "WhatsApp",
-    value: SITE.whatsappDisplay,
-    href: `https://wa.me/${SITE.whatsapp}`,
-  },
-  {
-    icon: "ph:map-pin",
     label: "Visítanos",
-    value: `${SITE.address.street}, ${SITE.address.city}`,
-    href: null,
+    lines: ["Calle Nápoles #2921,", "Guadalajara"],
+    icon: '<path d="M10 18s6-5.2 6-10a6 6 0 1 0-12 0c0 4.8 6 10 6 10Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><circle cx="10" cy="8" r="2.2" stroke="currentColor" stroke-width="1.4"/>',
+  },
+  {
+    label: "Envíanos un correo",
+    lines: [SITE.email],
+    icon: '<rect x="2.5" y="4.5" width="15" height="11" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="m3.5 6 6.5 4.5L16.5 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>',
+  },
+  {
+    label: "Te atenderemos",
+    lines: ["Lun a Vie: 9:00 – 19:00", "Sábados: 9:00 – 14:00"],
+    icon: '<circle cx="10" cy="10" r="7.25" stroke="currentColor" stroke-width="1.4"/><path d="M10 5.5V10l3 1.8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>',
   },
 ];
 ---
 
 <Base
-  title="Agenda tu evaluación gratuita | Professional Academy"
-  description="Agenda tu evaluación diagnóstica gratuita de TOEFL, SAT, GRE, GMAT o PAA. Mide tu nivel real y recibe un plan de preparación personalizado."
+  title="Contacto | Professional Academy"
+  description="Pide informes y agenda tu evaluación diagnóstica gratuita de TOEFL, SAT, GRE, GMAT o PAA. Te atendemos por WhatsApp, teléfono o correo."
   schema={[localBusinessSchema(), breadcrumbSchema([
     { name: "Inicio", url: SITE.url },
     { name: "Contacto", url: `${SITE.url}/contacto` },
   ])]}
   stickyCta={false}
 >
-  <!-- Main Section matching the screenshot -->
-  <section class="relative overflow-hidden pt-36 pb-20 bg-[#e8f5ed]">
-    <div class="container-edge relative grid gap-12 lg:grid-cols-[1.1fr_0.9fr] items-start">
-      
-      <!-- Left Column: Copy & Benefits -->
-      <div class="pr-0 lg:pr-8">
-        <h1 class="font-display text-[2.5rem] sm:text-[3.25rem] leading-[1.1] font-semibold tracking-tight text-ink-950" data-reveal-line>
-          <span class="line-mask"><span class="line-inner">Progresa más rápido</span></span>
-        </h1>
-        <p class="mt-6 text-[18px] font-medium leading-relaxed text-ink-950" data-reveal>
-          Con nuestra experiencia única de aprendizaje virtual.
-        </p>
+  <!-- Banner con imagen de fondo -->
+  <section id="contact-hero" class="relative overflow-hidden">
+    <div class="absolute inset-0" aria-hidden="true">
+      <img
+        src="/images/contacto-banner.webp"
+        alt=""
+        width="1503"
+        height="864"
+        fetchpriority="high"
+        class="size-full object-cover object-[45%_bottom] saturate-[1.25] contrast-[1.10]"
+      />
+    </div>
 
-        <div class="mt-8 border-t border-ink-950/15" data-reveal>
-          <ul class="flex flex-col">
-            {benefits.map((benefit, i) => (
-              <li class="flex items-center gap-4 border-b border-ink-950/15 py-5">
-                <div class="flex size-7 shrink-0 items-center justify-center rounded-full bg-[#0b8061] text-white">
-                  <Icon name="ph:check" class="size-4" stroke-width="2" />
-                </div>
-                <p class="text-[15px] font-medium leading-relaxed text-ink-900">
-                  {benefit}
-                </p>
+    <div class="container-edge relative w-full pt-24 pb-28">
+      <div class="grid gap-10 lg:grid-cols-[0.8fr_1.2fr]">
+        <div class="hidden lg:block" aria-hidden="true"></div>
+
+        <!-- Contenido a la derecha -->
+        <div class="lg:pl-40">
+          <h1 class="font-display text-[clamp(2.5rem,4.4vw,4rem)] leading-[1.04] font-semibold tracking-[-0.02em] text-ink-950" data-hero-line>
+            <span class="line-mask"><span class="line-inner">Regístrate ahora</span></span>
+            <span class="line-mask"><span class="line-inner font-medium text-teal-600">Progresa más rápido</span></span>
+          </h1>
+
+          <form id="contact-msg-form" class="mt-6 contact-fade" novalidate>
+            <div class="space-y-2.5 font-display text-[clamp(1.05rem,1.5vw,1.35rem)] font-medium leading-relaxed text-ink-950">
+              <p>Hola, me llamo <input
+                name="nombre" type="text" required autocomplete="name"
+                aria-label="Tu nombre completo" placeholder="nombre completo"
+                class="cf-field w-[15ch]" /></p>
+              <p>Quiero informes del <span class="cf-select-wrap"><select
+                name="curso" aria-label="Curso de interés" class="cf-field cf-select w-[16ch]">
+                {cursos.map((c) => <option value={c}>curso {c}</option>)}
+              </select></span></p>
+              <p>Pueden escribirme a <input
+                name="correo" type="email" required inputmode="email" autocomplete="email" spellcheck="false"
+                aria-label="Tu correo electrónico" placeholder="tu@correo.com"
+                class="cf-field w-[15ch]" /></p>
+              <p>o llamarme al <input
+                name="telefono" type="tel" inputmode="tel" autocomplete="tel"
+                aria-label="Tu número de teléfono" placeholder="tu número"
+                class="cf-field w-[11ch]" /></p>
+            </div>
+
+            <button type="submit" class="btn-primary mt-6 !font-display !text-sm !font-bold !tracking-widest" data-magnetic>
+              ENVIAR MENSAJE
+            </button>
+            <p id="contact-msg-status" class="mt-3 text-sm text-teal-700" role="status" aria-live="polite"></p>
+          </form>
+
+          <!-- Beneficios -->
+          <ul class="mt-6 max-w-xl divide-y divide-ink-950/10 border-t border-ink-950/10">
+            {benefits.map((b) => (
+              <li class="flex items-center gap-3.5 py-2.5 contact-fade">
+                <span class="grid size-7 shrink-0 place-items-center rounded-full bg-teal-600 text-white" aria-hidden="true">
+                  <svg class="size-4" viewBox="0 0 16 16" fill="none">
+                    <path d="m3.5 8.5 3 3 6-7" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </span>
+                <p class="text-[15px] leading-relaxed text-ink-900">{b}</p>
               </li>
             ))}
           </ul>
         </div>
       </div>
-
-      <!-- Right Column: Form Card -->
-      <div class="rounded-[4px] bg-white p-8 sm:p-10 shadow-2xl shadow-[#0b8061]/5 lg:ml-auto w-full max-w-[540px]" data-reveal data-reveal-delay="0.1">
-        <p class="font-display text-[18px] font-bold leading-snug text-ink-950">
-          Regístrate para conocer más sobre nuestros planes y precios
-        </p>
-
-        <form id="contact-page-form" class="mt-8 space-y-4">
-          <input type="text" name="nombre" required placeholder="Nombre de pila*" class="w-full rounded border border-ink-300 bg-white px-4 py-3.5 text-[15px] text-ink-950 outline-none transition-colors placeholder:text-ink-500 focus:border-[#0b8061] focus:ring-1 focus:ring-[#0b8061]" />
-          
-          <input type="text" name="apellidos" required placeholder="Apellido*" class="w-full rounded border border-ink-300 bg-white px-4 py-3.5 text-[15px] text-ink-950 outline-none transition-colors placeholder:text-ink-500 focus:border-[#0b8061] focus:ring-1 focus:ring-[#0b8061]" />
-
-          <input type="email" name="email" required placeholder="Correo electrónico*" class="w-full rounded border border-ink-300 bg-white px-4 py-3.5 text-[15px] text-ink-950 outline-none transition-colors placeholder:text-ink-500 focus:border-[#0b8061] focus:ring-1 focus:ring-[#0b8061]" />
-
-          <div class="flex gap-3">
-            <select class="w-[88px] shrink-0 rounded border border-ink-300 bg-white px-3 py-3.5 text-[15px] text-ink-950 outline-none transition-colors focus:border-[#0b8061] focus:ring-1 focus:ring-[#0b8061]">
-              <option>+52</option>
-              <option>+1</option>
-            </select>
-            <input type="tel" name="telefono" required placeholder="Teléfono*" class="flex-1 rounded border border-ink-300 bg-white px-4 py-3.5 text-[15px] text-ink-950 outline-none transition-colors placeholder:text-ink-500 focus:border-[#0b8061] focus:ring-1 focus:ring-[#0b8061]" />
-          </div>
-
-          <div class="relative">
-            <select name="edad" required class="w-full appearance-none rounded border border-ink-300 bg-white px-4 py-3.5 text-[15px] text-ink-500 outline-none transition-colors focus:border-[#0b8061] focus:text-ink-950 focus:ring-1 focus:ring-[#0b8061] cursor-pointer">
-              <option value="" disabled selected>Edad*</option>
-              <option value="15-18" class="text-ink-950">15 a 18 años</option>
-              <option value="19-25" class="text-ink-950">19 a 25 años</option>
-              <option value="26+" class="text-ink-950">26 años o más</option>
-            </select>
-            <Icon name="ph:caret-down" class="pointer-events-none absolute right-4 top-1/2 size-4 -translate-y-1/2 text-ink-500" />
-          </div>
-
-          <div class="relative">
-            <select name="motivacion" required class="w-full appearance-none rounded border border-ink-300 bg-white px-4 py-3.5 text-[15px] text-ink-500 outline-none transition-colors focus:border-[#0b8061] focus:text-ink-950 focus:ring-1 focus:ring-[#0b8061] cursor-pointer">
-              <option value="" disabled selected>Motivación*</option>
-              <option value="universidad" class="text-ink-950">Admisión a universidad</option>
-              <option value="posgrado" class="text-ink-950">Admisión a posgrado</option>
-              <option value="trabajo" class="text-ink-950">Crecimiento profesional</option>
-            </select>
-            <Icon name="ph:caret-down" class="pointer-events-none absolute right-4 top-1/2 size-4 -translate-y-1/2 text-ink-500" />
-          </div>
-
-          <div class="pt-2 flex items-start gap-3">
-            <input type="checkbox" id="privacy-page" required class="mt-1 size-5 shrink-0 rounded-sm border-ink-300 text-[#0b8061] focus:ring-[#0b8061]" />
-            <label for="privacy-page" class="text-[13px] leading-relaxed text-ink-800">
-              Sí, he leído y entendido cómo procesan mis datos personales según lo establecido en el <a href="/politica-de-privacidad" class="font-semibold text-ink-950 underline hover:text-[#0b8061]">Política de privacidad.</a>
-            </label>
-          </div>
-
-          <div class="pt-4">
-            <button type="submit" id="contact-submit-btn" class="w-auto rounded bg-[#0b8061] px-8 py-3 text-[15px] font-semibold tracking-wide text-white transition-colors hover:bg-teal-800">
-              Enviar
-            </button>
-          </div>
-        </form>
-      </div>
     </div>
   </section>
 
-  <!-- Contact Channels Section Below -->
-  <section class="bg-white py-20">
+  <!-- Canales de contacto directo -->
+  <section class="bg-pearl pt-12 pb-24" aria-label="Contacto directo">
     <div class="container-edge">
-      <h2 class="text-center font-display text-3xl font-semibold tracking-tight text-ink-950 mb-12">
+      <h2 class="text-center font-display text-3xl font-semibold tracking-tight text-ink-950 sm:text-4xl" data-reveal>
         ¿Prefieres contactarnos directamente?
       </h2>
-      <ul class="grid gap-6 md:grid-cols-3">
-        {channels.map((ch) => (
-          <li>
-            {ch.href ? (
-              <a
-                href={ch.href}
-                target={ch.href.startsWith("http") ? "_blank" : undefined}
-                rel={ch.href.startsWith("http") ? "noopener noreferrer" : undefined}
-                class="group flex flex-col items-center text-center gap-5 rounded-[20px] bg-ink-50 px-6 py-10 transition-all hover:bg-white hover:shadow-xl hover:shadow-[#0b8061]/5 hover:-translate-y-1 border border-transparent hover:border-ink-200"
-              >
-                <div class="flex size-16 items-center justify-center rounded-full bg-[#0b8061]/10 text-[#0b8061] transition-colors group-hover:bg-[#0b8061] group-hover:text-white">
-                  <Icon name={ch.icon} class="size-7" aria-hidden="true" />
-                </div>
-                <div>
-                  <span class="block font-mono text-[11px] tracking-[0.2em] text-ink-500 uppercase mb-2">{ch.label}</span>
-                  <span class="font-display font-medium text-[20px] text-ink-950">{ch.value}</span>
-                </div>
-              </a>
-            ) : (
-              <div class="flex flex-col items-center text-center gap-5 rounded-[20px] bg-ink-50 px-6 py-10">
-                <div class="flex size-16 items-center justify-center rounded-full bg-[#0b8061]/10 text-[#0b8061]">
-                  <Icon name={ch.icon} class="size-7" aria-hidden="true" />
-                </div>
-                <div>
-                  <span class="block font-mono text-[11px] tracking-[0.2em] text-ink-500 uppercase mb-2">{ch.label}</span>
-                  <span class="font-display font-medium text-[20px] text-ink-950">{ch.value}</span>
-                </div>
+
+      <ul class="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        {channels.map((ch, i) => (
+          <li
+            class="flex flex-col items-center gap-5 rounded-3xl border border-ink-950/[0.06] bg-ink-50 px-6 py-10 text-center transition-all duration-300 hover:-translate-y-1 hover:border-teal-500/30 hover:bg-white hover:shadow-card-lg"
+            data-reveal
+            data-reveal-delay={String(i * 0.07)}
+          >
+            <span class="grid size-14 place-items-center rounded-full bg-teal-600 text-white" aria-hidden="true">
+              <svg class="size-6" viewBox="0 0 20 20" fill="none" set:html={ch.icon} />
+            </span>
+            <div>
+              <p class="font-mono text-[11px] tracking-[0.2em] text-ink-500 uppercase">{ch.label}</p>
+              <div class="mt-2 font-display text-lg font-medium text-ink-950">
+                {ch.lines.map((line) => <p>{line}</p>)}
               </div>
-            )}
+            </div>
           </li>
         ))}
       </ul>
@@ -172,46 +143,147 @@ const channels = [
   </section>
 </Base>
 
-<script>
-  document.addEventListener("astro:page-load", () => {
-    const form = document.getElementById("contact-page-form") as HTMLFormElement;
-    if (!form) return;
+<style>
+  .cf-field {
+    display: inline-block;
+    background: transparent;
+    border: 0;
+    border-bottom: 2px dashed rgb(13 148 136 / 0.55);
+    color: var(--color-teal-700);
+    padding: 0 0.3em 0.1em;
+    outline: none;
+    text-align: center;
+    transition: border-color 0.25s, background-color 0.25s;
+    font: inherit;
+  }
+  .cf-field::placeholder {
+    color: rgb(13 148 136 / 0.6);
+  }
+  .cf-field:focus {
+    border-bottom-color: var(--color-teal-600);
+    background: rgb(20 184 166 / 0.07);
+  }
+  .cf-select-wrap {
+    position: relative;
+    display: inline-block;
+  }
+  .cf-select {
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+    padding-right: 1.4em;
+    text-align: left;
+    width: auto;
+  }
+  .cf-select-wrap::after {
+    content: "";
+    position: absolute;
+    right: 0.4em;
+    top: 50%;
+    transform: translateY(-25%);
+    border-left: 0.3em solid transparent;
+    border-right: 0.3em solid transparent;
+    border-top: 0.42em solid var(--color-teal-600);
+    pointer-events: none;
+  }
+  .cf-select option {
+    background: #fff;
+    color: var(--color-ink-950);
+  }
+  .cf-field[aria-invalid="true"] {
+    border-bottom-color: #ef4444;
+  }
+</style>
+
+<script define:vars={{ whatsapp: SITE.whatsapp }}>
+  function initContactMsg() {
+    const form = document.getElementById("contact-msg-form");
+    if (!form || form.dataset.bound) return;
+    form.dataset.bound = "true";
+    const status = document.getElementById("contact-msg-status");
 
     form.addEventListener("submit", (e) => {
       e.preventDefault();
-      
-      const btn = document.getElementById("contact-submit-btn") as HTMLButtonElement;
-      if (btn) btn.innerText = "Abriendo WhatsApp...";
-
       const data = new FormData(form);
-      const name = data.get("nombre");
-      const lastName = data.get("apellidos");
-      const email = data.get("email");
-      const phone = data.get("telefono");
-      const age = data.get("edad");
-      const motivation = data.get("motivacion");
+      const nombre = String(data.get("nombre") || "").trim();
+      const curso = String(data.get("curso") || "");
+      const correo = String(data.get("correo") || "").trim();
+      const telefono = String(data.get("telefono") || "").trim();
 
-      const message = [
-        "Hola, quiero más información sobre sus planes.",
-        `Nombre: ${name} ${lastName}`,
-        `Correo: ${email}`,
-        phone ? `Teléfono: ${phone}` : null,
-        age ? `Edad: ${age}` : null,
-        motivation ? `Motivación: ${motivation}` : null,
+      const setError = (name, msg) => {
+        const el = form.querySelector(`[name="${name}"]`);
+        el?.setAttribute("aria-invalid", "true");
+        el?.focus();
+        if (status) status.textContent = msg;
+      };
+
+      if (nombre.length < 2) return setError("nombre", "Escribe tu nombre para continuar.");
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo))
+        return setError("correo", "Escribe un correo válido, por ejemplo nombre@correo.com.");
+
+      form.querySelectorAll("[aria-invalid]").forEach((el) => el.removeAttribute("aria-invalid"));
+      if (status) status.textContent = "Abriendo WhatsApp…";
+
+      const msg = [
+        `Hola, me llamo ${nombre}.`,
+        `Quiero informes del curso ${curso}.`,
+        correo ? `Mi correo: ${correo}` : null,
+        telefono ? `Mi teléfono: ${telefono}` : null,
       ].filter(Boolean).join("\n");
 
-      // El número es 523327986275 (definido en LeadForm original)
-      const WHATSAPP = "523327986275";
-      window.open(
-        `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(message)}`,
-        "_blank",
-        "noopener,noreferrer"
-      );
-
-      setTimeout(() => {
-        if (btn) btn.innerText = "Enviado";
-        form.reset();
-      }, 1500);
+      window.dataLayer?.push({ event: "generate_lead", lead_exam: curso });
+      window.open(`https://wa.me/${whatsapp}?text=${encodeURIComponent(msg)}`, "_blank", "noopener,noreferrer");
     });
-  });
+  }
+
+  initContactMsg();
+  document.addEventListener("astro:page-load", initContactMsg);
+</script>
+
+<style>
+  .contact-fade {
+    opacity: 0;
+  }
+  html.no-motion .contact-fade {
+    opacity: 1;
+  }
+  [data-hero-line] .line-inner {
+    display: block;
+    transform: translateY(110%);
+  }
+  [data-hero-line] .line-mask {
+    display: block;
+    overflow: hidden;
+  }
+</style>
+
+<script>
+  import gsap from "gsap";
+
+  function initContactHero() {
+    if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      const tl = gsap.timeline({ defaults: { ease: "expo.out" } });
+      tl.to("#contact-hero [data-hero-line] .line-inner", {
+        y: 0,
+        duration: 1.2,
+        stagger: 0.1,
+        delay: 0.1,
+      }).fromTo(
+        "#contact-hero .contact-fade",
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 1, stagger: 0.08 },
+        "-=0.8"
+      );
+    } else {
+      document.querySelectorAll(".contact-fade").forEach((el) => {
+        (el as HTMLElement).style.opacity = "1";
+      });
+      document.querySelectorAll("[data-hero-line] .line-inner").forEach((el) => {
+        (el as HTMLElement).style.transform = "none";
+      });
+    }
+  }
+
+  initContactHero();
+  document.addEventListener("astro:page-load", initContactHero);
 </script>

@@ -231,10 +231,10 @@ export default function LeadForm() {
       <div className="pt-2">
         <button
           type="submit"
-          className="btn-primary w-full shadow-lg shadow-teal-500/20 hover:shadow-teal-500/40 hover:-translate-y-0.5 transition-all !py-4 sm:w-auto"
+          className="btn-primary w-full shadow-lg shadow-teal-500/20 hover:shadow-teal-500/40 hover:-translate-y-0.5 transition-all !py-4 sm:w-auto !font-display !text-sm !font-bold !tracking-widest"
           disabled={status === "sending"}
         >
-          {status === "sending" ? "Abriendo WhatsApp…" : "Agendar mi evaluación"}
+          {status === "sending" ? "ABRIENDO WHATSAPP…" : "ENVIAR MENSAJE"}
         </button>
       </div>
       <p className="text-xs leading-relaxed text-ink-400">

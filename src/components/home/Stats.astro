@@ -4,14 +4,27 @@ import { METRICS } from "@/data/site";
 
 <section class="relative py-28" aria-label="Resultados">
   <div class="container-edge">
-    <div class="max-w-2xl" data-reveal>
-      <h2 class="text-4xl sm:text-5xl text-ink-950">
-        Los números <em class="accent-em">hablan primero.</em>
-      </h2>
-      <p class="mt-5 max-w-lg text-base leading-relaxed text-ink-600">
-        Cada programa se mide contra tu diagnóstico inicial. Sin promesas vagas:
-        puntos reales, verificables y garantizados por contrato.
-      </p>
+    <div class="grid items-center gap-10 lg:grid-cols-[1.3fr_0.7fr]">
+      <div data-reveal>
+        <h2 class="text-4xl sm:text-5xl text-ink-950">
+          Garantizamos <em class="accent-em">resultados reales.</em>
+        </h2>
+        <p class="mt-5 max-w-lg text-base leading-relaxed text-ink-600">
+          Cada programa de estudio mide tu nivel y está diseñado para que mejores
+          en poco tiempo. Sin promesas vagas: puntos reales, verificables y
+          garantizados.
+        </p>
+      </div>
+
+      <!-- Animación Lottie: mano escribiendo (sin data-reveal: el transform de
+           GSAP aislaría el contexto de mezcla y reaparecería el fondo blanco) -->
+      <div class="flex justify-center lg:justify-end">
+        <img
+          src="/animation home.gif"
+          class="w-full max-w-[20rem] aspect-square object-contain mix-blend-multiply"
+          alt="Animación de una mano escribiendo en una hoja de examen"
+        />
+      </div>
     </div>
 
     <div class="mt-16 grid grid-cols-2 lg:grid-cols-4">

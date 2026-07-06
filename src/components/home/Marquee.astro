@@ -1,25 +1,42 @@
 ---
-const destinations = [
-  "Harvard", "MIT", "Stanford", "Tec de Monterrey", "Oxford", "Columbia",
-  "UC Berkeley", "UNAM", "Cambridge", "Yale", "UDEM", "Princeton",
+const logos = [
+  { name: "Harvard University", src: "/images/logos/logo-harvard.webp" },
+  { name: "MIT", src: "/images/logos/logo-mit.webp" },
+  { name: "Stanford University", src: "/images/logos/logo-stanford.webp" },
+  { name: "Tecnológico de Monterrey", src: "/images/logos/logo-tec.webp" },
+  { name: "University of Oxford", src: "/images/logos/logo-oxford.webp" },
+  { name: "Columbia University", src: "/images/logos/logo-columbia.webp" },
+  { name: "University of Cambridge", src: "/images/logos/logo-cambridge.webp" },
+  { name: "Yale University", src: "/images/logos/logo-yale.webp" },
+  { name: "Universidad de Guadalajara", src: "/images/logos/logo-udg.webp" },
 ];
 ---
 
-<section class="hairline-t hairline-b relative overflow-hidden py-8" aria-label="Universidades destino de nuestros alumnos">
-  <p class="container-edge mb-6 text-center font-mono text-[10px] tracking-[0.3em] text-ink-400 uppercase">
+<section class="hairline-t hairline-b relative overflow-hidden py-10" aria-label="Universidades destino de nuestros alumnos">
+  <p class="container-edge mb-7 text-center font-mono text-[10px] tracking-[0.3em] text-ink-400 uppercase">
     Nuestros alumnos estudian en
   </p>
-  <div class="marquee-track" aria-hidden="true">
+
+  <!-- Difuminado en los bordes -->
+  <div class="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-gradient-to-r from-pearl to-transparent" aria-hidden="true"></div>
+  <div class="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-gradient-to-l from-pearl to-transparent" aria-hidden="true"></div>
+
+  <div class="marquee-track items-center" aria-hidden="true">
     {[0, 1].map(() => (
       <div class="flex shrink-0 items-center">
-        {destinations.map((name) => (
-          <span class="mx-8 flex items-center gap-8 font-display text-xl font-medium tracking-tight text-ink-400 transition-colors hover:text-ink-700">
-            {name}
-            <span class="size-1 rounded-full bg-teal-600/60"></span>
-          </span>
+        {logos.map((logo) => (
+          <img
+            src={logo.src}
+            alt={logo.name}
+            height="36"
+            loading="lazy"
+            decoding="async"
+            class="mx-10 h-9 w-auto shrink-0 object-contain opacity-60 grayscale transition-all duration-300 hover:opacity-100 hover:grayscale-0"
+          />
         ))}
       </div>
     ))}
   </div>
-  <span class="sr-only">{destinations.join(", ")}</span>
+
+  <span class="sr-only">{logos.map((l) => l.name).join(", ")}</span>
 </section>

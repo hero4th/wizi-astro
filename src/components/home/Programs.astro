@@ -2,51 +2,158 @@
 import { PROGRAMS } from "@/data/programs";
 ---
 
-<section id="programas" class="relative py-28">
-  <div class="container-edge">
-    <div class="flex flex-wrap items-end justify-between gap-6" data-reveal>
+<section
+  id="programas"
+  class="relative overflow-hidden py-28 hairline-t-dim"
+  style="background-color: rgb(8 13 13)"
+  aria-label="Programas de preparación"
+>
+  <!-- Halo decorativo -->
+  <div class="pointer-events-none absolute -left-40 top-1/4 h-[34rem] w-[34rem] rounded-full bg-teal-500/8 blur-[120px]" aria-hidden="true"></div>
+
+  <div class="container-edge relative">
+    <div class="grid items-center gap-14 lg:grid-cols-[1fr_1.1fr] lg:gap-20">
+
+      <!-- Izquierda: selector de examen -->
       <div>
-        <p class="eyebrow">Programas</p>
-        <h2 class="mt-4 max-w-xl text-4xl sm:text-5xl">
+        <p class="eyebrow !text-teal-400" data-reveal>Programas</p>
+        <h2 class="mt-4 font-display text-4xl font-semibold leading-[1.05] tracking-tight text-pearl sm:text-5xl" data-reveal>
           Elige tu examen.<br />
-          <em class="accent-em">Nosotros, el camino.</em>
+          <em class="font-display italic font-medium text-teal-400">Nosotros, el camino.</em>
         </h2>
+
+        <div class="mt-12 hairline-t-dim" data-exam-list data-reveal>
+          {PROGRAMS.map((p, i) => (
+            <div
+              class="exam-row group relative hairline-b-dim"
+              data-exam-row
+              data-index={i}
+              data-active={i === 0 ? "true" : "false"}
+            >
+              <div class="flex items-center gap-4 py-5">
+                <button
+                  type="button"
+                  class="exam-toggle flex flex-1 items-center text-left"
+                  data-exam-toggle
+                  aria-expanded={i === 0 ? "true" : "false"}
+                >
+                  <span class="exam-name font-display text-3xl font-semibold tracking-tight text-pearl transition-all duration-300 sm:text-4xl">
+                    {p.exam}
+                  </span>
+                </button>
+                <a
+                  href={`/cursos/${p.slug}`}
+                  class="exam-go grid size-11 shrink-0 place-items-center rounded-full hairline-dim text-pearl transition-all duration-300 group-hover:border-teal-400 group-hover:bg-teal-400 group-hover:text-ink-950 before:absolute before:inset-0 before:z-30"
+                  aria-label={`Ver curso ${p.exam}`}
+                  data-event="program_row_click"
+                >
+                  <svg class="size-4 transition-transform duration-300 group-hover:rotate-[-45deg]" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <path d="M1 8h14m0 0L9 2m6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </a>
+              </div>
+              <div class="exam-panel relative z-20 pointer-events-none">
+                <div class="overflow-hidden">
+                  <p class="max-w-md pb-6 text-[15px] leading-relaxed text-ink-300">
+                    {p.audience}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
-      <a href="/precios" class="btn-ghost !px-5 !py-2.5 !text-[11px]" data-magnetic>Comparar precios</a>
-    </div>
 
-    <div class="mt-16 hairline-t">
-      {PROGRAMS.map((p, i) => (
-        <a
-          href={`/cursos/${p.slug}`}
-          class="group relative grid grid-cols-[1fr_auto] items-center gap-x-6 overflow-hidden py-8 hairline-b transition-colors duration-500 sm:grid-cols-[1.2fr_1fr_auto] sm:gap-x-10"
-          data-reveal
-          data-reveal-delay={String(i * 0.05)}
-          data-event="program_row_click"
-        >
-          <!-- Barrido turquesa al hover -->
-          <div class="absolute inset-0 origin-bottom scale-y-0 bg-teal-400/5 transition-transform duration-500 ease-[var(--ease-out-expo)] group-hover:scale-y-100" aria-hidden="true"></div>
+      <!-- Derecha: imagen que cambia según el examen activo -->
+      <div class="relative flex justify-center lg:justify-end" data-reveal>
+        <div class="pointer-events-none absolute inset-0 -z-10 translate-y-8 scale-90 rounded-[2rem] bg-teal-500/15 blur-3xl" aria-hidden="true"></div>
+        <div class="relative w-full max-w-[36rem]" style="aspect-ratio: 631 / 610;" data-parallax="-24">
+          {PROGRAMS.map((p, i) => (
+            <img
+              src={`/images/program-${p.slug}.webp`}
+              alt={`Material y reporte de calificación del examen ${p.exam}`}
+              width="631"
+              height="610"
+              loading={i === 0 ? "eager" : "lazy"}
+              decoding="async"
+              class="exam-img absolute inset-0 size-full object-contain drop-shadow-2xl"
+              data-exam-img={String(i)}
+              data-active={i === 0 ? "true" : "false"}
+            />
+          ))}
+        </div>
+      </div>
 
-          <div class="relative">
-            <h3 class="font-display text-3xl font-semibold tracking-tight transition-transform duration-500 ease-[var(--ease-out-expo)] group-hover:translate-x-2 sm:text-5xl">
-              {p.exam}
-            </h3>
-            <p class="mt-1.5 font-mono text-[10px] tracking-[0.18em] text-ink-500 uppercase">
-              {p.fullName}
-            </p>
-          </div>
-
-          <p class="relative hidden text-sm leading-relaxed text-ink-500 sm:block">
-            {p.audience}
-          </p>
-
-          <span class="relative grid size-12 place-items-center rounded-full hairline transition-all duration-500 group-hover:border-teal-400 group-hover:bg-teal-400 group-hover:text-ink-950">
-            <svg class="size-4 transition-transform duration-500 group-hover:rotate-[-35deg]" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <path d="M1 8h14m0 0L9 2m6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-          </span>
-        </a>
-      ))}
     </div>
   </div>
 </section>
+
+<style>
+  .exam-panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.5s var(--ease-out-expo);
+  }
+  .exam-row[data-active="true"] .exam-panel {
+    grid-template-rows: 1fr;
+  }
+  .exam-row[data-active="true"] .exam-name {
+    color: var(--color-teal-400);
+  }
+  .exam-row:not([data-active="true"]):hover .exam-name {
+    color: var(--color-pearl);
+    transform: translateX(4px);
+  }
+  .exam-name {
+    will-change: transform;
+  }
+  /* Imágenes apiladas: solo la activa visible (crossfade) */
+  .exam-img {
+    opacity: 0;
+    transform: scale(0.97);
+    transition: opacity 0.55s var(--ease-out-expo), transform 0.7s var(--ease-out-expo);
+  }
+  .exam-img[data-active="true"] {
+    opacity: 1;
+    transform: scale(1);
+  }
+  html.no-motion .exam-panel,
+  html.no-motion .exam-img {
+    transition: none;
+  }
+</style>
+
+<script>
+  function initExamSelector() {
+    const list = document.querySelector("[data-exam-list]");
+    if (!list) return;
+    const rows = Array.from(list.querySelectorAll<HTMLElement>("[data-exam-row]"));
+    const imgs = Array.from(document.querySelectorAll<HTMLElement>("[data-exam-img]"));
+    if (!rows.length) return;
+
+    const activate = (target: HTMLElement) => {
+      const index = target.dataset.index;
+      rows.forEach((row) => {
+        const isActive = row === target;
+        row.dataset.active = isActive ? "true" : "false";
+        row
+          .querySelector("[data-exam-toggle]")
+          ?.setAttribute("aria-expanded", String(isActive));
+      });
+      imgs.forEach((img) => {
+        img.dataset.active = img.dataset.examImg === index ? "true" : "false";
+      });
+    };
+
+    rows.forEach((row) => {
+      const toggle = row.querySelector("[data-exam-toggle]");
+      toggle?.addEventListener("click", () => activate(row));
+      if (window.matchMedia("(pointer: fine)").matches) {
+        row.addEventListener("mouseenter", () => activate(row));
+      }
+    });
+  }
+
+  initExamSelector();
+  document.addEventListener("astro:page-load", initExamSelector);
+</script>

@@ -34,9 +34,9 @@ export const SITE = {
 } as const;
 
 export const METRICS = [
-  { value: 10000, prefix: "+", suffix: "", label: "estudiantes preparados" },
-  { value: 94, prefix: "", suffix: "%", label: "satisfacción comprobada" },
-  { value: 10, prefix: "+", suffix: " pts", label: "aumento mínimo garantizado" },
+  { value: 10000, prefix: "+", suffix: "", label: "ingresos en universidades" },
+  { value: 94, prefix: "", suffix: "%", label: "alumnos satisfechos" },
+  { value: 100, prefix: "+", suffix: " pts", label: "top calificaciones" },
   { value: 4.9, prefix: "", suffix: "/5", label: "valoración promedio", decimals: 1 },
 ] as const;
 
@@ -48,9 +48,7 @@ export const NAV_LINKS = [
     { label: "GMAT", href: "/cursos/gmat" },
     { label: "PAA", href: "/cursos/paa" },
   ]},
-  { label: "Precios", href: "/precios" },
   { label: "Testimonios", href: "/testimonios" },
   { label: "Blog", href: "/blog" },
   { label: "FAQ", href: "/preguntas-frecuentes" },
-  { label: "Contacto", href: "/contacto" },
 ] as const;
