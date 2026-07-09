@@ -28,6 +28,8 @@ export default defineConfig({
     remotePatterns: [
       { protocol: "https", hostname: "proacademymx.com" },
       { protocol: "https", hostname: "www.proacademymx.com" },
+      // Agrega tu nuevo subdominio para que Astro pueda procesar las imágenes de WP
+      { protocol: "https", hostname: "cms.proacademymx.com" },
     ],
   },
   integrations: [
