@@ -6,7 +6,7 @@
   "description": "Professional Academy — Plataforma oficial de preparación para TOEFL, SAT, GRE, GMAT y PAA",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "astro build && node scripts/patch-redirects.mjs",
     "preview": "astro preview",
     "check": "astro check"
   },

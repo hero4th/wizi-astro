@@ -6,15 +6,30 @@ import sitemap from "@astrojs/sitemap";
 import vercel from "@astrojs/vercel";
 import icon from "astro-icon";
 import tailwindcss from "@tailwindcss/vite";
+import legacyBlogSlugs from "./src/data/legacy-redirects.mjs";
+
+// 301 redirects: old WordPress permalinks (/slug) → new Astro blog URLs (/blog/slug).
+// Preserves SEO for the posts already indexed at the root of proacademymx.com.
+const legacyRedirects = Object.fromEntries(
+  legacyBlogSlugs.map((slug) => [`/${slug}`, `/blog/${slug}`])
+);
 
 // https://astro.build/config
 export default defineConfig({
   site: "https://www.proacademymx.com",
   output: "static",
+  redirects: legacyRedirects,
   adapter: vercel({
     webAnalytics: { enabled: false },
     imageService: true,
   }),
+  image: {
+    // Allow featured/content images served from the headless WordPress backend.
+    remotePatterns: [
+      { protocol: "https", hostname: "proacademymx.com" },
+      { protocol: "https", hostname: "www.proacademymx.com" },
+    ],
+  },
   integrations: [
     react(),
     mdx(),

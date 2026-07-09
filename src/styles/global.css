@@ -317,6 +317,50 @@ h1, h2, h3, h4 {
   padding: 0.15em 0.4em;
   border-radius: 4px;
 }
+/* Images / figures coming from WordPress (Gutenberg) content -----------------*/
+.prose-pa :where(img) {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 0.75rem;
+  margin-block: 2rem;
+}
+.prose-pa :where(figure) {
+  margin-block: 2rem;
+}
+.prose-pa :where(figure) img {
+  margin-block: 0;
+}
+.prose-pa :where(figcaption) {
+  margin-top: 0.75rem;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  color: var(--color-ink-400);
+}
+.prose-pa :where(h1) {
+  color: var(--color-ink-950);
+  font-size: 1.875rem;
+  margin-top: 2.75rem;
+  margin-bottom: 1rem;
+}
+.prose-pa :where(iframe) {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  height: auto;
+  border-radius: 0.75rem;
+  margin-block: 2rem;
+  border: 0;
+}
+.prose-pa :where(.wp-block-table) {
+  overflow-x: auto;
+}
+.prose-pa :where(hr) {
+  border: 0;
+  border-top: 1px solid rgb(6 10 10 / 0.1);
+  margin-block: 2.5rem;
+}
 
 /* Accordion ---------------------------------------------------------------*/
 details.faq-item summary::-webkit-details-marker {

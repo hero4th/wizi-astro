@@ -1,23 +1,15 @@
 ---
-import { getCollection } from "astro:content";
 import Base from "@/layouts/Base.astro";
-import { CATEGORIES } from "@/data/categories";
+import { getPublishedPosts, getBlogCategories } from "@/lib/blog";
 import { SITE } from "@/data/site";
 import { breadcrumbSchema } from "@/lib/schema";
 
-const posts = (await getCollection("blog", ({ data }) => !data.draft)).sort(
-  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
-);
-
-const activeCategories = CATEGORIES.filter((c) =>
-  posts.some((p) => p.data.categorySlug === c.slug)
-);
+const posts = await getPublishedPosts();
+const activeCategories = await getBlogCategories(posts);
 
 const [featured, ...rest] = posts;
 const fullFmt = new Intl.DateTimeFormat("es-MX", { day: "numeric", month: "long", year: "numeric" });
 const shortFmt = new Intl.DateTimeFormat("es-MX", { day: "numeric", month: "short", year: "numeric" });
-
-const READ_TIME = 5;
 ---
 
 <Base
@@ -50,7 +42,7 @@ const READ_TIME = 5;
             href={`/blog/categoria/${cat.slug}`}
             class="rounded-full hairline px-4 py-2 font-mono text-[11px] tracking-[0.12em] text-ink-500 uppercase transition-colors hover:border-teal-500 hover:text-teal-600"
           >
-            {cat.label}
+            {cat.name}
           </a>
         ))}
       </nav>
@@ -87,11 +79,11 @@ const READ_TIME = 5;
                 </span>
                 <span class="font-mono text-[11px] text-ink-400">
                   <time datetime={featured.data.pubDate.toISOString()}>{fullFmt.format(featured.data.pubDate)}</time>
-                  {" · "}{READ_TIME} min lectura
+                  {" · "}{featured.data.readingTime} min lectura
                 </span>
               </div>
             </div>
-            <!-- Decorative panel -->
+            <!-- Featured image panel -->
             <div class="hidden items-center justify-center bg-teal-400/12 lg:flex overflow-hidden" aria-hidden="true">
               {featured.data.image ? (
                 <img src={featured.data.image} alt="" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
@@ -125,10 +117,10 @@ const READ_TIME = 5;
               data-reveal
               data-reveal-delay={String((i % 3) * 0.06)}
             >
-              <!-- Image or Accent band -->
+              <!-- Featured image or accent band -->
               {post.data.image ? (
                 <div class="h-40 w-full overflow-hidden bg-ink-100">
-                  <img src={post.data.image} alt="" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                  <img src={post.data.image} alt="" loading="lazy" decoding="async" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                 </div>
               ) : (
                 <div class="h-1 w-full bg-teal-400/70"></div>
@@ -149,7 +141,7 @@ const READ_TIME = 5;
                     {shortFmt.format(post.data.pubDate)}
                   </time>
                   <span class="flex items-center gap-1 font-mono text-[10.5px] text-ink-400 transition-colors group-hover:text-teal-600">
-                    {READ_TIME} min
+                    {post.data.readingTime} min
                     <svg class="size-3 transition-transform duration-300 group-hover:translate-x-0.5" viewBox="0 0 12 12" fill="none" aria-hidden="true">
                       <path d="M1 6h10m0 0L7 2m4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
