@@ -44,7 +44,7 @@ const comparison = [
 
 const benefits = [
   "Recibe retroalimentación en clases particulares",
-  "Estudia con materiales y simuladores oficiales",
+  "Estudia con materiales y simuladores actualizados",
   "Planes flexibles, cuando y donde quieras",
   "Obtén el puntaje que necesitas… ¡garantizado!",
 ];
@@ -279,58 +279,181 @@ const schema = [
   </section>
 
   <!-- LA MEJOR OPCIÓN / COMPARATIVA -->
-  <section class="bg-pearl py-24">
-    <div class="container-edge grid items-center gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
-      <div data-reveal>
-        <h2 class="text-3xl sm:text-5xl">
-          La mejor opción <em class="accent-em">para aprobar.</em>
+  <section class="bg-[#F8FAFC] py-24 sm:py-28 overflow-hidden">
+    <div class="container-edge grid items-center gap-16 lg:grid-cols-[0.75fr_1.25fr] lg:gap-12">
+      <!-- Left side info -->
+      <div data-reveal class="space-y-6">
+        <h2 class="font-display text-[clamp(2.5rem,5vw,3.5rem)] font-semibold leading-[1.05] tracking-tight text-ink-950">
+          La mejor opción <br />
+          <span class="text-teal-600 italic">para aprobar</span>
         </h2>
-        <p class="mt-5 max-w-md text-base leading-relaxed text-ink-600">
+        <p class="text-base leading-relaxed text-ink-600 max-w-lg">
           En nuestro curso {program.exam} diseñamos una metodología flexible con la que aseguras que cada hora de estudio se traduzca en un puntaje real y medible.
         </p>
-        <ul class="mt-8 space-y-3.5">
+        <ul class="space-y-4 pt-2">
           {benefits.map((b) => (
-            <li class="flex items-center gap-3.5 text-[15px] text-ink-800">
-              <span class="grid size-6 shrink-0 place-items-center rounded-full bg-teal-600 text-white" aria-hidden="true">
+            <li class="flex items-center gap-3.5 text-[15px] font-display font-medium text-ink-800">
+              <span class="grid size-6 shrink-0 place-items-center rounded-full bg-teal-600 text-pearl" aria-hidden="true">
                 <Icon name="ph:check" class="size-3.5" />
               </span>
               {b}
             </li>
           ))}
         </ul>
-        <a href="/contacto" class="btn-primary mt-9 !font-display !text-sm !font-bold !tracking-widest" data-magnetic>
-          Inscríbete ahora
-        </a>
+        <div class="pt-4">
+          <a href="/contacto" class="btn-primary mt-9 !font-display !text-sm !font-bold !tracking-widest uppercase" data-magnetic>
+            Inscríbete ahora
+          </a>
+        </div>
       </div>
 
-      <!-- Tabla comparativa -->
-      <div class="overflow-hidden rounded-3xl border border-ink-950/[0.06] bg-white shadow-panel" data-reveal>
-        <div class="grid grid-cols-[1.1fr_1fr_1fr] text-sm">
-          <!-- Encabezado -->
-          <div class="px-5 pb-5 pt-10 sm:px-6"></div>
-          <div class="relative border-x border-ink-950/[0.06] bg-teal-500/[0.06] px-4 pb-5 pt-10 text-center sm:px-6">
-            <span class="absolute left-1/2 top-3.5 -translate-x-1/2 whitespace-nowrap rounded-full bg-teal-500 px-3 py-1 font-mono text-[9px] font-bold tracking-[0.15em] text-ink-950 uppercase">Mejor oferta</span>
-            <p class="font-display text-base font-semibold tracking-tight text-ink-950">Professional Academy</p>
-            <p class="font-mono text-[10px] tracking-widest text-teal-700 uppercase">Curso a tu medida</p>
-          </div>
-          <div class="px-4 pb-5 pt-10 text-center sm:px-6">
-            <p class="font-display text-base font-semibold tracking-tight text-ink-700">Tradicional</p>
-            <p class="font-mono text-[10px] tracking-widest text-ink-400 uppercase">Cursos presenciales</p>
+      <!-- Right side: Custom Comparison Card Table -->
+      <div class="relative max-w-xl lg:max-w-none mx-auto w-full overflow-x-auto pt-16 pb-12 scrollbar-none" data-reveal>
+        <div class="relative min-w-[580px] lg:min-w-0 bg-white rounded-[2.5rem] border border-slate-100/80 px-6 py-6 shadow-[0_20px_50px_rgba(0,0,0,0.02)] grid grid-cols-[1fr_1.6fr_1fr] items-stretch">
+          
+          <!-- Background Card Overlay for Column 2 -->
+          <div class="col-start-2 col-span-1 row-start-1 row-span-8 bg-[#07211E] rounded-[2.25rem] border border-teal-500/20 shadow-[0_20px_40px_rgba(0,0,0,0.3)] -my-10 z-0 pointer-events-none relative">
+            <!-- Badge -->
+            <span class="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-[#008077] px-4 py-1.5 font-display text-[10px] font-bold tracking-widest text-white uppercase shadow-[0_4px_12px_rgba(0,0,0,0.15)] border border-teal-400/20">
+              MEJOR OFERTA
+            </span>
           </div>
 
-          {comparison.map((row) => (
-            <>
-              <div class="flex items-center border-t border-ink-950/[0.06] px-5 py-4 text-ink-500 sm:px-6">{row.label}</div>
-              <div class="flex items-center justify-center gap-2 border-x border-t border-ink-950/[0.06] bg-teal-500/[0.06] px-4 py-4 text-center font-medium text-ink-950">
-                <Icon name="ph:check" class="size-4 shrink-0 text-teal-600" aria-hidden="true" />
-                {row.pa}
+          <!-- Row 1: Headers -->
+          <!-- Col 1 -->
+          <div class="flex flex-col justify-end pb-3 border-b border-slate-100/60">
+            <span class="text-[10px] font-mono tracking-wider uppercase text-ink-400 font-bold">Comparativa</span>
+          </div>
+          <!-- Col 2 -->
+          <div class="relative z-10 text-left pt-7 pb-3 px-6 sm:px-8 flex flex-col justify-center items-start text-white col-start-2 row-start-1">
+            <h3 class="font-display text-[16px] sm:text-[18px] font-bold text-pearl leading-tight">Professional Academy</h3>
+            <p class="text-[11px] sm:text-[12px] text-teal-400/90 font-medium mt-1">Curso a tu medida</p>
+          </div>
+          <!-- Col 3 -->
+          <div class="text-left pt-7 pb-3 px-6 sm:px-8 border-b border-slate-100/60 flex flex-col justify-center items-start col-start-3 row-start-1">
+            <h3 class="font-display text-[16px] sm:text-[18px] font-semibold text-slate-800 leading-tight">Preparación tradicional</h3>
+            <p class="text-[11px] sm:text-[12px] text-slate-400/90 font-medium mt-1">Cursos presenciales</p>
+          </div>
+
+          <!-- Row 2: Duración -->
+          <!-- Col 1 -->
+          <div class="flex items-center gap-3 py-2.5 text-ink-700 font-display text-[13px] sm:text-[14px] font-semibold border-b border-slate-100/60">
+            <span class="text-slate-500 shrink-0"><Icon name="ph:calendar-blank" class="size-5" /></span>
+            <span>Duración del curso</span>
+          </div>
+          <!-- Col 2 -->
+          <div class="relative z-10 px-6 sm:px-8 py-2.5 flex items-center justify-start text-left font-display text-[13px] sm:text-[14px] font-medium border-t border-white/10 text-white col-start-2 row-start-2 gap-3">
+            <Icon name="ph:check-circle-fill" class="size-5 text-teal-400 shrink-0" />
+            <span>{program.hours} horas de clase 1:1 en vivo</span>
+          </div>
+          <!-- Col 3 -->
+          <div class="py-2.5 px-6 sm:px-8 text-left font-display text-[13px] sm:text-[14px] text-ink-600 border-b border-slate-100/60 flex items-center justify-start">
+            8 semanas
+          </div>
+
+          <!-- Row 3: Herramientas -->
+          <!-- Col 1 -->
+          <div class="flex items-center gap-3 py-2.5 text-ink-700 font-display text-[13px] sm:text-[14px] font-semibold border-b border-slate-100/60">
+            <span class="text-slate-500 shrink-0"><Icon name="ph:toolbox" class="size-5" /></span>
+            <span>Herramientas</span>
+          </div>
+          <!-- Col 2 -->
+          <div class="relative z-10 px-6 sm:px-8 py-2.5 flex items-center justify-start text-left font-display text-[13px] sm:text-[14px] font-medium border-t border-white/10 text-white col-start-2 row-start-3 gap-3">
+            <Icon name="ph:check-circle-fill" class="size-5 text-teal-400 shrink-0" />
+            <span>Acceso a plataforma premium</span>
+          </div>
+          <!-- Col 3 -->
+          <div class="py-2.5 px-6 sm:px-8 text-left font-display text-[13px] sm:text-[14px] text-ink-600 border-b border-slate-100/60 flex items-center justify-start">
+            Libro limitado
+          </div>
+
+          <!-- Row 4: Simuladores -->
+          <!-- Col 1 -->
+          <div class="flex items-center gap-3 py-2.5 text-ink-700 font-display text-[13px] sm:text-[14px] font-semibold border-b border-slate-100/60">
+            <span class="text-slate-500 shrink-0"><Icon name="ph:clipboard-text" class="size-5" /></span>
+            <span>Simuladores reales</span>
+          </div>
+          <!-- Col 2 -->
+          <div class="relative z-10 px-6 sm:px-8 py-2.5 flex items-center justify-start text-left font-display text-[13px] sm:text-[14px] font-medium border-t border-white/10 text-white col-start-2 row-start-4 gap-3">
+            <Icon name="ph:check-circle-fill" class="size-5 text-teal-400 shrink-0" />
+            <span>20 exámenes de simulación</span>
+          </div>
+          <!-- Col 3 -->
+          <div class="py-2.5 px-6 sm:px-8 text-left font-display text-[13px] sm:text-[14px] text-ink-400/80 border-b border-slate-100/60 flex items-center justify-start gap-3">
+            <Icon name="ph:x-circle" class="size-5 text-teal-600/40 shrink-0" />
+            <span>Bancos de preguntas</span>
+          </div>
+
+          <!-- Row 5: Sesiones -->
+          <!-- Col 1 -->
+          <div class="flex items-center gap-3 py-2.5 text-ink-700 font-display text-[13px] sm:text-[14px] font-semibold border-b border-slate-100/60">
+            <span class="text-slate-500 shrink-0"><Icon name="ph:graduation-cap" class="size-5" /></span>
+            <span>Sesiones de estudio</span>
+          </div>
+          <!-- Col 2 -->
+          <div class="relative z-10 px-6 sm:px-8 py-2.5 flex items-center justify-start text-left font-display text-[13px] sm:text-[14px] font-medium border-t border-white/10 text-white col-start-2 row-start-5 gap-3">
+            <Icon name="ph:check-circle-fill" class="size-5 text-teal-400 shrink-0" />
+            <span>Horarios flexibles adaptables</span>
+          </div>
+          <!-- Col 3 -->
+          <div class="py-2.5 px-6 sm:px-8 text-left font-display text-[13px] sm:text-[14px] text-ink-400/80 border-b border-slate-100/60 flex items-center justify-start gap-3">
+            <Icon name="ph:x-circle" class="size-5 text-teal-600/40 shrink-0" />
+            <span>Sujetas a disponibilidad</span>
+          </div>
+
+          <!-- Row 6: Temario -->
+          <!-- Col 1 -->
+          <div class="flex items-center gap-3 py-2.5 text-ink-700 font-display text-[13px] sm:text-[14px] font-semibold border-b border-slate-100/60">
+            <span class="text-slate-500 shrink-0"><Icon name="ph:book-open" class="size-5" /></span>
+            <span>Temario</span>
+          </div>
+          <!-- Col 2 -->
+          <div class="relative z-10 px-6 sm:px-8 py-2.5 flex items-center justify-start text-left font-display text-[13px] sm:text-[14px] font-medium border-t border-white/10 text-white col-start-2 row-start-6 gap-3">
+            <Icon name="ph:check-circle-fill" class="size-5 text-teal-400 shrink-0" />
+            <span>Plan de estudio personalizado</span>
+          </div>
+          <!-- Col 3 -->
+          <div class="py-2.5 px-6 sm:px-8 text-left font-display text-[13px] sm:text-[14px] text-ink-400/80 border-b border-slate-100/60 flex items-center justify-start gap-3">
+            <Icon name="ph:x-circle" class="size-5 text-teal-600/40 shrink-0" />
+            <span>Varía por programa</span>
+          </div>
+
+          <!-- Row 7: IA -->
+          <!-- Col 1 -->
+          <div class="flex items-center gap-3 py-2.5 text-ink-700 font-display text-[13px] sm:text-[14px] font-semibold">
+            <span class="text-slate-500 shrink-0"><Icon name="ph:robot" class="size-5" /></span>
+            <span>Inteligencia artificial</span>
+          </div>
+          <!-- Col 2 -->
+          <div class="relative z-10 px-6 sm:px-8 py-2.5 flex items-center justify-start text-left font-display text-[13px] sm:text-[14px] font-medium border-t border-white/10 text-white col-start-2 row-start-7 gap-3">
+            <Icon name="ph:check-circle-fill" class="size-5 text-teal-400 shrink-0" />
+            <span>Tutoría IA 24/7</span>
+          </div>
+          <!-- Col 3 -->
+          <div class="py-2.5 px-6 sm:px-8 text-left font-display text-[13px] sm:text-[14px] text-ink-400/80 flex items-center justify-start gap-3">
+            <Icon name="ph:x-circle" class="size-5 text-teal-600/40 shrink-0" />
+            <span>No disponible</span>
+          </div>
+
+          <!-- Row 8: Bottom Guarantee Card / Spacers -->
+          <!-- Col 1 -->
+          <div></div>
+          <!-- Col 2 -->
+          <div class="relative z-10 pb-6 pt-4 px-6 sm:px-8 border-t border-white/10 col-start-2 row-start-8">
+            <div class="bg-white/5 border border-white/10 rounded-2xl p-4 text-left">
+              <div class="flex items-start gap-3">
+                <Icon name="ph:seal-check-fill" class="size-5.5 text-teal-400 shrink-0 mt-0.5" />
+                <div>
+                  <h4 class="font-display text-[13px] sm:text-[14px] font-bold text-pearl leading-none">Garantía de puntaje</h4>
+                  <p class="text-[11px] sm:text-[12px] text-pearl/70 mt-1.5 leading-snug">Si no alcanzas tu objetivo, te reembolsamos al 100%.</p>
+                  <p class="text-[11px] sm:text-[12px] text-teal-400 font-semibold mt-1.5">+1,500 Estudiantes</p>
+                </div>
               </div>
-              <div class="flex items-center justify-center gap-2 border-t border-ink-950/[0.06] px-4 py-4 text-center text-ink-400">
-                <Icon name="ph:x" class="size-4 shrink-0 text-ink-300" aria-hidden="true" />
-                {row.trad}
-              </div>
-            </>
-          ))}
+            </div>
+          </div>
+          <!-- Col 3 -->
+          <div></div>
+
         </div>
       </div>
     </div>
