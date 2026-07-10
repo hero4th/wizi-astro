@@ -24,7 +24,8 @@ const wordpressBlogLoader: Loader = {
         logger.warn("Reusing previously cached posts from the data store.");
         return;
       }
-      throw error;
+      logger.warn("No previously cached posts found. Continuing with empty blog collection.");
+      posts = [];
     }
 
     store.clear();
