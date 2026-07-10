@@ -16,66 +16,110 @@
     <!-- Section Heading -->
     <div class="text-center mb-16 sm:mb-20">
       <h2 class="font-display text-[clamp(2rem,4vw,3.25rem)] font-semibold leading-[1.1] tracking-tight text-pearl">
-        ¿Por qué elegirnos? <span class="text-teal-400">Escúchalos a ellos</span>
+        ¿Por qué elegirnos? <span class="text-teal-400 italic">Escúchalos a ellos</span>
       </h2>
     </div>
 
     <!-- Main Content Container -->
-    <div class="relative w-full max-w-[48rem] mx-auto">
+    <div class="relative w-full max-w-[40rem] mx-auto">
       <!-- Central Video Player Card -->
       <div
         id="video-card"
-        class="group relative z-10 w-full aspect-video rounded-3xl bg-ink-950 shadow-panel overflow-hidden border border-white/5 cursor-pointer"
+        class="group relative z-10 w-full aspect-[4/3] rounded-3xl bg-ink-950 shadow-panel overflow-hidden border border-white/5 cursor-pointer"
       >
-        <!-- HTML5 Video element (Autoplay, muted, loop, playsinline, no controls) -->
+        <!-- HTML5 Video element (Autoplay disabled, loop, playsinline, no native controls) -->
         <video
           id="why-choose-us-video"
           class="absolute inset-0 w-full h-full object-cover z-10"
           src="/videos/why-choose-us.mp4"
-          autoplay
-          muted
           loop
           playsinline
           preload="auto"
         >
         </video>
 
-        <!-- Custom Hover Blur & Sound Toggle Overlay -->
+        <!-- Custom Player Overlay (Always visible when paused; visible on hover when playing) -->
         <div
           id="video-overlay"
-          class="absolute inset-0 z-20 bg-black/30 backdrop-blur-[8px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300"
+          class="absolute inset-0 z-20 flex flex-col justify-end p-4 sm:p-6 transition-all duration-300 bg-black/45 backdrop-blur-[4px]"
         >
-          <!-- Volume Muted Icon (Default) -->
-          <svg
-            id="icon-muted"
-            class="size-16 sm:size-24 text-white drop-shadow-[0_4px_12px_rgba(0,0,0,0.5)] transition-transform duration-200 active:scale-90"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
-            <line x1="22" y1="9" x2="16" y2="15" />
-            <line x1="16" y1="9" x2="22" y2="15" />
-          </svg>
+          <!-- Center Play/Pause Button Indicator -->
+          <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <!-- Center Play Button -->
+            <div
+              id="btn-play"
+              class="size-16 sm:size-20 flex items-center justify-center rounded-full bg-white/10 border border-white/20 text-white backdrop-blur-md shadow-[0_8px_32px_rgba(0,0,0,0.3)] transition-transform duration-200 pointer-events-auto hover:scale-110 active:scale-95"
+            >
+              <svg class="size-6 sm:size-8 translate-x-0.5" viewBox="0 0 24 24" fill="currentColor">
+                <polygon points="5 3 19 12 5 21 5 3" />
+              </svg>
+            </div>
 
-          <!-- Volume Active Icon (Hidden by default, shown when unmuted) -->
-          <svg
-            id="icon-unmuted"
-            class="hidden size-16 sm:size-24 text-white drop-shadow-[0_4px_12px_rgba(0,0,0,0.5)] transition-transform duration-200 active:scale-90"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
-            <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
-            <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
-          </svg>
+            <!-- Center Pause Button -->
+            <div
+              id="btn-pause"
+              class="hidden size-16 sm:size-20 flex items-center justify-center rounded-full bg-white/10 border border-white/20 text-white backdrop-blur-md shadow-[0_8px_32px_rgba(0,0,0,0.3)] transition-transform duration-200 pointer-events-auto hover:scale-110 active:scale-95"
+            >
+              <svg class="size-6 sm:size-8" viewBox="0 0 24 24" fill="currentColor">
+                <rect x="6" y="4" width="4" height="16" rx="1" />
+                <rect x="14" y="4" width="4" height="16" rx="1" />
+              </svg>
+            </div>
+          </div>
+
+          <!-- Bottom Control Bar (Fades in with overlay) -->
+          <div id="control-bar" class="w-full space-y-3 z-30 transition-all duration-300 pointer-events-auto">
+            <!-- Progress Bar (Scrubber) -->
+            <div id="progress-container" class="group/progress relative w-full h-1.5 bg-white/20 rounded-full cursor-pointer">
+              <div id="progress-bar" class="absolute left-0 top-0 h-full w-0 bg-teal-400 rounded-full transition-all duration-75 relative">
+                <!-- Scrub handle -->
+                <div class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 size-3 bg-white border border-teal-400 rounded-full opacity-0 group-hover/progress:opacity-100 transition-opacity shadow-md"></div>
+              </div>
+            </div>
+
+            <!-- Buttons and Time Display -->
+            <div class="flex items-center justify-between text-white text-[13px] font-medium font-display">
+              <!-- Left side: Play/Pause button and Time counter -->
+              <div class="flex items-center space-x-4">
+                <button id="toolbar-play-pause" class="hover:text-teal-400 transition-colors p-1" aria-label="Play/Pause">
+                  <!-- Play mini icon -->
+                  <svg id="mini-play" class="size-5" viewBox="0 0 24 24" fill="currentColor">
+                    <polygon points="5 3 19 12 5 21 5 3" />
+                  </svg>
+                  <!-- Pause mini icon -->
+                  <svg id="mini-pause" class="hidden size-5" viewBox="0 0 24 24" fill="currentColor">
+                    <rect x="6" y="4" width="4" height="16" rx="0.5" />
+                    <rect x="14" y="4" width="4" height="16" rx="0.5" />
+                  </svg>
+                </button>
+                <div class="select-none tracking-wide text-white/90">
+                  <span id="current-time">0:00</span>
+                  <span class="text-white/30 mx-1">/</span>
+                  <span id="total-duration">0:00</span>
+                </div>
+              </div>
+
+              <!-- Right side: Mute/Unmute button -->
+              <button
+                id="btn-sound-toggle"
+                class="p-1 hover:text-teal-400 transition-colors"
+                aria-label="Toggle sound"
+              >
+                <!-- Mute Icon -->
+                <svg id="btn-mute" class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                  <line x1="22" y1="9" x2="16" y2="15" />
+                  <line x1="16" y1="9" x2="22" y2="15" />
+                </svg>
+                <!-- Unmute Icon -->
+                <svg id="btn-unmute" class="hidden size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                  <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+                  <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+                </svg>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -85,7 +129,7 @@
         
         <!-- Top Left: Personalizado -->
         <div
-          class="relative lg:absolute lg:w-[145px] lg:h-[88px] lg:top-[12%] lg:left-0 lg:-translate-x-[42%] lg:rotate-[-2deg] lg:z-20"
+          class="relative lg:absolute lg:w-[145px] lg:h-[88px] lg:top-[12%] lg:left-0 lg:-translate-x-[115%] lg:rotate-[-2deg] lg:z-20"
         >
           <div class="animate-float-1 size-full flex flex-col items-center justify-center p-4 rounded-2xl bg-[#0D2B27]/60 border border-teal-500/30 backdrop-blur-md text-center transition-all duration-300 hover:border-teal-400/60 hover:bg-[#113833]/70 hover:shadow-[0_0_20px_rgba(20,184,166,0.25)] group/card">
             <span class="text-teal-400 mb-2 transition-transform duration-300 group-hover/card:scale-110">
@@ -100,7 +144,7 @@
 
         <!-- Middle Left: Retroalimentación -->
         <div
-          class="relative lg:absolute lg:w-[145px] lg:h-[88px] lg:top-[50%] lg:left-0 lg:-translate-y-1/2 lg:-translate-x-[85%] lg:rotate-[1deg] lg:z-20"
+          class="relative lg:absolute lg:w-[145px] lg:h-[88px] lg:top-[50%] lg:left-0 lg:-translate-y-1/2 lg:-translate-x-[135%] lg:rotate-[1deg] lg:z-20"
         >
           <div class="animate-float-2 size-full flex flex-col items-center justify-center p-4 rounded-2xl bg-[#0D2B27]/60 border border-teal-500/30 backdrop-blur-md text-center transition-all duration-300 hover:border-teal-400/60 hover:bg-[#113833]/70 hover:shadow-[0_0_20px_rgba(20,184,166,0.25)] group/card">
             <span class="text-teal-400 mb-2 transition-transform duration-300 group-hover/card:scale-110">
@@ -115,7 +159,7 @@
 
         <!-- Bottom Left: Accesible -->
         <div
-          class="relative lg:absolute lg:w-[145px] lg:h-[88px] lg:bottom-[12%] lg:left-0 lg:-translate-x-[42%] lg:rotate-[-1deg] lg:z-20"
+          class="relative lg:absolute lg:w-[145px] lg:h-[88px] lg:bottom-[12%] lg:left-0 lg:-translate-x-[115%] lg:rotate-[-1deg] lg:z-20"
         >
           <div class="animate-float-3 size-full flex flex-col items-center justify-center p-4 rounded-2xl bg-[#0D2B27]/60 border border-teal-500/30 backdrop-blur-md text-center transition-all duration-300 hover:border-teal-400/60 hover:bg-[#113833]/70 hover:shadow-[0_0_20px_rgba(20,184,166,0.25)] group/card">
             <span class="text-teal-400 mb-2 transition-transform duration-300 group-hover/card:scale-110">
@@ -132,7 +176,7 @@
         
         <!-- Top Right: Clases 1:1 -->
         <div
-          class="relative lg:absolute lg:w-[145px] lg:h-[88px] lg:top-[12%] lg:right-0 lg:translate-x-[42%] lg:rotate-[2deg] lg:z-20"
+          class="relative lg:absolute lg:w-[145px] lg:h-[88px] lg:top-[12%] lg:right-0 lg:translate-x-[115%] lg:rotate-[2deg] lg:z-20"
         >
           <div class="animate-float-4 size-full flex flex-col items-center justify-center p-4 rounded-2xl bg-[#0D2B27]/60 border border-teal-500/30 backdrop-blur-md text-center transition-all duration-300 hover:border-teal-400/60 hover:bg-[#113833]/70 hover:shadow-[0_0_20px_rgba(20,184,166,0.25)] group/card">
             <span class="text-teal-400 mb-2 transition-transform duration-300 group-hover/card:scale-110">
@@ -147,7 +191,7 @@
 
         <!-- Middle Right: Garantía -->
         <div
-          class="relative lg:absolute lg:w-[145px] lg:h-[88px] lg:top-[50%] lg:right-0 lg:-translate-y-1/2 lg:translate-x-[85%] lg:rotate-[-1deg] lg:z-20"
+          class="relative lg:absolute lg:w-[145px] lg:h-[88px] lg:top-[50%] lg:right-0 lg:-translate-y-1/2 lg:translate-x-[135%] lg:rotate-[-1deg] lg:z-20"
         >
           <div class="animate-float-5 size-full flex flex-col items-center justify-center p-4 rounded-2xl bg-[#0D2B27]/60 border border-teal-500/30 backdrop-blur-md text-center transition-all duration-300 hover:border-teal-400/60 hover:bg-[#113833]/70 hover:shadow-[0_0_20px_rgba(20,184,166,0.25)] group/card">
             <span class="text-teal-400 mb-2 transition-transform duration-300 group-hover/card:scale-110">
@@ -162,7 +206,7 @@
 
         <!-- Bottom Right: Simuladores -->
         <div
-          class="relative lg:absolute lg:w-[145px] lg:h-[88px] lg:bottom-[12%] lg:right-0 lg:translate-x-[42%] lg:rotate-[1deg] lg:z-20"
+          class="relative lg:absolute lg:w-[145px] lg:h-[88px] lg:bottom-[12%] lg:right-0 lg:translate-x-[115%] lg:rotate-[1deg] lg:z-20"
         >
           <div class="animate-float-6 size-full flex flex-col items-center justify-center p-4 rounded-2xl bg-[#0D2B27]/60 border border-teal-500/30 backdrop-blur-md text-center transition-all duration-300 hover:border-teal-400/60 hover:bg-[#113833]/70 hover:shadow-[0_0_20px_rgba(20,184,166,0.25)] group/card">
             <span class="text-teal-400 mb-2 transition-transform duration-300 group-hover/card:scale-110">
@@ -183,30 +227,138 @@
 </section>
 
 <script>
-  function initVideoAudioToggle() {
+  function initVideoCustomPlayer() {
     const card = document.getElementById("video-card");
     const video = document.getElementById("why-choose-us-video") as HTMLVideoElement | null;
-    const iconMuted = document.getElementById("icon-muted");
-    const iconUnmuted = document.getElementById("icon-unmuted");
+    const overlay = document.getElementById("video-overlay");
+    
+    const playBtn = document.getElementById("btn-play");
+    const pauseBtn = document.getElementById("btn-pause");
+    const miniPlay = document.getElementById("mini-play");
+    const miniPause = document.getElementById("mini-pause");
+    
+    const muteBtn = document.getElementById("btn-mute");
+    const unmuteBtn = document.getElementById("btn-unmute");
 
-    if (!card || !video || !iconMuted || !iconUnmuted) return;
+    const progressContainer = document.getElementById("progress-container");
+    const progressBar = document.getElementById("progress-bar");
+    const currentTimeEl = document.getElementById("current-time");
+    const totalDurationEl = document.getElementById("total-duration");
 
-    card.addEventListener("click", () => {
-      if (video.muted) {
-        video.muted = false;
-        iconMuted.classList.add("hidden");
-        iconUnmuted.classList.remove("hidden");
+    if (
+      !card || !video || !overlay || !playBtn || !pauseBtn || 
+      !miniPlay || !miniPause || !muteBtn || !unmuteBtn || 
+      !progressContainer || !progressBar || !currentTimeEl || !totalDurationEl
+    ) return;
+
+    // Ensure autoplay is disabled
+    video.autoplay = false;
+
+    function formatTime(seconds: number) {
+      if (isNaN(seconds)) return "0:00";
+      const mins = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+    }
+
+    function updateUI() {
+      if (video.paused) {
+        // Paused state: overlay is visible, backdrop-blur is active, play button shows
+        overlay.className = "absolute inset-0 z-20 flex flex-col justify-end p-4 sm:p-6 transition-all duration-300 bg-black/45 backdrop-blur-[4px] opacity-100 pointer-events-auto";
+        playBtn.classList.remove("hidden");
+        pauseBtn.classList.add("hidden");
+        miniPlay.classList.remove("hidden");
+        miniPause.classList.add("hidden");
       } else {
-        video.muted = true;
-        iconMuted.classList.remove("hidden");
-        iconUnmuted.classList.add("hidden");
+        // Playing state: overlay is hidden, shows only on hover
+        overlay.className = "absolute inset-0 z-20 flex flex-col justify-end p-4 sm:p-6 transition-all duration-300 bg-black/35 backdrop-blur-[6px] opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto";
+        playBtn.classList.add("hidden");
+        pauseBtn.classList.remove("hidden");
+        miniPlay.classList.add("hidden");
+        miniPause.classList.remove("hidden");
+      }
+
+      if (video.muted) {
+        muteBtn.classList.remove("hidden");
+        unmuteBtn.classList.add("hidden");
+      } else {
+        muteBtn.classList.add("hidden");
+        unmuteBtn.classList.remove("hidden");
+      }
+    }
+
+    // Toggle Play/Pause on card click
+    card.addEventListener("click", (e) => {
+      const target = e.target as HTMLElement;
+
+      // If clicking progress bar or sound toggle button, do not toggle play/pause here
+      if (target.closest("#progress-container") || target.closest("#btn-sound-toggle")) {
+        return;
+      }
+
+      if (video.paused) {
+        video.play();
+      } else {
+        video.pause();
+      }
+      updateUI();
+    });
+
+    // Sound Toggle Click handler
+    const soundToggle = document.getElementById("btn-sound-toggle");
+    soundToggle?.addEventListener("click", (e) => {
+      e.stopPropagation();
+      video.muted = !video.muted;
+      updateUI();
+    });
+
+    // Toolbar Play/Pause Click handler
+    const toolbarPlayPause = document.getElementById("toolbar-play-pause");
+    toolbarPlayPause?.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (video.paused) {
+        video.play();
+      } else {
+        video.pause();
+      }
+      updateUI();
+    });
+
+    // Time Update event
+    video.addEventListener("timeupdate", () => {
+      const percentage = (video.currentTime / video.duration) * 100;
+      progressBar.style.width = `${percentage}%`;
+      currentTimeEl.textContent = formatTime(video.currentTime);
+    });
+
+    // Duration metadata loaded event
+    video.addEventListener("loadedmetadata", () => {
+      totalDurationEl.textContent = formatTime(video.duration);
+    });
+
+    if (video.readyState >= 1) {
+      totalDurationEl.textContent = formatTime(video.duration);
+    }
+
+    // Click on progress bar to seek
+    progressContainer.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const rect = progressContainer.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const width = rect.width;
+      if (width > 0 && video.duration > 0) {
+        const newTime = (clickX / width) * video.duration;
+        video.currentTime = newTime;
       }
     });
+
+    // Initial setup
+    updateUI();
   }
 
   // Run on first load & after transitions
-  initVideoAudioToggle();
-  document.addEventListener("astro:page-load", initVideoAudioToggle);
+  initVideoCustomPlayer();
+  document.addEventListener("astro:page-load", initVideoCustomPlayer);
 </script>
 
 <style>
