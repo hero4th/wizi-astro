@@ -67,13 +67,17 @@ import { breadcrumbSchema } from "@/lib/schema";
     <div class="container-edge">
       <div class="grid items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {TESTIMONIALS.map((t, i) => (
-          <div data-reveal data-reveal-delay={String((i % 3) * 0.08)}>
+          <div
+            data-reveal
+            data-reveal-delay={String((i % 3) * 0.08)}
+            class:list={["testimonial-wrapper", { "hidden": i >= 9 }]}
+          >
             <button
               type="button"
-              class="testimonial-card group flex cursor-pointer flex-col h-full rounded-3xl border border-ink-950/[0.06] bg-ink-50 p-7 text-left transition-all duration-300 hover:-translate-y-1 hover:border-teal-500/30 hover:bg-white hover:shadow-card-lg"
+              class="testimonial-card group flex cursor-pointer flex-col h-full w-full rounded-3xl border border-ink-950/[0.06] bg-ink-50 p-7 text-left transition-all duration-300 hover:-translate-y-1 hover:border-teal-500/30 hover:bg-white hover:shadow-card-lg"
               data-testimonial
               data-name={t.name}
-              data-course={`Curso ${t.program}`}
+              data-course={t.program === "General" ? "Caso de Éxito" : `Preparación ${t.program}`}
               data-score={t.score}
               data-image={t.image}
               data-quote={t.fullQuote ?? t.quote}
@@ -94,15 +98,17 @@ import { breadcrumbSchema } from "@/lib/schema";
                   <div>
                     <p class="font-display text-lg font-semibold tracking-tight text-ink-950">{t.name}</p>
                     <p class="mt-0.5 font-mono text-[10px] tracking-[0.16em] text-teal-600 uppercase">
-                      Curso {t.program}
+                      {t.program === "General" ? "Caso de Éxito" : `Curso ${t.program}`}
                     </p>
                   </div>
                 </div>
-                <span class="grid size-9 shrink-0 place-items-center rounded-full bg-teal-500/12 text-teal-600 transition-colors group-hover:bg-teal-500 group-hover:text-ink-950" aria-hidden="true">
-                  <svg class="size-4 transition-transform duration-300 group-hover:rotate-[-45deg]" viewBox="0 0 16 16" fill="none">
-                    <path d="M1 8h14m0 0L9 2m6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                  </svg>
-                </span>
+                {(t.fullQuote || t.hasDetail) && (
+                  <span class="grid size-9 shrink-0 place-items-center rounded-full bg-teal-500/12 text-teal-600 transition-colors group-hover:bg-teal-500 group-hover:text-ink-950" aria-hidden="true">
+                    <svg class="size-4 transition-transform duration-300 group-hover:rotate-[-45deg]" viewBox="0 0 16 16" fill="none">
+                      <path d="M1 8h14m0 0L9 2m6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                  </span>
+                )}
               </div>
               <blockquote class="mt-6 flex-1 text-[15px] leading-relaxed text-ink-600">
                 “{t.quote}”
@@ -111,6 +117,18 @@ import { breadcrumbSchema } from "@/lib/schema";
           </div>
         ))}
       </div>
+
+      {TESTIMONIALS.length > 9 && (
+        <div class="mt-16 text-center" id="ver-mas-container">
+          <button
+            type="button"
+            id="btn-ver-mas"
+            class="inline-flex items-center justify-center rounded-full border border-ink-950/20 bg-transparent px-8 py-3.5 text-sm font-semibold tracking-wider text-ink-950 uppercase transition-all duration-300 hover:border-teal-500 hover:text-teal-600 cursor-pointer"
+          >
+            Ver más testimonios
+          </button>
+        </div>
+      )}
     </div>
   </section>
 
@@ -144,7 +162,7 @@ import { breadcrumbSchema } from "@/lib/schema";
           <p id="tm-name" class="font-display text-xl font-semibold tracking-tight text-ink-950"></p>
           <p id="tm-course" class="font-mono text-[10px] tracking-[0.16em] text-teal-600 uppercase"></p>
         </div>
-        <span class="inline-flex items-center gap-2 rounded-full bg-teal-500/12 px-3.5 py-1.5 font-mono text-[11px] tracking-wide text-teal-800 uppercase">
+        <span id="tm-score-badge" class="inline-flex items-center gap-2 rounded-full bg-teal-500/12 px-3.5 py-1.5 font-mono text-[11px] tracking-wide text-teal-800 uppercase">
           <svg class="size-3.5 text-teal-600" viewBox="0 0 16 16" fill="none" aria-hidden="true">
             <path d="m3.5 8.5 3 3 6-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
           </svg>
@@ -160,6 +178,8 @@ import { breadcrumbSchema } from "@/lib/schema";
 </Base>
 
 <script>
+  import gsap from "gsap";
+
   function initTmModal() {
     const modal = document.getElementById("tm-modal");
     if (!modal || modal.dataset.bound) return;
@@ -168,6 +188,7 @@ import { breadcrumbSchema } from "@/lib/schema";
     const img = document.getElementById("tm-img") as HTMLImageElement;
     const nameEl = document.getElementById("tm-name")!;
     const courseEl = document.getElementById("tm-course")!;
+    const scoreBadge = document.getElementById("tm-score-badge")!;
     const scoreEl = document.getElementById("tm-score")!;
     const body = document.getElementById("tm-body")!;
     let lastFocus: HTMLElement | null = null;
@@ -178,17 +199,30 @@ import { breadcrumbSchema } from "@/lib/schema";
       img.alt = card.dataset.name || "";
       nameEl.textContent = card.dataset.name || "";
       courseEl.textContent = card.dataset.course || "";
-      scoreEl.textContent = card.dataset.score || "";
+      
+      const score = card.dataset.score || "";
+      if (!score || score.trim() === "") {
+        scoreBadge.style.display = "none";
+      } else {
+        scoreBadge.style.display = "inline-flex";
+        scoreEl.textContent = score;
+      }
+      
       body.innerHTML = "";
-      const paras = (card.dataset.quote || "").split(/\n{2,}/).map((s) => s.trim()).filter(Boolean);
-      paras.forEach((para, idx) => {
-        const p = document.createElement("p");
-        let text = para;
-        if (idx === 0) text = "“" + text;
-        if (idx === paras.length - 1) text = text + "”";
-        p.textContent = text;
-        body.appendChild(p);
-      });
+      const quoteVal = card.dataset.quote || "";
+      if (quoteVal.trim().startsWith("<")) {
+        body.innerHTML = quoteVal;
+      } else {
+        const paras = quoteVal.split(/\n{2,}/).map((s) => s.trim()).filter(Boolean);
+        paras.forEach((para, idx) => {
+          const p = document.createElement("p");
+          let text = para;
+          if (idx === 0) text = "“" + text;
+          if (idx === paras.length - 1) text = text + "”";
+          p.textContent = text;
+          body.appendChild(p);
+        });
+      }
       modal.classList.remove("invisible", "opacity-0");
       modal.setAttribute("aria-hidden", "false");
       panel?.classList.remove("scale-95");
@@ -213,8 +247,40 @@ import { breadcrumbSchema } from "@/lib/schema";
     });
   }
 
+  function initVerMas() {
+    const btn = document.getElementById("btn-ver-mas");
+    if (!btn || btn.dataset.bound) return;
+    btn.dataset.bound = "true";
+
+    const itemsPerPage = 9;
+    
+    btn.addEventListener("click", () => {
+      const hiddenWrappers = Array.from(document.querySelectorAll(".testimonial-wrapper.hidden"));
+      const toShow = hiddenWrappers.slice(0, itemsPerPage);
+      
+      if (toShow.length > 0) {
+        toShow.forEach(el => el.classList.remove("hidden"));
+        
+        gsap.fromTo(toShow,
+          { opacity: 0, y: 30 },
+          { opacity: 1, y: 0, duration: 0.8, stagger: 0.08, ease: "power2.out" }
+        );
+      }
+      
+      const remaining = document.querySelectorAll(".testimonial-wrapper.hidden");
+      if (remaining.length === 0) {
+        const container = document.getElementById("ver-mas-container");
+        if (container) container.style.display = "none";
+      }
+    });
+  }
+
   initTmModal();
-  document.addEventListener("astro:page-load", initTmModal);
+  initVerMas();
+  document.addEventListener("astro:page-load", () => {
+    initTmModal();
+    initVerMas();
+  });
 </script>
 
 <style is:global>
