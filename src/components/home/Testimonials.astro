@@ -111,7 +111,7 @@ import { TESTIMONIALS } from "@/data/testimonials";
         <p id="tm-name" class="font-display text-xl font-semibold tracking-tight text-ink-950"></p>
         <p id="tm-course" class="font-mono text-[10px] tracking-[0.16em] text-teal-600 uppercase"></p>
       </div>
-      <span class="inline-flex items-center gap-2 rounded-full bg-teal-500/12 px-3.5 py-1.5 font-mono text-[11px] tracking-wide text-teal-800 uppercase">
+      <span id="tm-score-badge" class="inline-flex items-center gap-2 rounded-full bg-teal-500/12 px-3.5 py-1.5 font-mono text-[11px] tracking-wide text-teal-800 uppercase">
         <svg class="size-3.5 text-teal-600" viewBox="0 0 16 16" fill="none" aria-hidden="true">
           <path d="m3.5 8.5 3 3 6-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
@@ -156,6 +156,7 @@ import { TESTIMONIALS } from "@/data/testimonials";
     const img = document.getElementById("tm-img") as HTMLImageElement;
     const nameEl = document.getElementById("tm-name")!;
     const courseEl = document.getElementById("tm-course")!;
+    const scoreBadge = document.getElementById("tm-score-badge")!;
     const scoreEl = document.getElementById("tm-score")!;
     const body = document.getElementById("tm-body")!;
     let lastFocus: HTMLElement | null = null;
@@ -166,17 +167,30 @@ import { TESTIMONIALS } from "@/data/testimonials";
       img.alt = card.dataset.name || "";
       nameEl.textContent = card.dataset.name || "";
       courseEl.textContent = card.dataset.course || "";
-      scoreEl.textContent = card.dataset.score || "";
+      
+      const score = card.dataset.score || "";
+      if (!score || score.trim() === "") {
+        scoreBadge.style.display = "none";
+      } else {
+        scoreBadge.style.display = "inline-flex";
+        scoreEl.textContent = score;
+      }
+
       body.innerHTML = "";
-      const paras = (card.dataset.quote || "").split(/\n{2,}/).map((s) => s.trim()).filter(Boolean);
-      paras.forEach((para, idx) => {
-        const p = document.createElement("p");
-        let text = para;
-        if (idx === 0) text = "“" + text;
-        if (idx === paras.length - 1) text = text + "”";
-        p.textContent = text;
-        body.appendChild(p);
-      });
+      const quoteVal = card.dataset.quote || "";
+      if (quoteVal.trim().startsWith("<")) {
+        body.innerHTML = quoteVal;
+      } else {
+        const paras = quoteVal.split(/\n{2,}/).map((s) => s.trim()).filter(Boolean);
+        paras.forEach((para, idx) => {
+          const p = document.createElement("p");
+          let text = para;
+          if (idx === 0) text = "“" + text;
+          if (idx === paras.length - 1) text = text + "”";
+          p.textContent = text;
+          body.appendChild(p);
+        });
+      }
       modal.classList.remove("invisible", "opacity-0");
       modal.setAttribute("aria-hidden", "false");
       panel?.classList.remove("scale-95");
@@ -218,5 +232,42 @@ import { TESTIMONIALS } from "@/data/testimonials";
   #tm-modal[aria-hidden="false"] {
     opacity: 1;
     visibility: visible;
+  }
+  #tm-body h4,
+  #tm-body h3 {
+    font-weight: 700;
+    color: #0d9488;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  #tm-body h4::before,
+  #tm-body h3::before {
+    content: "";
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 9999px;
+    background-color: #14b8a6;
+  }
+  #tm-body h4:first-child,
+  #tm-body h3:first-child {
+    margin-top: 0;
+  }
+  #tm-body strong {
+    font-weight: 600;
+    color: #0f766e;
+  }
+  #tm-body p {
+    margin-bottom: 1rem;
+    line-height: 1.75;
+  }
+  #tm-body p:last-child {
+    margin-bottom: 0;
   }
 </style>

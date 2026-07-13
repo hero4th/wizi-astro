@@ -106,7 +106,7 @@ export const PROGRAMS: Program[] = [
         description:
           "Evalúa tu capacidad para entender, procesar y analizar textos académicos. La dificultad del segundo bloque cambia según tu desempeño en el primero.",
         time: "~30 min",
-        scoreRange: "1.0 - 6.0",
+        scoreRange: "1.0 – 6.0",
         activities: [
           { title: "Complete the Words", detail: "Rellenar las letras que faltan en palabras de un párrafo." },
           { title: "Read in Daily Life", detail: "Responder preguntas sobre anuncios, artículos cortos o notas cotidianas del campus." },
@@ -117,39 +117,38 @@ export const PROGRAMS: Program[] = [
         name: "Listening",
         label: "Comprensión Auditiva",
         description:
-          "Mide tu capacidad para entender conversaciones, indicaciones y clases en inglés académico, tomando notas mientras escuchas una sola vez.",
-        time: "~35 min",
-        scoreRange: "1.0 - 6.0",
+          "Evalúa tu capacidad para entender textos tanto académicos como cotidianos. La dificultad del segundo bloque cambia según tu desempeño en el primero.",
+        time: "~29 min",
+        scoreRange: "1.0 – 6.0",
         activities: [
-          { title: "Listen for the Main Idea", detail: "Identificar el tema central de conversaciones y anuncios del campus." },
-          { title: "Listen in Daily Life", detail: "Responder preguntas sobre instrucciones, mensajes y diálogos cotidianos." },
-          { title: "Academic Lecture", detail: "Comprender y sintetizar una conferencia universitaria con toma de notas." },
+          { title: "Listen and Choose a Response", detail: "Escuchar una frase o pregunta corta de la vida diaria y elegir la respuesta lógica." },
+          { title: "Listen to an Announcement or Conversation", detail: "Escuchar avisos públicos o diálogos informales entre estudiantes." },
+          { title: "Listen to an Academic Talk", detail: "Escuchar debates académicos para identificar ideas principales y actitudes." },
         ],
       },
       {
         name: "Writing",
         label: "Expresión Escrita",
         description:
-          "Desarrolla respuestas claras y bien estructuradas. Revisamos cada texto 1 a 1 con las rúbricas oficiales para que escribas como un nativo académico.",
-        time: "~30 min",
-        scoreRange: "1.0 - 6.0",
+          "Evalúa tu habilidad para comunicar ideas por escrito de forma clara, precisa y estructurada en situaciones universitarias reales.",
+        time: "~23 min",
+        scoreRange: "1.0 – 6.0",
         activities: [
-          { title: "Build a Sentence", detail: "Ordenar y completar oraciones aplicando gramática y vocabulario correctos." },
-          { title: "Email Writing", detail: "Redactar un correo formal respondiendo a una situación del campus." },
-          { title: "Opinion Essay", detail: "Argumentar una postura con introducción, desarrollo y conclusión." },
+          { title: "Build a Sentence", detail: "Ordenar fragmentos mezclados para formar una oración gramaticalmente correcta." },
+          { title: "Write an Email", detail: "Redactar un correo electrónico respondiendo a una situación específica." },
+          { title: "Write for an Academic Discussion", detail: "Expresar tu opinión en un foro, simulando una clase universitaria." },
         ],
       },
       {
         name: "Speaking",
         label: "Expresión Oral",
         description:
-          "Practica respuestas independientes e integradas con grabación y análisis. Ganas fluidez, pronunciación y seguridad para hablar bajo presión.",
-        time: "~16 min",
-        scoreRange: "1.0 - 6.0",
+          "Mide tu fluidez, pronunciación, entonación y la capacidad de reaccionar oralmente de forma inmediata. Los tiempos son estrictos y no se pueden pausar.",
+        time: "~8 min",
+        scoreRange: "1.0 – 6.0",
         activities: [
-          { title: "Read Aloud", detail: "Leer un texto en voz alta cuidando ritmo y pronunciación." },
-          { title: "Personal Response", detail: "Dar tu opinión sobre un tema cotidiano en tiempo cronometrado." },
-          { title: "Integrated Task", detail: "Resumir y responder combinando información de lectura y audio." },
+          { title: "Listen and Repeat", detail: "Escuchar frases cortas y repetirlas imitando el ritmo y la pronunciación." },
+          { title: "Take an Interview", detail: "Responder las preguntas de un entrevistador virtual (15 s preparación / 45 s respuesta)." },
         ],
       },
     ],
@@ -200,6 +199,66 @@ export const PROGRAMS: Program[] = [
       { q: "¿Tienen garantía de puntaje?", a: "Garantizamos un aumento mínimo de 100 puntos sobre tu diagnóstico inicial o te devolvemos el 100% de tu inversión." },
     ],
     heroImage: "/sat-hero.png",
+    guideImage: "/images/ibt-guia.webp",
+    guaranteeImage: "/images/ibt-garantias.webp",
+    skillsImage: "/images/domina-toefl.webp",
+    faqImage: "/images/ibt-laptop.webp",
+    academicIntro:
+      "El Digital SAT es el examen clave para acceder a universidades top en EE. UU. y el Tec de Monterrey. Nuestro plan te capacita en el formato adaptativo digital con precisión y rapidez.",
+    examSections: [
+      {
+        name: "Reading",
+        label: "Comprensión Lectora",
+        description:
+          "Evalúa tu capacidad para analizar textos literarios, científicos e históricos del formato digital del College Board, identificando evidencia y estructura.",
+        time: "~32 min",
+        scoreRange: "200 – 800",
+        activities: [
+          { title: "Words in Context", detail: "Elegir el vocabulario académico preciso según el contexto del párrafo." },
+          { title: "Textual Evidence", detail: "Identificar la evidencia que mejor respalda la hipótesis o argumento del autor." },
+          { title: "Inferences", detail: "Completar lógicamente la conclusión de un argumento o experimento." },
+        ],
+      },
+      {
+        name: "Writing",
+        label: "Gramática y Retórica",
+        description:
+          "Mide tu dominio de las convenciones del inglés estándar, puntuación, concordancia, conectores lógicos y síntesis retórica en párrafos cortos.",
+        time: "~32 min",
+        scoreRange: "200 – 800",
+        activities: [
+          { title: "Standard English Conventions", detail: "Corregir puntuación, concordancia y estructura de oraciones complejas." },
+          { title: "Rhetorical Synthesis", detail: "Integrar notas informativas para cumplir un objetivo retórico específico." },
+          { title: "Transitions", detail: "Elegir el conector lógico adecuado entre ideas y párrafos académicos." },
+        ],
+      },
+      {
+        name: "Algebra",
+        label: "Álgebra Fundamental",
+        description:
+          "Enfocado en ecuaciones lineales, sistemas de ecuaciones, funciones y análisis numérico utilizando la calculadora Desmos integrada.",
+        time: "~35 min",
+        scoreRange: "200 – 800",
+        activities: [
+          { title: "Linear Equations", detail: "Modelar y resolver ecuaciones algebraicas y sistemas lineales con agilidad." },
+          { title: "Problem Solving & Data", detail: "Interpretar tasas, porcentajes, tablas y dispersión de datos estadísticos." },
+          { title: "Desmos Mastery", detail: "Técnicas rápidas de graficación para encontrar soluciones en segundos." },
+        ],
+      },
+      {
+        name: "Advanced Math",
+        label: "Matemáticas Avanzadas",
+        description:
+          "Módulo adaptativo con problemas de alta complejidad de funciones no lineales, geometría, trigonometría y números complejos.",
+        time: "~35 min",
+        scoreRange: "200 – 800",
+        activities: [
+          { title: "Nonlinear Functions", detail: "Analizar parábolas, exponenciales y funciones racionales complejas." },
+          { title: "Geometry & Trigonometry", detail: "Cálculo de áreas, volúmenes, semejanza de triángulos y razones trigonométricas." },
+          { title: "Complex Word Problems", detail: "Desglosar planteamientos abstractos en ecuaciones resolubles al instante." },
+        ],
+      },
+    ],
   },
   {
     slug: "gre",
@@ -247,7 +306,67 @@ export const PROGRAMS: Program[] = [
       { q: "¿Qué nivel de inglés necesito para iniciar?", a: "Recomendamos un nivel B2 de inglés. El diagnóstico inicial confirma tu punto de partida y ajusta el plan." },
       { q: "¿Cuánto dura el programa de preparación?", a: "Entre 8 y 12 semanas según tu meta, con 40 sesiones de clase y horarios flexibles." },
     ],
-    heroImage: "/sat-hero.png",
+    heroImage: "/images/gre-hero.png",
+    guideImage: "/images/ibt-guia.webp",
+    guaranteeImage: "/images/ibt-garantias.webp",
+    skillsImage: "/images/domina-toefl.webp",
+    faqImage: "/images/ibt-laptop.webp",
+    academicIntro:
+      "El GRE es el examen estándar para las mejores maestrías y doctorados a nivel mundial. Nuestro programa ataca el vocabulario avanzado y el razonamiento lógico con rigor y estrategia.",
+    examSections: [
+      {
+        name: "Verbal Reasoning",
+        label: "Razonamiento Verbal",
+        description:
+          "Evalúa tu capacidad de analizar y evaluar material escrito, sintetizar información de pasajes complejos y reconocer relaciones entre palabras y conceptos.",
+        time: "~46 min",
+        scoreRange: "130 – 170",
+        activities: [
+          { title: "Text Completion", detail: "Completar párrafos académicos identificando el tono e intención lógica del autor." },
+          { title: "Sentence Equivalence", detail: "Seleccionar dos palabras que completen una oración produciendo el mismo significado exacto." },
+          { title: "Reading Comprehension", detail: "Analizar pasajes de ciencias naturales, humanidades y sociales con rigor lógico." },
+        ],
+      },
+      {
+        name: "Quantitative",
+        label: "Razonamiento Cuantitativo",
+        description:
+          "Mide tu habilidad para modelar y resolver problemas matemáticos en aritmética, álgebra, geometría y análisis estadístico de datos.",
+        time: "~47 min",
+        scoreRange: "130 – 170",
+        activities: [
+          { title: "Quantitative Comparison", detail: "Comparar dos cantidades para determinar con velocidad la relación matemática entre ellas." },
+          { title: "Multiple-Choice Math", detail: "Resolver ejercicios numéricos avanzados aplicando atajos sin cálculos excesivos." },
+          { title: "Data Interpretation", detail: "Analizar gráficas de dispersión, diagramas circulares y tablas estadísticas complejas." },
+        ],
+      },
+      {
+        name: "Analytical Writing",
+        label: "Redacción Analítica",
+        description:
+          "Evalúa tu capacidad de articular y respaldar ideas complejas, construir argumentos sólidos y mantener una redacción académica coherente.",
+        time: "~30 min",
+        scoreRange: "0.0 – 6.0",
+        activities: [
+          { title: "Analyze an Issue", detail: "Redactar un ensayo argumentando una postura clara ante un tema filosófico o social." },
+          { title: "Argument Structuring", detail: "Desarrollar tesis, premisas y contraargumentos con coherencia expositiva." },
+          { title: "Rubric Calibration", detail: "Revisión personalizada 1 a 1 para cumplir los estándares de puntuación 5.0+ de ETS." },
+        ],
+      },
+      {
+        name: "Vocabulary",
+        label: "Dominio Léxico",
+        description:
+          "El éxito en la sección verbal del GRE depende directamente de un vocabulario universitario y científico extenso, integrado a tu rutina de práctica.",
+        time: "Continuo",
+        scoreRange: "130 – 170",
+        activities: [
+          { title: "Spaced Repetition", detail: "Memorización activa de las 800 palabras más frecuentes en exámenes oficiales ETS." },
+          { title: "Roots & Affixes", detail: "Decodificar palabras complejas mediante etimología latina y griega." },
+          { title: "Connotation & Shade", detail: "Diferenciar matices sutiles de significado en contextos académicos formales." },
+        ],
+      },
+    ],
   },
   {
     slug: "gmat",
@@ -289,12 +408,72 @@ export const PROGRAMS: Program[] = [
       { title: "Plan por secciones", detail: "Ruta personalizada según el peso de cada sección en tu escuela objetivo." },
     ],
     faqs: [
-      { q: "¿El curso cubre el GMAT Focus Edition?", a: "Sí, el programa completo está actualizado al Focus Edition: tres secciones de 45 minutos, sin essay y con la nueva sección de Data Insights." },
+      { q: "¿El curso cubre el GMAT Focus Edition?", a: "Sí, todo el programa está actualizado al Focus Edition: tres secciones de 45 minutos, sin essay y con la nueva sección de Data Insights." },
       { q: "¿GMAT o GRE, cuál me conviene?", a: "Depende de tu programa objetivo. En la sesión de diagnóstico gratuita evaluamos tu perfil y te recomendamos el examen que maximice tu admisión." },
       { q: "¿Cuánto dura la preparación?", a: "De 10 a 14 semanas en promedio, con 40 sesiones y horarios flexibles para profesionistas." },
       { q: "¿Tienen garantía?", a: "Sí, garantizamos un aumento medible sobre tu diagnóstico inicial o te devolvemos el 100% de tu inversión." },
     ],
-    heroImage: "/sat-hero.png",
+    heroImage: "/images/gmat-hero.png",
+    guideImage: "/images/ibt-guia.webp",
+    guaranteeImage: "/images/ibt-garantias.webp",
+    skillsImage: "/images/domina-toefl.webp",
+    faqImage: "/images/ibt-laptop.webp",
+    academicIntro:
+      "El GMAT Focus Edition es el estándar global para acceder a los MBA más prestigiosos. Nuestro curso domina las tres secciones clave con técnicas avanzadas de razonamiento.",
+    examSections: [
+      {
+        name: "Quantitative",
+        label: "Razonamiento Cuantitativo",
+        description:
+          "Mide tu capacidad de razonamiento matemático para resolver problemas de álgebra y aritmética aplicada en entornos de negocios y toma de decisiones.",
+        time: "45 min",
+        scoreRange: "60 – 90",
+        activities: [
+          { title: "Problem Solving", detail: "Resolver problemas matemáticos de álgebra, proporciones y progresiones sin calculadora." },
+          { title: "Number Properties", detail: "Dominar reglas de divisibilidad, exponentes y desigualdades con agilidad analítica." },
+          { title: "Strategic Estimation", detail: "Técnicas de aproximación para responder en menos de 2 minutos por ejercicio." },
+        ],
+      },
+      {
+        name: "Verbal",
+        label: "Razonamiento Verbal",
+        description:
+          "Evalúa tu capacidad de leer y comprender pasajes complejos, argumentar con solidez lógica y detectar falacias o suposiciones implícitas.",
+        time: "45 min",
+        scoreRange: "60 – 90",
+        activities: [
+          { title: "Critical Reasoning", detail: "Identificar suposiciones, fortalecer o debilitar argumentos e inferir conclusiones de negocios." },
+          { title: "Reading Comprehension", detail: "Analizar textos extensos sobre economía, estrategia empresarial y ciencias sociales." },
+          { title: "Flaw Detection", detail: "Reconocer fallas estructurales en cadenas argumentativas complejas." },
+        ],
+      },
+      {
+        name: "Data Insights",
+        label: "Análisis de Datos",
+        description:
+          "La sección diferenciadora del Focus Edition: evalúa cómo procesas información cuantitativa y verbal de múltiples fuentes para tomar decisiones ejecutivas.",
+        time: "45 min",
+        scoreRange: "60 – 90",
+        activities: [
+          { title: "Data Sufficiency", detail: "Determinar si la información proporcionada es suficiente para resolver un problema estratégico." },
+          { title: "Multi-Source Reasoning", detail: "Cruzar correos, tablas financieras y gráficos para responder preguntas complejas." },
+          { title: "Table Interpretation", detail: "Extraer tendencias y proyecciones clave de reportes visuales de datos." },
+        ],
+      },
+      {
+        name: "Adaptive Focus",
+        label: "Algoritmo Adaptativo",
+        description:
+          "El formato actual permite revisar y editar hasta tres respuestas por sección. Aprende a gestionar el tiempo y el orden de respuesta para maximizar tu puntaje final.",
+        time: "Transversal",
+        scoreRange: "205 – 805",
+        activities: [
+          { title: "Question Review & Edit", detail: "Estrategia de cuándo usar tus 3 correcciones permitidas por módulo." },
+          { title: "Section Order Selection", detail: "Elegir el orden óptimo de las tres secciones según tu fortaleza personal." },
+          { title: "Pacing Mastery", detail: "Ritmo cronometrado para no dejar ninguna pregunta sin contestar." },
+        ],
+      },
+    ],
   },
   {
     slug: "paa",
@@ -341,7 +520,67 @@ export const PROGRAMS: Program[] = [
       { q: "¿Cuánto tiempo antes debo prepararme?", a: "Recomendamos iniciar de 3 a 4 meses antes de tu fecha de examen para completar las 36 sesiones y los 6 simulacros." },
       { q: "¿Tienen garantía de puntaje?", a: "Sí, garantizamos un aumento mínimo de 100 puntos sobre tu diagnóstico o te devolvemos el 100% de tu inversión." },
     ],
-    heroImage: "/sat-hero.png",
+    heroImage: "/images/paa-hero.png",
+    guideImage: "/images/ibt-guia.webp",
+    guaranteeImage: "/images/ibt-garantias.webp",
+    skillsImage: "/images/domina-toefl.webp",
+    faqImage: "/images/ibt-laptop.webp",
+    academicIntro:
+      "La Prueba de Aptitud Académica (PAA) del College Board es el filtro principal de ingreso al Tec de Monterrey, UDEM e ITAM. Nuestro curso te asegura dominar cada tipo de pregunta en español.",
+    examSections: [
+      {
+        name: "Lectura",
+        label: "Comprensión Lectora",
+        description:
+          "Evalúa tu habilidad para interpretar textos literarios, ensayos de humanidades y artículos de divulgación científica en español.",
+        time: "~45 min",
+        scoreRange: "200 – 800",
+        activities: [
+          { title: "Análisis de Textos", detail: "Identificar idea central, propósito del autor y tono en lecturas académicas." },
+          { title: "Inferencia y Evidencia", detail: "Deducir conclusiones fundamentadas en citas textuales explícitas." },
+          { title: "Vocabulario en Contexto", detail: "Determinar el significado exacto de términos polisémicos según el párrafo." },
+        ],
+      },
+      {
+        name: "Redacción",
+        label: "Lenguaje y Redacción",
+        description:
+          "Mide tu dominio del español normativo: gramática, ortografía, puntuación, claridad expositiva y cohesión de textos escritos.",
+        time: "~30 min",
+        scoreRange: "200 – 800",
+        activities: [
+          { title: "Corrección Gramatical", detail: "Corregir errores de concordancia, solecismos y ortografía en oraciones complejas." },
+          { title: "Cohesión y Conectores", detail: "Seleccionar nexos y marcadores discursivos para una transición fluida entre párrafos." },
+          { title: "Precisión Estilística", detail: "Eliminar redundancias y ambigüedades en textos expositivos." },
+        ],
+      },
+      {
+        name: "Matemáticas",
+        label: "Razonamiento Matemático",
+        description:
+          "Evalúa tus competencias aritméticas, algebraicas, geométricas y de estadística elemental para resolver problemas prácticos del College Board.",
+        time: "~55 min",
+        scoreRange: "200 – 800",
+        activities: [
+          { title: "Aritmética y Álgebra", detail: "Ecuaciones lineales, porcentajes, proporciones y sistemas algebraicos rápidos." },
+          { title: "Geometría Práctica", detail: "Cálculo de perímetros, áreas, ángulos y propiedades de figuras planas." },
+          { title: "Estadística y Probabilidad", detail: "Interpretación de tablas, promedios, medianas y combinatoria básica." },
+        ],
+      },
+      {
+        name: "Simulación",
+        label: "Práctica Oficial",
+        description:
+          "El tiempo es el factor decisivo en la PAA. Entrena con simulacros completos cronometrados bajo condiciones reales de examen.",
+        time: "Tiempo Oficial",
+        scoreRange: "400 – 1600",
+        activities: [
+          { title: "Simulacros Reales", detail: "Exámenes completos en plataforma digital idéntica a la prueba real." },
+          { title: "Análisis por Subárea", detail: "Reporte automático que identifica qué temas específicos necesitan refuerzo." },
+          { title: "Manejo del Estrés", detail: "Estrategias psicológicas y de administración de tiempo por sección." },
+        ],
+      },
+    ],
   },
 ];
 

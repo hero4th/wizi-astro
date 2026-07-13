@@ -104,9 +104,9 @@ const schema = [
           decoding="async"
           class:list={[
             "pointer-events-none mx-auto mt-12 w-full drop-shadow-2xl lg:absolute lg:bottom-0 lg:mx-0 lg:mt-0",
-            program.slug === 'toefl-ibt'
-              ? "max-w-2xl lg:right-[calc(50%-50vw)] lg:w-[65%] lg:max-w-[1100px]"
-              : "max-w-xl lg:right-[-2vw] lg:w-[56%] lg:max-w-[920px]"
+            program.slug === 'sat' || program.slug === 'gmat'
+              ? "max-w-4xl lg:right-[calc(50%-53vw)] lg:w-[78%] lg:max-w-[1350px]"
+              : "max-w-2xl lg:right-[calc(50%-50vw)] lg:w-[65%] lg:max-w-[1100px]"
           ]}
           data-reveal
           data-reveal-delay="0.1"
@@ -240,7 +240,7 @@ const schema = [
                       <p class="font-mono text-[9px] font-bold tracking-[0.2em] text-pearl/40 uppercase">Puntaje de sección</p>
                       <p class="mt-1 font-display text-[17px] font-semibold text-teal-400">
                         {s.scoreRange} 
-                        {program.slug === 'toefl-ibt' && <span class="text-[13px] font-normal text-pearl/40 ml-1">(equiv. 0 - 30 pts)</span>}
+                        <span class="text-[13px] font-normal text-pearl/40 ml-1">(escala {program.scoreScale})</span>
                       </p>
                     </div>
                   </div>

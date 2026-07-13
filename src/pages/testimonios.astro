@@ -288,6 +288,43 @@ import { breadcrumbSchema } from "@/lib/schema";
     opacity: 1;
     visibility: visible;
   }
+  #tm-body h4,
+  #tm-body h3 {
+    font-weight: 700;
+    color: #0d9488;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  #tm-body h4::before,
+  #tm-body h3::before {
+    content: "";
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 9999px;
+    background-color: #14b8a6;
+  }
+  #tm-body h4:first-child,
+  #tm-body h3:first-child {
+    margin-top: 0;
+  }
+  #tm-body strong {
+    font-weight: 600;
+    color: #0f766e;
+  }
+  #tm-body p {
+    margin-bottom: 1rem;
+    line-height: 1.75;
+  }
+  #tm-body p:last-child {
+    margin-bottom: 0;
+  }
 </style>
 
 <style>
