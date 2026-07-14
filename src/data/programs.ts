@@ -44,6 +44,9 @@ export interface Program {
   academicIntro?: string;
   /** Secciones del examen con detalle interactivo (tabs). */
   examSections?: ExamSection[];
+  /** Comparativa y beneficios específicos del curso. */
+  comparison?: { label: string; pa: string; trad: string }[];
+  benefits?: string[];
 }
 
 export const PROGRAMS: Program[] = [
@@ -110,7 +113,6 @@ export const PROGRAMS: Program[] = [
         activities: [
           { title: "Complete the Words", detail: "Rellenar las letras que faltan en palabras de un párrafo." },
           { title: "Read in Daily Life", detail: "Responder preguntas sobre anuncios, artículos cortos o notas cotidianas del campus." },
-          { title: "Read an Academic Passage", detail: "Responder preguntas sobre un fragmento de texto académico tipo universitario." },
         ],
       },
       {
@@ -123,7 +125,6 @@ export const PROGRAMS: Program[] = [
         activities: [
           { title: "Listen and Choose a Response", detail: "Escuchar una frase o pregunta corta de la vida diaria y elegir la respuesta lógica." },
           { title: "Listen to an Announcement or Conversation", detail: "Escuchar avisos públicos o diálogos informales entre estudiantes." },
-          { title: "Listen to an Academic Talk", detail: "Escuchar debates académicos para identificar ideas principales y actitudes." },
         ],
       },
       {
@@ -136,7 +137,6 @@ export const PROGRAMS: Program[] = [
         activities: [
           { title: "Build a Sentence", detail: "Ordenar fragmentos mezclados para formar una oración gramaticalmente correcta." },
           { title: "Write an Email", detail: "Redactar un correo electrónico respondiendo a una situación específica." },
-          { title: "Write for an Academic Discussion", detail: "Expresar tu opinión en un foro, simulando una clase universitaria." },
         ],
       },
       {
@@ -216,7 +216,6 @@ export const PROGRAMS: Program[] = [
         activities: [
           { title: "Words in Context", detail: "Elegir el vocabulario académico preciso según el contexto del párrafo." },
           { title: "Textual Evidence", detail: "Identificar la evidencia que mejor respalda la hipótesis o argumento del autor." },
-          { title: "Inferences", detail: "Completar lógicamente la conclusión de un argumento o experimento." },
         ],
       },
       {
@@ -229,7 +228,6 @@ export const PROGRAMS: Program[] = [
         activities: [
           { title: "Standard English Conventions", detail: "Corregir puntuación, concordancia y estructura de oraciones complejas." },
           { title: "Rhetorical Synthesis", detail: "Integrar notas informativas para cumplir un objetivo retórico específico." },
-          { title: "Transitions", detail: "Elegir el conector lógico adecuado entre ideas y párrafos académicos." },
         ],
       },
       {
@@ -242,7 +240,6 @@ export const PROGRAMS: Program[] = [
         activities: [
           { title: "Linear Equations", detail: "Modelar y resolver ecuaciones algebraicas y sistemas lineales con agilidad." },
           { title: "Problem Solving & Data", detail: "Interpretar tasas, porcentajes, tablas y dispersión de datos estadísticos." },
-          { title: "Desmos Mastery", detail: "Técnicas rápidas de graficación para encontrar soluciones en segundos." },
         ],
       },
       {
@@ -255,7 +252,6 @@ export const PROGRAMS: Program[] = [
         activities: [
           { title: "Nonlinear Functions", detail: "Analizar parábolas, exponenciales y funciones racionales complejas." },
           { title: "Geometry & Trigonometry", detail: "Cálculo de áreas, volúmenes, semejanza de triángulos y razones trigonométricas." },
-          { title: "Complex Word Problems", detail: "Desglosar planteamientos abstractos en ecuaciones resolubles al instante." },
         ],
       },
     ],
@@ -324,7 +320,6 @@ export const PROGRAMS: Program[] = [
         activities: [
           { title: "Text Completion", detail: "Completar párrafos académicos identificando el tono e intención lógica del autor." },
           { title: "Sentence Equivalence", detail: "Seleccionar dos palabras que completen una oración produciendo el mismo significado exacto." },
-          { title: "Reading Comprehension", detail: "Analizar pasajes de ciencias naturales, humanidades y sociales con rigor lógico." },
         ],
       },
       {
@@ -337,7 +332,6 @@ export const PROGRAMS: Program[] = [
         activities: [
           { title: "Quantitative Comparison", detail: "Comparar dos cantidades para determinar con velocidad la relación matemática entre ellas." },
           { title: "Multiple-Choice Math", detail: "Resolver ejercicios numéricos avanzados aplicando atajos sin cálculos excesivos." },
-          { title: "Data Interpretation", detail: "Analizar gráficas de dispersión, diagramas circulares y tablas estadísticas complejas." },
         ],
       },
       {
@@ -350,7 +344,6 @@ export const PROGRAMS: Program[] = [
         activities: [
           { title: "Analyze an Issue", detail: "Redactar un ensayo argumentando una postura clara ante un tema filosófico o social." },
           { title: "Argument Structuring", detail: "Desarrollar tesis, premisas y contraargumentos con coherencia expositiva." },
-          { title: "Rubric Calibration", detail: "Revisión personalizada 1 a 1 para cumplir los estándares de puntuación 5.0+ de ETS." },
         ],
       },
       {
@@ -363,7 +356,6 @@ export const PROGRAMS: Program[] = [
         activities: [
           { title: "Spaced Repetition", detail: "Memorización activa de las 800 palabras más frecuentes en exámenes oficiales ETS." },
           { title: "Roots & Affixes", detail: "Decodificar palabras complejas mediante etimología latina y griega." },
-          { title: "Connotation & Shade", detail: "Diferenciar matices sutiles de significado en contextos académicos formales." },
         ],
       },
     ],
@@ -431,7 +423,6 @@ export const PROGRAMS: Program[] = [
         activities: [
           { title: "Problem Solving", detail: "Resolver problemas matemáticos de álgebra, proporciones y progresiones sin calculadora." },
           { title: "Number Properties", detail: "Dominar reglas de divisibilidad, exponentes y desigualdades con agilidad analítica." },
-          { title: "Strategic Estimation", detail: "Técnicas de aproximación para responder en menos de 2 minutos por ejercicio." },
         ],
       },
       {
@@ -444,7 +435,6 @@ export const PROGRAMS: Program[] = [
         activities: [
           { title: "Critical Reasoning", detail: "Identificar suposiciones, fortalecer o debilitar argumentos e inferir conclusiones de negocios." },
           { title: "Reading Comprehension", detail: "Analizar textos extensos sobre economía, estrategia empresarial y ciencias sociales." },
-          { title: "Flaw Detection", detail: "Reconocer fallas estructurales en cadenas argumentativas complejas." },
         ],
       },
       {
@@ -457,7 +447,6 @@ export const PROGRAMS: Program[] = [
         activities: [
           { title: "Data Sufficiency", detail: "Determinar si la información proporcionada es suficiente para resolver un problema estratégico." },
           { title: "Multi-Source Reasoning", detail: "Cruzar correos, tablas financieras y gráficos para responder preguntas complejas." },
-          { title: "Table Interpretation", detail: "Extraer tendencias y proyecciones clave de reportes visuales de datos." },
         ],
       },
       {
@@ -470,7 +459,6 @@ export const PROGRAMS: Program[] = [
         activities: [
           { title: "Question Review & Edit", detail: "Estrategia de cuándo usar tus 3 correcciones permitidas por módulo." },
           { title: "Section Order Selection", detail: "Elegir el orden óptimo de las tres secciones según tu fortaleza personal." },
-          { title: "Pacing Mastery", detail: "Ritmo cronometrado para no dejar ninguna pregunta sin contestar." },
         ],
       },
     ],
@@ -482,7 +470,7 @@ export const PROGRAMS: Program[] = [
     headline: "Tu lugar en el Tec",
     accent: "se gana aquí.",
     subheadline:
-      "Preparación completa para la Prueba de Aptitud Académica del College Board: lectura, redacción y matemáticas con simuladores idénticos al examen.",
+      "Preparación integral para la Prueba de Aptitud Académica en inglés y español. Aceptado en el Tec de Monterrey, UDEM y otras universidades clave.",
     description:
       "Curso PAA para admisión al Tec de Monterrey y universidades College Board: simuladores reales, clases 1 a 1 y Garantía de Puntaje.",
     metaTitle: "Curso PAA College Board | Admisión al Tec de Monterrey Garantizada",
@@ -491,10 +479,10 @@ export const PROGRAMS: Program[] = [
     audience: "Estudiantes que buscan admisión al Tec de Monterrey, UDEM y universidades que aplican la PAA.",
     guarantee: "+100 puntos garantizados sobre tu diagnóstico o te devolvemos tu inversión.",
     priceMXN: 12900,
-    sessions: 36,
-    exercises: 1600,
-    evaluations: 6,
-    hours: 18,
+    sessions: 20,
+    exercises: 5000,
+    evaluations: 20,
+    hours: 60,
     scoreScale: "400-1600",
     skills: [
       { name: "Lectura", detail: "Comprensión de textos literarios, científicos y sociales con preguntas de evidencia." },
@@ -509,77 +497,87 @@ export const PROGRAMS: Program[] = [
       "Estrategia personalizada de admisión",
     ],
     features: [
-      { title: "Formato oficial", detail: "Simuladores construidos con la estructura exacta de la PAA del College Board." },
-      { title: "Clases 1 a 1", detail: "Tutorías personalizadas con docentes egresados de las mejores universidades." },
-      { title: "Plan de admisión", detail: "Acompañamiento en el proceso completo de admisión al Tec y College Board." },
-      { title: "Reportes de avance", detail: "Métricas por sección después de cada simulacro para enfocar tu estudio." },
+      { title: "Materiales de estudio", detail: "Acceso a biblioteca de ejercicios prácticos, exámenes de diagnóstico y material oficial actualizado para el formato de PAA." },
+      { title: "Simuladores reales", detail: "Practica bajo condiciones reales con límite de tiempo y formato idéntico al examen oficial para que no haya sorpresas." },
+      { title: "Expertos en la prueba PAA", detail: "Aprende de profesores certificados con puntajes altos y años de experiencia preparando alumnos para el Tec, ITAM y más." },
+      { title: "Garantía de puntaje", detail: "Si no aumentas al menos 100 puntos sobre tu diagnóstico o no entras al Tec, te devolvemos el 100% de tu inversión." },
     ],
     faqs: [
-      { q: "¿La PAA es lo mismo que el SAT?", a: "Comparten estructura del College Board, pero la PAA se aplica en español y la usan el Tec de Monterrey, UDEM y otras universidades de Latinoamérica." },
-      { q: "¿Qué puntaje necesito para el Tec de Monterrey?", a: "Depende de la carrera y el campus, pero un puntaje de 1250+ te coloca en rango competitivo para la mayoría de los programas." },
-      { q: "¿Cuánto tiempo antes debo prepararme?", a: "Recomendamos iniciar de 3 a 4 meses antes de tu fecha de examen para completar las 36 sesiones y los 6 simulacros." },
-      { q: "¿Tienen garantía de puntaje?", a: "Sí, garantizamos un aumento mínimo de 100 puntos sobre tu diagnóstico o te devolvemos el 100% de tu inversión." },
+      { q: "¿Qué incluye el curso de preparación PAA?", a: "Nuestro curso incluye materiales oficiales, exámenes de simulación cronometrados bajo condiciones reales, clases 1 a 1 en vivo, retroalimentación en video y reportes de desempeño continuos para maximizar tu puntaje." },
+      { q: "¿Cómo funciona la garantía de puntaje?", a: "Estamos tan seguros de nuestra metodología que si tu puntuación oficial en la Prueba de Aptitud Académica (PAA) es menor a 90 puntos o no eres admitido después de completar el curso, te devolvemos el 100% de tu inversión. Nuestro objetivo es asegurar tu lugar en la universidad." },
+      { q: "¿Necesito conocimientos de matemáticas o inglés para iniciar?", a: "Lo que hayas aprendido en preparatoria es más que suficiente. El curso inicia desde las bases. Te enseñamos las fórmulas clave, trucos de descarte y gestión del tiempo desde cero." },
+      { q: "¿Cuánto dura el programa de preparación PAA?", a: "El programa está diseñado para completarse de manera óptima en las horas contratadas, dedicando breves momentos a la semana. Sin embargo, si necesitas una preparación más flexible, puedes contratar más horas y avanzar a tu propio ritmo." },
     ],
-    heroImage: "/images/paa-hero.png",
-    guideImage: "/images/ibt-guia.webp",
-    guaranteeImage: "/images/ibt-garantias.webp",
-    skillsImage: "/images/domina-toefl.webp",
-    faqImage: "/images/ibt-laptop.webp",
+    heroImage: "/images/hero paa.png",
+    guideImage: "/images/preparacion-paa.png",
+    guaranteeImage: "/images/preparacion-paa-2.png",
+    skillsImage: "/images/domina-paa.png",
+    faqImage: "/images/laptop-paa.png",
     academicIntro:
-      "La Prueba de Aptitud Académica (PAA) del College Board es el filtro principal de ingreso al Tec de Monterrey, UDEM e ITAM. Nuestro curso te asegura dominar cada tipo de pregunta en español.",
+      "Asegura tu lugar en el Tec de Monterrey e importantes universidades que aplican la PAA con una preparación adaptada a tu ritmo. Domina las secciones de Lectura, Redacción, Matemáticas e Inglés con simuladores oficiales y clases en vivo.",
+    exam: "PAA",
     examSections: [
       {
         name: "Lectura",
-        label: "Comprensión Lectora",
+        label: "Comprensión de Lectura",
         description:
-          "Evalúa tu habilidad para interpretar textos literarios, ensayos de humanidades y artículos de divulgación científica en español.",
+          "Evalúa tu capacidad para entender pasajes literarios, comprender argumentos complejos e interpretar textos en español.",
         time: "~45 min",
         scoreRange: "200 – 800",
         activities: [
-          { title: "Análisis de Textos", detail: "Identificar idea central, propósito del autor y tono en lecturas académicas." },
-          { title: "Inferencia y Evidencia", detail: "Deducir conclusiones fundamentadas en citas textuales explícitas." },
-          { title: "Vocabulario en Contexto", detail: "Determinar el significado exacto de términos polisémicos según el párrafo." },
+          { title: "Análisis de textos", detail: "Identificar la idea central, el propósito del autor y el tono en lecturas académicas." },
+          { title: "Vocabulario en contexto", detail: "Inferir el significado de palabras y frases complejas según el sentido del pasaje." },
         ],
       },
       {
         name: "Redacción",
-        label: "Lenguaje y Redacción",
+        label: "Redacción Indirecta",
         description:
-          "Mide tu dominio del español normativo: gramática, ortografía, puntuación, claridad expositiva y cohesión de textos escritos.",
+          "Evalúa tu capacidad para identificar errores gramaticales, mejorar la cohesión y perfeccionar la redacción de textos escritos.",
         time: "~30 min",
         scoreRange: "200 – 800",
         activities: [
-          { title: "Corrección Gramatical", detail: "Corregir errores de concordancia, solecismos y ortografía en oraciones complejas." },
-          { title: "Cohesión y Conectores", detail: "Seleccionar nexos y marcadores discursivos para una transición fluida entre párrafos." },
-          { title: "Precisión Estilística", detail: "Eliminar redundancias y ambigüedades en textos expositivos." },
+          { title: "Estructura y cohesión", detail: "Corregir errores de concordancia, seleccionar nexos y mejorar la claridad expositiva en textos escritos." },
+          { title: "Uso de la lengua", detail: "Identificar y corregir errores de ortografía, puntuación, sintaxis y vocabulario en español." },
         ],
       },
       {
         name: "Matemáticas",
         label: "Razonamiento Matemático",
         description:
-          "Evalúa tus competencias aritméticas, algebraicas, geométricas y de estadística elemental para resolver problemas prácticos del College Board.",
+          "Evalúa tus habilidades de razonamiento lógico, análisis cuantitativo y resolución de problemas de aritmética, álgebra, geometría y estadística.",
         time: "~55 min",
         scoreRange: "200 – 800",
         activities: [
-          { title: "Aritmética y Álgebra", detail: "Ecuaciones lineales, porcentajes, proporciones y sistemas algebraicos rápidos." },
-          { title: "Geometría Práctica", detail: "Cálculo de perímetros, áreas, ángulos y propiedades de figuras planas." },
-          { title: "Estadística y Probabilidad", detail: "Interpretación de tablas, promedios, medianas y combinatoria básica." },
+          { title: "Razonamiento Lógico-Matemático", detail: "Resolver problemas algebraicos y aritméticos para solucionar escenarios prácticos." },
+          { title: "Estadística y Geometría", detail: "Leer gráficos y calcular datos en contexto." },
         ],
       },
       {
-        name: "Simulación",
-        label: "Práctica Oficial",
+        name: "Inglés",
+        label: "Competencia en Inglés",
         description:
-          "El tiempo es el factor decisivo en la PAA. Entrena con simulacros completos cronometrados bajo condiciones reales de examen.",
-        time: "Tiempo Oficial",
-        scoreRange: "400 – 1600",
+          "Mide tu nivel de competencia en el idioma inglés mediante ejercicios de comprensión de lectura y redacción indirecta, enfocados en el contexto universitario.",
+        time: "~45 min",
+        scoreRange: "200 – 800 (Complementario)",
         activities: [
-          { title: "Simulacros Reales", detail: "Exámenes completos en plataforma digital idéntica a la prueba real." },
-          { title: "Análisis por Subárea", detail: "Reporte automático que identifica qué temas específicos necesitan refuerzo." },
-          { title: "Manejo del Estrés", detail: "Estrategias psicológicas y de administración de tiempo por sección." },
+          { title: "Language Use", detail: "Completar enunciados aplicando la estructura gramatical y vocabulario adecuado." },
+          { title: "Reading Comprehension", detail: "Responder preguntas sobre la idea principal y el propósito de textos cortos en inglés." },
         ],
       },
+    ],
+    comparison: [
+      { label: "Duración del curso", pa: "20 horas de clase 1:1 en vivo", trad: "8 semanas" },
+      { label: "Herramientas", pa: "Acceso a plataforma premium", trad: "Libro limitado" },
+      { label: "Simuladores reales", pa: "20 exámenes de simulación", trad: "Bancos de preguntas" },
+      { label: "Sesiones de estudio", pa: "Horarios flexibles adaptables", trad: "Sujetas a disponibilidad" },
+      { label: "Temario", pa: "Plan de estudio personalizado", trad: "Varía por programa" },
+    ],
+    benefits: [
+      "Retroalimentación detallada en clases particulares",
+      "Ejercicios, simuladores y sesiones actualizadas",
+      "Horarios flexibles adaptables a tu ritmo",
+      "100% de reembolso si no logras tu objetivo",
     ],
   },
 ];

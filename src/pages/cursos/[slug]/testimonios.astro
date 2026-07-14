@@ -1,0 +1,399 @@
+---
+import Base from "@/layouts/Base.astro";
+import FinalCTA from "@/components/home/FinalCTA.astro";
+import WhyChooseUs from "@/components/home/WhyChooseUs.astro";
+import { TESTIMONIALS } from "@/data/testimonials";
+import { PROGRAMS } from "@/data/programs";
+import { SITE } from "@/data/site";
+import { breadcrumbSchema } from "@/lib/schema";
+
+export function getStaticPaths() {
+  return PROGRAMS.map((program) => ({
+    params: { slug: program.slug },
+    props: { program },
+  }));
+}
+
+const { program } = Astro.props;
+
+// Filtrar los testimonios correspondientes al curso actual
+const courseTestimonials = TESTIMONIALS.filter((t) => {
+  if (program.slug === "toefl-ibt") {
+    return t.program.toUpperCase().includes("TOEFL");
+  }
+  return t.program.toUpperCase() === program.exam.toUpperCase();
+});
+---
+
+<Base
+  title={`Testimonios del curso ${program.exam} | Professional Academy`}
+  description={`Historias reales de alumnos que alcanzaron su puntaje objetivo en el examen ${program.exam} con Professional Academy.`}
+  schema={[breadcrumbSchema([
+    { name: "Inicio", url: SITE.url },
+    { name: "Cursos", url: `${SITE.url}/cursos` },
+    { name: program.exam, url: `${SITE.url}/cursos/${program.slug}` },
+    { name: "Testimonios", url: `${SITE.url}/cursos/${program.slug}/testimonios` },
+  ])]}
+>
+  <!-- Hero con collage de alumnos al fondo -->
+  <section id="testimonials-hero" class="relative overflow-hidden pt-40 pb-24 sm:pt-44">
+    <div class="absolute inset-0 z-0 bg-white" aria-hidden="true">
+      <img
+        src="/images/testimonials-hero.webp"
+        alt=""
+        width="1600"
+        height="727"
+        class="size-full object-cover opacity-100"
+        fetchpriority="high"
+      />
+      <div class="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent"></div>
+      <div class="absolute inset-0 bg-gradient-to-t from-white via-white/10 to-transparent"></div>
+    </div>
+
+    <div class="container-edge relative z-10">
+      <div class="max-w-3xl">
+        <h1
+          class="font-display text-[clamp(2.75rem,7vw,5rem)] leading-[1.02] font-semibold tracking-[-0.03em] text-ink-950"
+          data-hero-line
+        >
+          <span class="line-mask"><span class="line-inner">Testimonios {program.exam}</span></span>
+          <span class="line-mask"><span class="line-inner"><em class="accent-em">casos de éxito.</em></span></span>
+        </h1>
+        <p class="mt-7 max-w-xl text-lg leading-relaxed text-ink-600 tm-hero-fade">
+          Más de 10,000 alumnos han alcanzado su puntaje objetivo con nosotros.
+          Conoce sus resultados académicos en el curso {program.exam}.
+        </p>
+
+        <div class="mt-9 flex flex-wrap gap-3 tm-hero-fade">
+          <span class="inline-flex items-center gap-1.5 rounded-full border border-ink-200 bg-white/80 px-4 py-2 text-sm font-medium text-ink-700 backdrop-blur-sm">
+            <svg class="size-4 text-teal-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+            Garantía por Contrato
+          </span>
+          <span class="inline-flex items-center gap-1.5 rounded-full border border-ink-200 bg-white/80 px-4 py-2 text-sm font-medium text-ink-700 backdrop-blur-sm">
+            <svg class="size-4 text-teal-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            10,000+ Alumnos
+          </span>
+          <span class="inline-flex items-center gap-1.5 rounded-full border border-ink-200 bg-white/80 px-4 py-2 text-sm font-medium text-ink-700 backdrop-blur-sm">
+            <svg class="size-4 text-teal-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            Top Scores {program.exam}
+          </span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Grid de testimonios -->
+  <section class="relative pb-28 bg-white" aria-label={`Testimonios del curso ${program.exam}`}>
+    <div class="container-edge">
+      <div class="flex flex-wrap items-stretch justify-center gap-6">
+        {courseTestimonials.map((t, i) => (
+          <div
+            data-reveal
+            data-reveal-delay={String((i % 3) * 0.08)}
+            class:list={[
+              "testimonial-wrapper flex w-full sm:w-[calc((100%-1.5rem)/2)] lg:w-[calc((100%-3rem)/3)]",
+              { "hidden": i >= 9 }
+            ]}
+          >
+            <button
+              type="button"
+              class="testimonial-card group flex cursor-pointer flex-col h-full w-full rounded-3xl border border-ink-950/[0.06] bg-ink-50 p-7 text-left transition-all duration-300 hover:-translate-y-1 hover:border-teal-500/30 hover:bg-white hover:shadow-card-lg"
+              data-testimonial
+              data-name={t.name}
+              data-course={t.program === "General" ? "Caso de Éxito" : `Curso ${t.program}`}
+              data-score={t.score}
+              data-image={t.image}
+              data-quote={t.fullQuote ?? t.quote}
+              aria-haspopup="dialog"
+              aria-label={`Leer testimonio de ${t.name}`}
+            >
+              <div class="flex w-full items-center justify-between gap-3">
+                <div class="flex items-center gap-3.5">
+                  <img
+                    src={t.image}
+                    alt={t.name}
+                    width="56"
+                    height="56"
+                    loading="lazy"
+                    decoding="async"
+                    class="size-14 shrink-0 rounded-full object-cover ring-2 ring-white"
+                  />
+                  <div>
+                    <p class="font-display text-lg font-semibold tracking-tight text-ink-950">{t.name}</p>
+                    <p class="mt-0.5 font-mono text-[10px] tracking-[0.16em] text-teal-600 uppercase">
+                      {t.program === "General" ? "Caso de Éxito" : `Curso ${t.program}`}
+                    </p>
+                  </div>
+                </div>
+                {(t.fullQuote || t.hasDetail) && (
+                  <span class="grid size-9 shrink-0 place-items-center rounded-full bg-teal-500/12 text-teal-600 transition-colors group-hover:bg-teal-500 group-hover:text-ink-950" aria-hidden="true">
+                    <svg class="size-4 transition-transform duration-300 group-hover:rotate-[-45deg]" viewBox="0 0 16 16" fill="none">
+                      <path d="M1 8h14m0 0L9 2m6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                  </span>
+                )}
+              </div>
+              <blockquote class="mt-6 flex-1 text-[15px] leading-relaxed text-ink-600">
+                “{t.quote}”
+              </blockquote>
+            </button>
+          </div>
+        ))}
+      </div>
+
+      {courseTestimonials.length > 9 && (
+        <div class="mt-16 text-center" id="ver-mas-container">
+          <button
+            type="button"
+            id="btn-ver-mas"
+            class="inline-flex items-center justify-center rounded-full border border-ink-950/20 bg-transparent px-8 py-3.5 text-sm font-semibold tracking-wider text-ink-950 uppercase transition-all duration-300 hover:border-teal-500 hover:text-teal-600 cursor-pointer"
+          >
+            Ver más testimonios
+          </button>
+        </div>
+      )}
+    </div>
+  </section>
+
+  <WhyChooseUs />
+
+  <!-- Modal de testimonio -->
+  <div
+    id="tm-modal"
+    class="fixed inset-0 z-[110] flex items-center justify-center p-4 opacity-0 invisible transition-opacity duration-300"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="tm-name"
+    aria-hidden="true"
+  >
+    <div class="tm-backdrop absolute inset-0 bg-ink-950/70 backdrop-blur-sm" data-tm-close></div>
+    <div class="tm-panel relative w-full max-w-2xl scale-95 rounded-3xl bg-white p-7 shadow-panel transition-transform duration-300 sm:p-10">
+      <button
+        type="button"
+        class="absolute right-5 top-5 grid size-9 place-items-center rounded-full bg-teal-500/12 text-ink-700 transition-colors hover:bg-teal-500 hover:text-ink-950"
+        aria-label="Cerrar"
+        data-tm-close
+      >
+        <svg class="size-4" viewBox="0 0 16 16" fill="none">
+          <path d="M3 3l10 10M13 3 3 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+        </svg>
+      </button>
+
+      <div class="flex flex-wrap items-center gap-4 pr-10">
+        <img id="tm-img" src="" alt="" width="56" height="56" class="size-14 rounded-full object-cover" />
+        <div class="mr-2">
+          <p id="tm-name" class="font-display text-xl font-semibold tracking-tight text-ink-950"></p>
+          <p id="tm-course" class="font-mono text-[10px] tracking-[0.16em] text-teal-600 uppercase"></p>
+        </div>
+        <span id="tm-score-badge" class="inline-flex items-center gap-2 rounded-full bg-teal-500/12 px-3.5 py-1.5 font-mono text-[11px] tracking-wide text-teal-800 uppercase">
+          <svg class="size-3.5 text-teal-600" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="m3.5 8.5 3 3 6-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          Puntaje <span id="tm-score" class="text-teal-900"></span>
+        </span>
+      </div>
+
+      <div id="tm-body" class="mt-6 max-h-[55vh] space-y-4 overflow-y-auto pr-1 text-[15px] leading-relaxed text-ink-600"></div>
+    </div>
+  </div>
+
+  <FinalCTA />
+</Base>
+
+<script>
+  import gsap from "gsap";
+
+  function initTmModal() {
+    const modal = document.getElementById("tm-modal");
+    if (!modal || modal.dataset.bound) return;
+    modal.dataset.bound = "true";
+    const panel = modal.querySelector(".tm-panel");
+    const img = document.getElementById("tm-img") as HTMLImageElement;
+    const nameEl = document.getElementById("tm-name")!;
+    const courseEl = document.getElementById("tm-course")!;
+    const scoreBadge = document.getElementById("tm-score-badge")!;
+    const scoreEl = document.getElementById("tm-score")!;
+    const body = document.getElementById("tm-body")!;
+    let lastFocus: HTMLElement | null = null;
+
+    const open = (card: HTMLElement) => {
+      lastFocus = card;
+      img.src = card.dataset.image || "";
+      img.alt = card.dataset.name || "";
+      nameEl.textContent = card.dataset.name || "";
+      courseEl.textContent = card.dataset.course || "";
+      
+      const score = card.dataset.score || "";
+      if (!score || score.trim() === "") {
+        scoreBadge.style.display = "none";
+      } else {
+        scoreBadge.style.display = "inline-flex";
+        scoreEl.textContent = score;
+      }
+      
+      body.innerHTML = "";
+      const quoteVal = card.dataset.quote || "";
+      if (quoteVal.trim().startsWith("<")) {
+        body.innerHTML = quoteVal;
+      } else {
+        const paras = quoteVal.split(/\n{2,}/).map((s) => s.trim()).filter(Boolean);
+        paras.forEach((para, idx) => {
+          const p = document.createElement("p");
+          let text = para;
+          if (idx === 0) text = "“" + text;
+          if (idx === paras.length - 1) text = text + "”";
+          p.textContent = text;
+          body.appendChild(p);
+        });
+      }
+      modal.classList.remove("invisible", "opacity-0");
+      modal.setAttribute("aria-hidden", "false");
+      panel?.classList.remove("scale-95");
+      document.documentElement.classList.add("lenis-stopped");
+      (modal.querySelector("[data-tm-close]") as HTMLElement)?.focus();
+    };
+
+    const close = () => {
+      modal.classList.add("invisible", "opacity-0");
+      modal.setAttribute("aria-hidden", "true");
+      panel?.classList.add("scale-95");
+      document.documentElement.classList.remove("lenis-stopped");
+      lastFocus?.focus();
+    };
+
+    document.querySelectorAll<HTMLElement>("[data-testimonial]").forEach((card) => {
+      card.addEventListener("click", () => open(card));
+    });
+    modal.querySelectorAll("[data-tm-close]").forEach((el) => el.addEventListener("click", () => close()));
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && modal.getAttribute("aria-hidden") === "false") close();
+    });
+  }
+
+  function initVerMas() {
+    const btn = document.getElementById("btn-ver-mas");
+    if (!btn || btn.dataset.bound) return;
+    btn.dataset.bound = "true";
+
+    const itemsPerPage = 9;
+    
+    btn.addEventListener("click", () => {
+      const hiddenWrappers = Array.from(document.querySelectorAll(".testimonial-wrapper.hidden"));
+      const toShow = hiddenWrappers.slice(0, itemsPerPage);
+      
+      if (toShow.length > 0) {
+        toShow.forEach(el => el.classList.remove("hidden"));
+        
+        gsap.fromTo(toShow,
+          { opacity: 0, y: 30 },
+          { opacity: 1, y: 0, duration: 0.8, stagger: 0.08, ease: "power2.out" }
+        );
+      }
+      
+      const remaining = document.querySelectorAll(".testimonial-wrapper.hidden");
+      if (remaining.length === 0) {
+        const container = document.getElementById("ver-mas-container");
+        if (container) container.style.display = "none";
+      }
+    });
+  }
+
+  initTmModal();
+  initVerMas();
+  document.addEventListener("astro:page-load", () => {
+    initTmModal();
+    initVerMas();
+  });
+</script>
+
+<style is:global>
+  #tm-modal[aria-hidden="false"] {
+    opacity: 1;
+    visibility: visible;
+  }
+  #tm-body h4,
+  #tm-body h3 {
+    font-weight: 700;
+    color: #0d9488;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  #tm-body h4::before,
+  #tm-body h3::before {
+    content: "";
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 9999px;
+    background-color: #14b8a6;
+  }
+  #tm-body h4:first-child,
+  #tm-body h3:first-child {
+    margin-top: 0;
+  }
+  #tm-body strong {
+    font-weight: 600;
+    color: #0f766e;
+  }
+  #tm-body p {
+    margin-bottom: 1rem;
+    line-height: 1.75;
+  }
+  #tm-body p:last-child {
+    margin-bottom: 0;
+  }
+</style>
+
+<style>
+  .tm-hero-fade {
+    opacity: 0;
+  }
+  html.no-motion .tm-hero-fade {
+    opacity: 1;
+  }
+  [data-hero-line] .line-inner {
+    display: block;
+    transform: translateY(110%);
+  }
+  [data-hero-line] .line-mask {
+    display: block;
+    overflow: hidden;
+  }
+</style>
+
+<script>
+  import gsap from "gsap";
+
+  function initTestimonialsHero() {
+    if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      const tl = gsap.timeline({ defaults: { ease: "expo.out" } });
+      tl.to("#testimonials-hero [data-hero-line] .line-inner", {
+        y: 0,
+        duration: 1.2,
+        stagger: 0.1,
+        delay: 0.1,
+      }).fromTo(
+        "#testimonials-hero .tm-hero-fade",
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 1, stagger: 0.08 },
+        "-=0.8"
+      );
+    } else {
+      document.querySelectorAll(".tm-hero-fade").forEach((el) => {
+        (el as HTMLElement).style.opacity = "1";
+      });
+      document.querySelectorAll("[data-hero-line] .line-inner").forEach((el) => {
+        (el as HTMLElement).style.transform = "none";
+      });
+    }
+  }
+
+  initTestimonialsHero();
+  document.addEventListener("astro:page-load", initTestimonialsHero);
+</script>

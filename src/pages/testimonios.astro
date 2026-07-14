@@ -65,12 +65,15 @@ import { breadcrumbSchema } from "@/lib/schema";
   <!-- Grid de testimonios -->
   <section class="relative pb-28 bg-white" aria-label="Testimonios de alumnos">
     <div class="container-edge">
-      <div class="grid items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div class="flex flex-wrap items-stretch justify-center gap-6">
         {TESTIMONIALS.map((t, i) => (
           <div
             data-reveal
             data-reveal-delay={String((i % 3) * 0.08)}
-            class:list={["testimonial-wrapper", { "hidden": i >= 9 }]}
+            class:list={[
+              "testimonial-wrapper flex w-full sm:w-[calc((100%-1.5rem)/2)] lg:w-[calc((100%-3rem)/3)]",
+              { "hidden": i >= 9 }
+            ]}
           >
             <button
               type="button"
