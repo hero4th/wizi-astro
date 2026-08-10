@@ -65,23 +65,39 @@ export default function LeadForm() {
       lead_exam: String(data.get("exam")),
     });
 
+    const nombre = String(data.get("name"));
+    const correo = String(data.get("email"));
+    const telefono = String(data.get("phone") ?? "");
+    const curso = String(data.get("exam"));
+    const notas = String(data.get("notes") ?? "");
+
     const message = [
       "Hola, quiero agendar mi evaluación gratuita.",
-      `Nombre: ${data.get("name")}`,
-      `Correo: ${data.get("email")}`,
-      data.get("phone") ? `Teléfono: ${data.get("phone")}` : null,
-      `Examen: ${data.get("exam")}`,
-      data.get("notes") ? `Comentarios: ${data.get("notes")}` : null,
+      `Nombre: ${nombre}`,
+      `Correo: ${correo}`,
+      telefono ? `Teléfono: ${telefono}` : null,
+      `Examen: ${curso}`,
+      notas ? `Comentarios: ${notas}` : null,
     ]
       .filter(Boolean)
       .join("\n");
 
-    window.open(
-      `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(message)}`,
-      "_blank",
-      "noopener,noreferrer"
-    );
-    setStatus("done");
+    fetch("/api/contact", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ nombre, correo, telefono, curso, notas, fromUrl: window.location.href }),
+    }).catch(err => console.error("Error al enviar correo", err))
+      .finally(() => {
+        setTimeout(() => {
+          window.open(
+            `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(message)}`,
+            "_blank",
+            "noopener,noreferrer"
+          );
+        }, 5000);
+        
+        setStatus("done");
+      });
   }
 
   const inputClass = (hasError: boolean) =>

@@ -532,15 +532,29 @@ const schema = [
         if (nombre.length < 2) return setError("nombre", "Escribe tu nombre para continuar.");
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) return setError("correo", "Escribe un correo válido.");
         form.querySelectorAll("[aria-invalid]").forEach((el) => el.removeAttribute("aria-invalid"));
-        if (status) status.textContent = "Abriendo WhatsApp…";
-        const msg = [
-          `Hola, me llamo ${nombre}.`,
-          `Quiero informes del curso ${exam}.`,
-          correo ? `Mi correo: ${correo}` : null,
-          telefono ? `Mi teléfono: ${telefono}` : null,
-        ].filter(Boolean).join("\n");
-        window.dataLayer?.push({ event: "generate_lead", lead_exam: exam });
-        window.open(`https://wa.me/${whatsapp}?text=${encodeURIComponent(msg)}`, "_blank", "noopener,noreferrer");
+        if (status) status.textContent = "Enviando mensaje…";
+        
+        fetch("/api/contact", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ nombre, correo, telefono, curso: exam, fromUrl: window.location.href }),
+        }).finally(() => {
+          if (status) {
+            status.innerHTML = `¡Mensaje enviado perfectamente! <br/><span class="text-xs text-teal-400/80 mt-1 block">Abriendo WhatsApp en 5 segundos...</span>`;
+          }
+          const msg = [
+            `Hola, me llamo ${nombre}.`,
+            `Quiero informes del curso ${exam}.`,
+            correo ? `Mi correo: ${correo}` : null,
+            telefono ? `Mi teléfono: ${telefono}` : null,
+          ].filter(Boolean).join("\n");
+          window.dataLayer?.push({ event: "generate_lead", lead_exam: exam });
+          
+          setTimeout(() => {
+            if (status) status.innerHTML = "¡Mensaje enviado perfectamente!";
+            window.open(`https://wa.me/${whatsapp}?text=${encodeURIComponent(msg)}`, "_blank", "noopener,noreferrer");
+          }, 5000);
+        });
       });
     }
   }
