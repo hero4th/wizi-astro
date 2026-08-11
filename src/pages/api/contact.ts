@@ -40,7 +40,7 @@ export const POST: APIRoute = async ({ request }) => {
         <!-- Header -->
         <tr>
           <td style="background-color: #060a0a; text-align: center; padding: 40px 20px; border-bottom: 4px solid #0d9488;">
-            <img src="https://www.proacademymx.com/logo.svg" alt="Professional Academy" width="180" style="display: block; margin: 0 auto; filter: brightness(0) invert(1);" />
+            <img src="https://www.proacademymx.com/logo.png" alt="Professional Academy" width="180" style="display: block; margin: 0 auto;" />
             <h1 style="color: #ffffff; margin: 24px 0 0 0; font-size: 20px; font-weight: 600; letter-spacing: 0.5px;">¡Nuevo contacto generado!</h1>
             <p style="color: #5eead4; margin: 8px 0 0 0; font-size: 13px; font-weight: 500; text-transform: uppercase; letter-spacing: 2px;">Sitio Web Oficial</p>
           </td>
