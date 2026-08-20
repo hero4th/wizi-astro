@@ -170,15 +170,6 @@ const diagnostics = [
 </style>
 
 <script>
-  // Diagnósticos por examen. Llena cada href cuando la prueba esté lista.
-  const DIAGNOSTICS: Record<string, string> = {
-    "toefl-ibt": "/Diagnóstico TOEFL IBT de Proacademy.pdf",
-    sat: "",
-    gre: "",
-    gmat: "",
-    paa: "",
-  };
-
   function initDiagnostic() {
     const modal = document.getElementById("diag-modal");
     const openBtns = Array.from(document.querySelectorAll("[data-open-diagnostic]"));
@@ -188,10 +179,12 @@ const diagnostics = [
     const options = Array.from(modal.querySelectorAll<HTMLElement>("[data-diag-option]"));
     const goBtn = modal.querySelector<HTMLElement>("[data-diag-go]");
     const status = modal.querySelector<HTMLElement>("[data-diag-status]");
-    let selected = options[0]?.dataset.slug ?? "toefl-ibt";
+    
+    let selectedOption = options.find((o) => o.getAttribute("aria-pressed") === "true") || options[0];
+    let selectedHref = selectedOption?.dataset.href ?? "";
 
     const select = (el: HTMLElement) => {
-      selected = el.dataset.slug ?? selected;
+      selectedHref = el.dataset.href ?? "";
       options.forEach((o) => o.setAttribute("aria-pressed", String(o === el)));
       if (status) status.textContent = "";
     };
@@ -215,9 +208,8 @@ const diagnostics = [
 
     // Lógica dinámica: cada examen abre su propio diagnóstico (cuando exista).
     goBtn?.addEventListener("click", () => {
-      const href = DIAGNOSTICS[selected];
-      if (href) {
-        window.open(href, "_blank", "noopener,noreferrer");
+      if (selectedHref) {
+        window.open(selectedHref, "_blank", "noopener,noreferrer");
       } else if (status) {
         status.textContent = "Tu diagnóstico estará disponible muy pronto. ¡Déjanos tus datos y te avisamos!";
       }
