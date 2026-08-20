@@ -5,7 +5,7 @@ import InteractiveImageAccordion from "@/components/ui/InteractiveImageAccordion
 // Cada examen es un diagnóstico distinto. El campo `href` se llenará cuando las
 // pruebas estén listas para descargar; mientras tanto queda la lógica dinámica.
 const diagnostics = [
-  { slug: "toefl-ibt", name: "TOEFL iBT", full: "Test of English as a Foreign Language", parts: "Reading, Listening, Speaking, Writing", time: "~3 hrs", href: "" },
+  { slug: "toefl-ibt", name: "TOEFL iBT", full: "Test of English as a Foreign Language", parts: "Reading, Listening, Speaking, Writing", time: "~3 hrs", href: "/Diagnóstico TOEFL IBT de Proacademy.pdf" },
   { slug: "sat", name: "SAT", full: "Scholastic Assessment Test", parts: "Reading & Writing, Math", time: "~2 hrs 14 min", href: "" },
   { slug: "gre", name: "GRE", full: "Graduate Record Examination", parts: "Verbal, Quantitative, Analytical Writing", time: "~1 hr 58 min", href: "" },
   { slug: "gmat", name: "GMAT", full: "Graduate Management Admission Test", parts: "Quantitative, Verbal, Data Insights", time: "~2 hrs 15 min", href: "" },
@@ -172,7 +172,7 @@ const diagnostics = [
 <script>
   // Diagnósticos por examen. Llena cada href cuando la prueba esté lista.
   const DIAGNOSTICS: Record<string, string> = {
-    "toefl-ibt": "",
+    "toefl-ibt": "/Diagnóstico TOEFL IBT de Proacademy.pdf",
     sat: "",
     gre: "",
     gmat: "",
