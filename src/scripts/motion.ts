@@ -159,4 +159,28 @@ function init() {
       onToggle: (self) => sticky.classList.toggle("is-visible", self.isActive),
     });
   }
+
+  // -- Keep trigger positions accurate as late content settles --------------------
+  // Images (esp. the hero) and variable web fonts can still be resizing the
+  // document after ScrollTrigger's first pass, which throws off every "start"
+  // offset below them — refresh once that settles so reveals fire at the right
+  // scroll position instead of too early/late (or not at all).
+  const refresh = () => ScrollTrigger.refresh();
+
+  document.fonts?.ready.then(refresh).catch(() => {});
+
+  const pendingImages = Array.from(document.images).filter((img) => !img.complete);
+  if (pendingImages.length) {
+    let remaining = pendingImages.length;
+    const onImageSettled = () => {
+      remaining -= 1;
+      if (remaining <= 0) refresh();
+    };
+    pendingImages.forEach((img) => {
+      img.addEventListener("load", onImageSettled, { once: true });
+      img.addEventListener("error", onImageSettled, { once: true });
+    });
+  }
+
+  window.addEventListener("load", refresh);
 }
