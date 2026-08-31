@@ -44,84 +44,96 @@ function init() {
     });
   });
 
-  // -- Reveals ----------------------------------------------------------------
-  document.querySelectorAll<HTMLElement>("[data-reveal]").forEach((el) => {
-    gsap.to(el, {
-      opacity: 1,
-      y: 0,
-      duration: 1.1,
-      delay: parseFloat(el.dataset.revealDelay ?? "0"),
-      ease: "expo.out",
-      scrollTrigger: { trigger: el, start: "top 88%", once: true },
+  // -- Reveals, counters, parallax, progress lines -----------------------------
+  // These all read layout (getBoundingClientRect) at creation time to set their
+  // scroll trigger positions. Variable web fonts can still be swapping in and
+  // resizing text right after the initial script runs, which used to leave
+  // triggers armed against stale positions — visible as reveals sitting at
+  // partial opacity until something (e.g. a resize) forced GSAP to recompute.
+  // Waiting for fonts to be ready before creating them fixes that at the
+  // source, with no risk of disturbing reveals that already fired.
+  const setupScrollAnimations = () => {
+    document.querySelectorAll<HTMLElement>("[data-reveal]").forEach((el) => {
+      gsap.to(el, {
+        opacity: 1,
+        y: 0,
+        duration: 1.1,
+        delay: parseFloat(el.dataset.revealDelay ?? "0"),
+        ease: "expo.out",
+        scrollTrigger: { trigger: el, start: "top 88%", once: true },
+      });
     });
-  });
 
-  document.querySelectorAll<HTMLElement>("[data-reveal-line]").forEach((el) => {
-    const lines = el.querySelectorAll(".line-inner");
-    gsap.to(lines, {
-      y: 0,
-      duration: 1.2,
-      stagger: 0.09,
-      ease: "expo.out",
-      scrollTrigger: { trigger: el, start: "top 85%", once: true },
+    document.querySelectorAll<HTMLElement>("[data-reveal-line]").forEach((el) => {
+      const lines = el.querySelectorAll(".line-inner");
+      gsap.to(lines, {
+        y: 0,
+        duration: 1.2,
+        stagger: 0.09,
+        ease: "expo.out",
+        scrollTrigger: { trigger: el, start: "top 85%", once: true },
+      });
     });
-  });
 
-  // -- Counters ---------------------------------------------------------------
-  document.querySelectorAll<HTMLElement>("[data-counter]").forEach((el) => {
-    const target = parseFloat(el.dataset.counter ?? "0");
-    const decimals = parseInt(el.dataset.decimals ?? "0", 10);
-    const state = { v: 0 };
-    gsap.to(state, {
-      v: target,
-      duration: 2,
-      ease: "expo.out",
-      scrollTrigger: { trigger: el, start: "top 85%", once: true },
-      onUpdate: () => {
-        el.textContent = state.v.toLocaleString("es-MX", {
-          minimumFractionDigits: decimals,
-          maximumFractionDigits: decimals,
-        });
-      },
-    });
-  });
-
-  // -- Parallax ---------------------------------------------------------------
-  document.querySelectorAll<HTMLElement>("[data-parallax]").forEach((el) => {
-    gsap.fromTo(
-      el,
-      { y: 0 },
-      {
-        y: parseFloat(el.dataset.parallax ?? "-60"),
-        ease: "none",
-        scrollTrigger: {
-          trigger: el.closest("[data-parallax-root]") ?? el,
-          start: "top bottom",
-          end: "bottom top",
-          scrub: 0.6,
+    document.querySelectorAll<HTMLElement>("[data-counter]").forEach((el) => {
+      const target = parseFloat(el.dataset.counter ?? "0");
+      const decimals = parseInt(el.dataset.decimals ?? "0", 10);
+      const state = { v: 0 };
+      gsap.to(state, {
+        v: target,
+        duration: 2,
+        ease: "expo.out",
+        scrollTrigger: { trigger: el, start: "top 85%", once: true },
+        onUpdate: () => {
+          el.textContent = state.v.toLocaleString("es-MX", {
+            minimumFractionDigits: decimals,
+            maximumFractionDigits: decimals,
+          });
         },
-      }
-    );
-  });
+      });
+    });
 
-  // -- Progress lines -----------------------------------------------------------
-  document.querySelectorAll<HTMLElement>("[data-progress-line]").forEach((el) => {
-    gsap.fromTo(
-      el,
-      { scaleX: 0 },
-      {
-        scaleX: 1,
-        transformOrigin: "left center",
-        ease: "none",
-        scrollTrigger: {
-          trigger: el.closest("section") ?? el,
-          start: "top 70%",
-          end: "bottom 60%",
-          scrub: 0.8,
-        },
-      }
-    );
-  });
+    document.querySelectorAll<HTMLElement>("[data-parallax]").forEach((el) => {
+      gsap.fromTo(
+        el,
+        { y: 0 },
+        {
+          y: parseFloat(el.dataset.parallax ?? "-60"),
+          ease: "none",
+          scrollTrigger: {
+            trigger: el.closest("[data-parallax-root]") ?? el,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: 0.6,
+          },
+        }
+      );
+    });
+
+    document.querySelectorAll<HTMLElement>("[data-progress-line]").forEach((el) => {
+      gsap.fromTo(
+        el,
+        { scaleX: 0 },
+        {
+          scaleX: 1,
+          transformOrigin: "left center",
+          ease: "none",
+          scrollTrigger: {
+            trigger: el.closest("section") ?? el,
+            start: "top 70%",
+            end: "bottom 60%",
+            scrub: 0.8,
+          },
+        }
+      );
+    });
+  };
+
+  if (document.fonts && document.fonts.status !== "loaded") {
+    document.fonts.ready.then(setupScrollAnimations).catch(setupScrollAnimations);
+  } else {
+    setupScrollAnimations();
+  }
 
   // -- Magnetic buttons (pointer devices only) ----------------------------------
   if (window.matchMedia("(pointer: fine)").matches) {
@@ -159,28 +171,4 @@ function init() {
       onToggle: (self) => sticky.classList.toggle("is-visible", self.isActive),
     });
   }
-
-  // -- Keep trigger positions accurate as late content settles --------------------
-  // Images (esp. the hero) and variable web fonts can still be resizing the
-  // document after ScrollTrigger's first pass, which throws off every "start"
-  // offset below them — refresh once that settles so reveals fire at the right
-  // scroll position instead of too early/late (or not at all).
-  const refresh = () => ScrollTrigger.refresh();
-
-  document.fonts?.ready.then(refresh).catch(() => {});
-
-  const pendingImages = Array.from(document.images).filter((img) => !img.complete);
-  if (pendingImages.length) {
-    let remaining = pendingImages.length;
-    const onImageSettled = () => {
-      remaining -= 1;
-      if (remaining <= 0) refresh();
-    };
-    pendingImages.forEach((img) => {
-      img.addEventListener("load", onImageSettled, { once: true });
-      img.addEventListener("error", onImageSettled, { once: true });
-    });
-  }
-
-  window.addEventListener("load", refresh);
 }
