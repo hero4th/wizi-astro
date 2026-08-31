@@ -7,9 +7,7 @@ dist/
 node_modules/
 
 # environment
-.env
-.env.local
-.env.production
+.env*
 
 # OS / editor
 .DS_Store

@@ -4,15 +4,13 @@ import nodemailer from "nodemailer";
 import type { APIRoute } from "astro";
 
 const transporter = nodemailer.createTransport({
-  host: "cms.proacademymx.com", // Subdominio que apunta al servidor Neubox
-  port: 465,
-  secure: true, // true para port 465, false para 587
+  host: "mail.oqumail.com", // Servidor SMTP de OquMail (envío)
+  port: 587,
+  secure: false, // STARTTLS en el puerto 587 (no SSL directo)
+  requireTLS: true,
   auth: {
-    user: "contacto@proacademymx.com",
-    pass: "CuenT4$ProAcademy",
-  },
-  tls: {
-    rejectUnauthorized: false,
+    user: import.meta.env.SMTP_USER,
+    pass: import.meta.env.SMTP_PASS,
   },
 });
 
@@ -40,7 +38,7 @@ export const POST: APIRoute = async ({ request }) => {
         <!-- Header -->
         <tr>
           <td style="background-color: #060a0a; text-align: center; padding: 40px 20px; border-bottom: 4px solid #0d9488;">
-            <img src="https://www.proacademymx.com/logo.png" alt="Professional Academy" width="180" style="display: block; margin: 0 auto;" />
+            <img src="https://www.proacademymx.com/email-logo.png" alt="Professional Academy" width="180" height="46" style="display: block; margin: 0 auto; width: 180px; height: auto; max-width: 100%;" />
             <h1 style="color: #ffffff; margin: 24px 0 0 0; font-size: 20px; font-weight: 600; letter-spacing: 0.5px;">¡Nuevo contacto generado!</h1>
             <p style="color: #5eead4; margin: 8px 0 0 0; font-size: 13px; font-weight: 500; text-transform: uppercase; letter-spacing: 2px;">Sitio Web Oficial</p>
           </td>
