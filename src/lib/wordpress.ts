@@ -13,7 +13,7 @@
 
 export const WP_ENDPOINT =
   import.meta.env.WP_GRAPHQL_ENDPOINT?.trim() ||
-  "https://proacademymx.com/graphql";
+  "https://cms.proacademymx.com/graphql";
 
 /** How many posts to request per GraphQL page (content is heavy, keep modest). */
 const PAGE_SIZE = 20;
