@@ -22,7 +22,7 @@ const heroBadges = [
   "Planes flexibles, cuando y donde quieras",
 ];
 
-type Feature = string | { label: string; note: string };
+type Feature = string | { label: string; note?: string; isHighlight?: boolean };
 
 interface Tier {
   name: string;
@@ -34,9 +34,12 @@ interface Tier {
   features: Feature[];
   guarantee: string;
   dark?: boolean;
+  lightGreen?: boolean;
   recommended?: boolean;
   tag?: [string, string];
   students?: string;
+  isInteractive?: boolean;
+  hidden?: boolean;
 }
 
 const tiers: Tier[] = [
@@ -92,6 +95,81 @@ const tiers: Tier[] = [
     students: "+1,500",
   },
 ];
+
+const paaTiers: Tier[] = [
+  {
+    name: "Pro Esencial",
+    description: "Para estudiantes disciplinados que<br/>buscan material de alta calidad.",
+    priceNote: "Pago único, acceso por 6 meses",
+    price: "$2,490",
+    priceUnit: "MXN",
+    includesTitle: "¿QUÉ INCLUYE ESTE PLAN?",
+    features: [
+      "Acceso a la plataforma digital",
+      "+20 exámenes de simulación",
+      "Tutor de IA Integrado",
+      "+5,000 preguntas de práctica",
+      "Lecciones en video",
+    ],
+    guarantee: "Si no logras el 80% en tu examen oficial, te devolvemos el 100% del dinero.",
+  },
+  {
+    name: "Pro Avanzado",
+    recommended: true,
+    isInteractive: true,
+    description: "Evalúa tu nivel y trabaja en tus debilidades<br/>con la ayuda de nuestros expertos.",
+    priceNote: "Elige tus clases en vivo:",
+    price: "$8,500",
+    priceUnit: "MXN",
+    includesTitle: "INCLUYE TODO DEL PLAN ESENCIAL, MÁS:",
+    features: [
+      "Diagnóstico de tu nivel",
+      "Plan de estudio personalizado",
+      { label: "Clases 1:1 en vivo", note: "10 a 20 h (ajustable según diagnóstico)" },
+      "Horarios flexibles adaptables",
+    ],
+    guarantee: "Si no logras el 85% en tu examen oficial, te devolvemos el 100% del dinero.",
+  },
+  {
+    name: "Pro Élite",
+    lightGreen: true,
+    description: "Programa intensivo con acompañamiento<br/>constante para resultados garantizados.",
+    priceNote: "A partir de:",
+    price: "$29,000",
+    priceUnit: "/MXN",
+    tag: ["PAGO DE CONTADO", "AHORRA 15%"],
+    includesTitle: "INCLUYE TODO DEL PLAN AVANZADO, MÁS:",
+    features: [
+      "40 horas de clase en vivo 1:1",
+      "Maestros certificados",
+      "Retroalimentación detallada",
+      "Kit de estrategia para el día del examen",
+    ],
+    guarantee: "Si no logras el 85% en tu examen oficial, te devolvemos el 100% del dinero.",
+    students: "+1,500",
+  },
+  {
+    name: "Pro Élite - Grupal",
+    dark: true,
+    hidden: true,
+    description: "Programa intensivo con otros aspirantes para una mejor experiencia... garantizado.",
+    priceNote: "A partir de:",
+    price: "$7,900",
+    priceUnit: "/MXN",
+    includesTitle: "INCLUYE TODO DEL PLAN AVANZADO, MÁS:",
+    features: [
+      "40 horas de clase grupal",
+      "Maestros certificados",
+      "Retroalimentación detallada",
+      "Kit de estrategia para el día del examen",
+      { label: "Consulta horarios matutinos y vespertinos", isHighlight: true }
+    ],
+    guarantee: "Si no logras el 80% en tu examen oficial, te devolvemos el 100% del dinero.",
+    students: "+1,500",
+  }
+];
+
+const currentTiers = program.slug === "paa" ? paaTiers : tiers;
 
 const waLink = (plan: string) =>
   `https://wa.me/${SITE.whatsapp}?text=${encodeURIComponent(
@@ -177,15 +255,18 @@ const schema = [
       </div>
 
       <div class="pp-cards mt-12">
-        {tiers.map((t, idx) => (
+        {currentTiers.map((t, idx) => (
           <div
             class:list={[
               "pp-card relative flex flex-col rounded-3xl p-6 sm:p-8 xl:p-9",
               `pp-card-${idx}`,
+              t.hidden && "hidden",
               t.dark 
                 ? "pp-card-dark text-pearl shadow-2xl shadow-black/30" 
-                : "bg-[#f1f3f5] text-ink-950",
-              !t.dark && idx === 1 && "lg:border-l lg:border-ink-950/[0.06]",
+                : t.lightGreen
+                  ? "bg-[#c6e9e0] text-ink-950 shadow-lg"
+                  : "bg-[#f1f3f5] text-ink-950",
+              !t.dark && !t.lightGreen && idx === 1 && "lg:border-l lg:border-ink-950/[0.06]",
               idx === 2 && "lg:!pt-[3.5rem] xl:!pt-[3.75rem]",
             ]}
             style={t.dark ? "background-image: linear-gradient(158deg, #112b26 0%, #0d211d 52%, #081714 100%)" : undefined}
@@ -199,28 +280,46 @@ const schema = [
             )}
 
             <div class="min-h-[6.5rem] sm:min-h-[7rem] lg:min-h-[7.5rem] flex flex-col justify-start">
-              <h2 class:list={["font-display text-[1.7rem] font-semibold tracking-tight leading-none", t.dark ? "text-pearl" : "text-ink-950"]}>{t.name}</h2>
-              <p class:list={["mt-3 max-w-[27ch] text-[14px] leading-relaxed", t.dark ? "text-ink-300" : "text-ink-500"]}>{t.description}</p>
+              <h2 class:list={["font-display text-[2rem] sm:text-[2.25rem] font-extrabold tracking-tight leading-none", t.dark ? "text-pearl" : "text-[#1b2a38]"]}>{t.name}</h2>
+              <p class:list={["mt-3 max-w-[29ch] text-[15px] font-medium leading-relaxed", t.dark ? "text-ink-300" : "text-[#475569]"]} set:html={t.description}></p>
             </div>
 
             <!-- Precio -->
-            <div class="mt-7 min-h-[5.5rem] lg:min-h-[5.75rem] flex flex-col justify-start">
-              <p class:list={["text-[13px]", t.dark ? "text-ink-300" : "text-ink-400"]}>{t.priceNote}</p>
-              <div class="mt-2 flex items-center justify-between gap-2 sm:gap-3 xl:gap-4">
-                <p class:list={["font-display font-semibold tracking-tight whitespace-nowrap shrink-0", t.dark ? "text-pearl" : "text-ink-950"]}>
-                  <span class="text-[2.35rem] sm:text-[2.6rem] xl:text-[2.75rem] leading-none">{t.price}</span>
-                  <span class:list={["ml-1 text-sm font-normal", t.dark ? "text-ink-300" : "text-ink-400"]}>{t.priceUnit}</span>
-                </p>
-                {t.tag && (
-                  <span
-                    class="inline-flex flex-col justify-center items-center text-center pl-[26px] sm:pl-[30px] xl:pl-[32px] pr-[14px] sm:pr-[16px] xl:pr-[18px] py-[10px] sm:py-[11px] xl:py-[12px] shrink-0"
-                    style="background-color: #354245; border-radius: 12px; clip-path: polygon(15px 0%, 100% 0%, 100% 100%, 15px 100%, 0% 50%);"
-                  >
-                    <span class="font-display text-[11px] sm:text-[11.5px] xl:text-[12px] font-bold tracking-[0.03em] text-white uppercase leading-none">{t.tag[0]}</span>
-                    <span class="font-display text-[15px] sm:text-[16.5px] xl:text-[18px] font-extrabold tracking-normal text-white uppercase leading-none mt-1">{t.tag[1]}</span>
-                  </span>
-                )}
+            <div class:list={["mt-5 min-h-[5.5rem] lg:min-h-[5.75rem] flex flex-row justify-between", t.isInteractive ? "items-end" : "items-start"]}>
+              <div class="flex flex-col justify-start w-full">
+                <p class:list={["text-[14px] font-medium", t.dark ? "text-ink-300" : "text-[#475569]"]}>{t.priceNote}</p>
+                <div class="mt-1 flex items-end justify-between gap-2 sm:gap-3 xl:gap-4 w-full">
+                  <p class:list={["font-display tracking-tight whitespace-nowrap shrink-0 flex items-baseline", t.dark ? "text-pearl" : "text-[#1b2a38]"]}>
+                    <span id={t.isInteractive ? "interactive-price" : undefined} class="text-[2.6rem] sm:text-[2.85rem] xl:text-[3.1rem] font-extrabold leading-none">{t.price}</span>
+                    <span class:list={["ml-1.5 text-[14px] sm:text-[15px] font-extrabold tracking-wide uppercase", t.dark ? "text-ink-300" : "text-[#5e7182]"]}>{t.priceUnit}</span>
+                  </p>
+                  {t.tag && (
+                    <span
+                      class="inline-flex flex-col justify-center items-center text-center pl-[22px] sm:pl-[26px] xl:pl-[28px] pr-[12px] sm:pr-[14px] xl:pr-[16px] py-[8px] sm:py-[10px] xl:py-[10px] shrink-0 translate-y-[-4px]"
+                      style={t.lightGreen ? "background-color: #00cfab; border-radius: 12px; clip-path: polygon(15px 0%, 100% 0%, 100% 100%, 15px 100%, 0% 50%);" : "background-color: #354245; border-radius: 12px; clip-path: polygon(15px 0%, 100% 0%, 100% 100%, 15px 100%, 0% 50%);"}
+                    >
+                      <span class:list={["font-display text-[10px] sm:text-[10.5px] xl:text-[11px] font-extrabold tracking-[0.04em] uppercase leading-none", t.lightGreen ? "text-[#061713]" : "text-white"]}>{t.tag[0]}</span>
+                      <span class:list={["font-display text-[14px] sm:text-[15px] xl:text-[16px] font-black tracking-normal uppercase leading-none mt-1", t.lightGreen ? "text-[#061713]" : "text-white"]}>{t.tag[1]}</span>
+                    </span>
+                  )}
+                </div>
               </div>
+
+              {t.isInteractive && (
+                <div class="bg-white rounded-2xl px-3.5 pt-3.5 pb-3 shadow-[0_2px_8px_rgba(0,0,0,0.04)] flex flex-col items-center gap-2 border border-ink-950/[0.03] shrink-0 ml-4 mb-0.5">
+                  <div class="text-[19px] sm:text-[21px] font-extrabold text-[#1b2a38] leading-none tracking-tight">
+                    <span id="interactive-hours">10</span> h
+                  </div>
+                  <div class="flex items-center gap-1.5 mt-0.5">
+                    <button id="btn-minus" class="w-[34px] h-[34px] rounded-full bg-[#f1f3f5] flex items-center justify-center text-[#1b2a38] hover:bg-[#e2e8f0] transition-colors disabled:opacity-30 cursor-pointer disabled:cursor-not-allowed">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 256 256"><path fill="currentColor" d="M228,128a12,12,0,0,1-12,12H40a12,12,0,0,1,0-24H216A12,12,0,0,1,228,128Z"/></svg>
+                    </button>
+                    <button id="btn-plus" class="w-[34px] h-[34px] rounded-full bg-[#f1f3f5] flex items-center justify-center text-[#1b2a38] hover:bg-[#e2e8f0] transition-colors disabled:opacity-30 cursor-pointer disabled:cursor-not-allowed">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 256 256"><path fill="currentColor" d="M228,128a12,12,0,0,1-12,12H140v76a12,12,0,0,1-24,0V140H40a12,12,0,0,1,0-24h76V40a12,12,0,0,1,24,0v76h76A12,12,0,0,1,228,128Z"/></svg>
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
 
             <a
@@ -235,12 +334,13 @@ const schema = [
             </a>
 
             <!-- Incluye -->
-            <p class:list={["mt-8 min-h-[2rem] font-mono text-[11px] font-bold tracking-[0.16em] uppercase flex items-center", t.dark ? "text-[#00cfab]" : "text-[#008f7a]"]}>{t.includesTitle}</p>
+            <p class:list={["mt-8 min-h-[2rem] font-mono text-[11px] font-extrabold tracking-[0.16em] uppercase flex items-center", t.dark ? "text-[#00cfab]" : "text-[#008f7a]"]}>{t.includesTitle}</p>
             <div class:list={["mt-3.5 h-px w-full", t.dark ? "bg-white/10" : "bg-ink-950/[0.08]"]} aria-hidden="true"></div>
             <ul class="mt-4 space-y-3.5 mb-10 sm:mb-12 xl:mb-14">
               {t.features.map((f) => {
                 const label = typeof f === "string" ? f : f.label;
                 const note = typeof f === "string" ? undefined : f.note;
+                const isHighlight = typeof f === "string" ? false : f.isHighlight;
                 return (
                   <li class="flex items-start gap-3">
                     {t.dark ? (
@@ -251,8 +351,8 @@ const schema = [
                       <Icon name="ph:check-circle" class="mt-px size-5 shrink-0 text-[#009485]" aria-hidden="true" />
                     )}
                     <span class="min-w-0">
-                      <span class:list={["block text-[14px] leading-snug", t.dark ? "text-ink-100" : "text-ink-800"]}>{label}</span>
-                      {note && <span class="mt-0.5 block text-[12px] leading-snug text-ink-400">{note}</span>}
+                      <span class:list={["block text-[15px] font-medium leading-snug", t.dark ? "text-ink-100" : "text-[#475569]", isHighlight && "!text-[#00cfab] font-bold"]}>{label}</span>
+                      {note && <span class="mt-0.5 block text-[13px] font-medium leading-snug text-[#5e7182]">{note}</span>}
                     </span>
                   </li>
                 );
@@ -262,7 +362,7 @@ const schema = [
             <!-- Garantía -->
             <div class:list={[
               "mt-auto rounded-3xl p-6 sm:p-7 shadow-sm",
-              t.dark ? "bg-[#13332e] border border-white/10" : "bg-[#e2f8f3]",
+              t.dark ? "bg-[#13332e] border border-white/10" : t.lightGreen ? "bg-white/40 border border-white/50" : "bg-[#e2f8f3]",
             ]}>
               <div class="flex items-center gap-3">
                 <Icon name="ph:seal-check" class:list={["size-7 shrink-0", t.dark ? "text-white" : "text-[#008f7a]"]} aria-hidden="true" />
@@ -312,6 +412,94 @@ const schema = [
     </div>
   </section>
 </Base>
+
+<script>
+  function initInteractivePricing() {
+    const btnMinus = document.getElementById("btn-minus");
+    const btnPlus = document.getElementById("btn-plus");
+    const hoursDisplay = document.getElementById("interactive-hours");
+    const priceDisplay = document.getElementById("interactive-price");
+    
+    if (btnMinus && btnPlus && hoursDisplay && priceDisplay) {
+      const hoursMap = [
+        { hours: 5, price: 4900 },
+        { hours: 10, price: 8900 },
+        { hours: 20, price: 16900 },
+        { hours: 30, price: 22900 }
+      ];
+      
+      let currentIndex = 1; // Default to 10 hours
+      let currentHours = hoursMap[currentIndex].hours;
+      let currentPrice = hoursMap[currentIndex].price;
+      
+      function animateValue(obj, start, end, duration, prefix = "") {
+        let startTimestamp = null;
+        const easeOutQuad = t => t * (2 - t);
+        
+        const step = (timestamp) => {
+          if (!startTimestamp) startTimestamp = timestamp;
+          let progress = Math.min((timestamp - startTimestamp) / duration, 1);
+          progress = easeOutQuad(progress);
+          const current = Math.floor(progress * (end - start) + start);
+          obj.textContent = prefix + current.toLocaleString('en-US');
+          if (progress < 1) {
+            window.requestAnimationFrame(step);
+          } else {
+            obj.textContent = prefix + end.toLocaleString('en-US');
+          }
+        };
+        window.requestAnimationFrame(step);
+      }
+      
+      const updateDisplay = (newIndex, animate = true) => {
+        const target = hoursMap[newIndex];
+        const newHours = target.hours;
+        const newPrice = target.price;
+        
+        if (animate) {
+          animateValue(hoursDisplay, currentHours, newHours, 350);
+          animateValue(priceDisplay, currentPrice, newPrice, 350, "$");
+        } else {
+          hoursDisplay.textContent = newHours.toString();
+          priceDisplay.textContent = "$" + newPrice.toLocaleString('en-US');
+        }
+        
+        currentHours = newHours;
+        currentPrice = newPrice;
+        currentIndex = newIndex;
+        
+        if(currentIndex <= 0) {
+           btnMinus.setAttribute('disabled', 'true');
+        } else {
+           btnMinus.removeAttribute('disabled');
+        }
+        
+        if(currentIndex >= hoursMap.length - 1) {
+           btnPlus.setAttribute('disabled', 'true');
+        } else {
+           btnPlus.removeAttribute('disabled');
+        }
+      };
+      
+      btnMinus.addEventListener("click", () => {
+        if (currentIndex > 0) {
+          updateDisplay(currentIndex - 1);
+        }
+      });
+      
+      btnPlus.addEventListener("click", () => {
+        if (currentIndex < hoursMap.length - 1) {
+          updateDisplay(currentIndex + 1);
+        }
+      });
+      
+      updateDisplay(currentIndex, false);
+    }
+  }
+
+  initInteractivePricing();
+  document.addEventListener('astro:page-load', initInteractivePricing);
+</script>
 
 <style>
   /* ---- HERO ---- */
