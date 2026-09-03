@@ -1,36 +1,24 @@
 /**
- * Post content processing. The admin editor (Tiptap) authors HTML directly —
- * there's no Markdown step anymore. This module sanitizes that HTML before
- * it's stored (defense in depth: the editor is trusted, but the content is
- * rendered unescaped on the public site via `set:html`) and injects heading
- * ids for the table of contents.
+ * Post content processing for the admin editor. The editor (Tiptap) authors
+ * HTML directly — there's no Markdown step. This module sanitizes that HTML
+ * before it's stored (defense in depth: the editor is trusted, but the
+ * content is rendered unescaped on the public site via `set:html`) and
+ * injects heading ids for the table of contents.
+ *
+ * Admin-only: this pulls in sanitize-html, which the public blog pages must
+ * NOT import (see headings.ts for why).
  */
 import sanitizeHtml from "sanitize-html";
+import { slugify } from "./slug";
 
-export interface Heading {
-  depth: number;
-  slug: string;
-  text: string;
-}
-
-function slugify(text: string): string {
-  return text
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .toLowerCase()
-    .replace(/<[^>]+>/g, "")
-    .replace(/[^a-z0-9\s-]/g, "")
-    .trim()
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-");
-}
+export { extractHeadings, readingTimeFromHtml, type Heading } from "./headings";
 
 const ALLOWED_TAGS = [
   "h2", "h3", "h4", "p", "br", "hr", "strong", "b", "em", "i", "u", "s", "strike", "code", "pre",
   "blockquote", "ul", "ol", "li", "a", "img", "table", "thead", "tbody", "tr", "th", "td", "span",
 ];
 
-/** Sanitize editor-authored HTML and inject `id` attributes on h2/h3 for the TOC. */
+/** Sanitize editor-authored HTML and inject `id` attributes on h2/h3/h4 for the TOC. */
 export function processContentHtml(rawHtml: string): string {
   const clean = sanitizeHtml(rawHtml, {
     allowedTags: ALLOWED_TAGS,
@@ -43,7 +31,6 @@ export function processContentHtml(rawHtml: string): string {
     allowedStyles: {
       span: { "font-family": [/^[\w\s,'"-]+$/] },
     },
-    // Links to other sites open safely; internal links are untouched.
     transformTags: {
       a: sanitizeHtml.simpleTransform("a", { rel: "noopener noreferrer" }, false),
     },
@@ -60,26 +47,4 @@ export function processContentHtml(rawHtml: string): string {
     const cleanedAttrs = (attrs || "").replace(/\s*id="[^"]*"/i, "");
     return `<${tag}${cleanedAttrs} id="${slug}">${inner}</${tag}>`;
   });
-}
-
-/** Extract the {depth, slug, text} list back out of already-processed HTML (for the TOC). */
-export function extractHeadings(html: string): Heading[] {
-  const headings: Heading[] = [];
-  const re = /<h([23])\s+id="([^"]+)">([\s\S]*?)<\/h\1>/gi;
-  let m: RegExpExecArray | null;
-  while ((m = re.exec(html))) {
-    headings.push({
-      depth: Number(m[1]),
-      slug: m[2],
-      text: m[3].replace(/<[^>]+>/g, "").trim(),
-    });
-  }
-  return headings;
-}
-
-/** Reading time in minutes from rendered HTML (~200 wpm). */
-export function readingTimeFromHtml(html: string): number {
-  const text = html.replace(/<[^>]+>/g, " ").trim();
-  const words = text.split(/\s+/).filter(Boolean);
-  return Math.max(1, Math.round(words.length / 200));
 }

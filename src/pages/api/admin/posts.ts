@@ -4,17 +4,7 @@ import type { APIRoute } from "astro";
 import { requireSession } from "@/lib/auth";
 import { sql } from "@/lib/db";
 import { processContentHtml, readingTimeFromHtml } from "@/lib/content";
-
-function slugify(text: string): string {
-  return text
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, "")
-    .trim()
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-");
-}
+import { slugify } from "@/lib/slug";
 
 /** Defense-in-depth CSRF check: same-origin only for state-changing requests. */
 function isSameOrigin(request: Request): boolean {

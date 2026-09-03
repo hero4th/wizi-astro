@@ -6,7 +6,7 @@ import TableOfContents from "@/components/TableOfContents.astro";
 import { SITE } from "@/data/site";
 import { articleSchema, breadcrumbSchema } from "@/lib/schema";
 import { getPostBySlug, getPublishedPosts } from "@/lib/blog";
-import { extractHeadings } from "@/lib/content";
+import { extractHeadings } from "@/lib/headings";
 
 const post = await getPostBySlug(Astro.params.slug!);
 if (!post) return Astro.redirect("/blog", 307);

@@ -4,22 +4,12 @@ import type { APIRoute } from "astro";
 import { requireSession } from "@/lib/auth";
 import { sql } from "@/lib/db";
 import { processContentHtml, readingTimeFromHtml } from "@/lib/content";
+import { slugify } from "@/lib/slug";
 
 function isSameOrigin(request: Request): boolean {
   const origin = request.headers.get("origin");
   if (!origin) return true;
   return origin === new URL(request.url).origin;
-}
-
-function slugify(text: string): string {
-  return text
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, "")
-    .trim()
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-");
 }
 
 export const PUT: APIRoute = async ({ params, request, cookies }) => {

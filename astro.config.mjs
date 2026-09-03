@@ -57,6 +57,13 @@ export default defineConfig({
   ],
   vite: {
     plugins: [tailwindcss()],
+    // sanitize-html's htmlparser2 dependency is ESM-only; Vercel's function
+    // bundler chokes trying to inline a require() of it (ERR_REQUIRE_ESM at
+    // runtime, invisible locally). Keeping it external makes Node load it
+    // normally from node_modules in the deployed function instead.
+    ssr: {
+      external: ["sanitize-html", "htmlparser2"],
+    },
   },
   prefetch: {
     prefetchAll: true,
