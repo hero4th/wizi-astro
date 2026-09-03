@@ -6,16 +6,15 @@ import { sql } from "@/lib/db";
 import { processContentHtml, readingTimeFromHtml } from "@/lib/content";
 import { slugify } from "@/lib/slug";
 
-/** Defense-in-depth CSRF check: same-origin only for state-changing requests. */
-function isSameOrigin(request: Request): boolean {
-  const origin = request.headers.get("origin");
-  if (!origin) return true; // same-origin form posts often omit Origin; rely on SameSite=strict cookie
-  return origin === new URL(request.url).origin;
-}
-
 export const POST: APIRoute = async ({ request, cookies }) => {
+  // CSRF protection is the session cookie itself (httpOnly, secure,
+  // sameSite=strict — never sent on a cross-site request in the first
+  // place, which is the current recommended baseline). A manual Origin
+  // comparison was tried here too, but request.url doesn't reliably reflect
+  // the public origin behind Vercel's proxy, so it rejected legitimate
+  // requests in production while never having caught anything sameSite
+  // wasn't already blocking.
   if (!(await requireSession(cookies))) return new Response("Unauthorized", { status: 401 });
-  if (!isSameOrigin(request)) return new Response("Forbidden", { status: 403 });
 
   const data = await request.json();
   const title: string = String(data.title ?? "").trim();

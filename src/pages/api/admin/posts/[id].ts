@@ -6,15 +6,13 @@ import { sql } from "@/lib/db";
 import { processContentHtml, readingTimeFromHtml } from "@/lib/content";
 import { slugify } from "@/lib/slug";
 
-function isSameOrigin(request: Request): boolean {
-  const origin = request.headers.get("origin");
-  if (!origin) return true;
-  return origin === new URL(request.url).origin;
-}
-
 export const PUT: APIRoute = async ({ params, request, cookies }) => {
+  // See posts.ts for why there's no separate Origin check: the session
+  // cookie's sameSite=strict already rules out cross-site requests, and a
+  // manual Origin comparison here rejected legitimate requests in
+  // production (request.url doesn't reliably reflect the public origin
+  // behind Vercel's proxy).
   if (!(await requireSession(cookies))) return new Response("Unauthorized", { status: 401 });
-  if (!isSameOrigin(request)) return new Response("Forbidden", { status: 403 });
 
   const id = Number(params.id);
   if (!Number.isInteger(id)) return new Response("Invalid id", { status: 400 });
@@ -67,9 +65,8 @@ export const PUT: APIRoute = async ({ params, request, cookies }) => {
   }
 };
 
-export const DELETE: APIRoute = async ({ params, request, cookies }) => {
+export const DELETE: APIRoute = async ({ params, cookies }) => {
   if (!(await requireSession(cookies))) return new Response("Unauthorized", { status: 401 });
-  if (!isSameOrigin(request)) return new Response("Forbidden", { status: 403 });
 
   const id = Number(params.id);
   if (!Number.isInteger(id)) return new Response("Invalid id", { status: 400 });

@@ -7,15 +7,9 @@ import { requireSession } from "@/lib/auth";
 const MAX_BYTES = 8 * 1024 * 1024; // 8 MB
 const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/gif", "image/svg+xml"]);
 
-function isSameOrigin(request: Request): boolean {
-  const origin = request.headers.get("origin");
-  if (!origin) return true;
-  return origin === new URL(request.url).origin;
-}
-
 export const POST: APIRoute = async ({ request, cookies }) => {
+  // See posts.ts for why there's no separate Origin check here.
   if (!(await requireSession(cookies))) return new Response("Unauthorized", { status: 401 });
-  if (!isSameOrigin(request)) return new Response("Forbidden", { status: 403 });
 
   const form = await request.formData();
   const file = form.get("file");
