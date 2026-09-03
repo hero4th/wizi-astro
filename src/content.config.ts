@@ -1,88 +1,34 @@
 import { defineCollection, z } from "astro:content";
-import type { Loader } from "astro/loaders";
-import { fetchAllPosts } from "./lib/wordpress";
+import { glob } from "astro/loaders";
 
 /**
- * Content Layer loader that pulls every published post from WordPress
- * (WPGraphQL) at build time. The normalized data — including the cleaned
- * article HTML and the extracted headings — is stored on each entry so the
- * Astro blog pages keep working through the familiar `getCollection` API.
+ * Blog posts live as Markdown files in src/content/blog/ — no external
+ * fetch, no database. They're either:
+ *  - migrated once from the old WordPress export (scripts/import-wordpress.mjs), or
+ *  - written through the visual editor at /admin (Decap CMS), which commits
+ *    the .md file straight to this folder via the GitHub API.
+ * Astro's built-in `glob` loader reads them at build time; `render(entry)`
+ * (used in the post page) turns the Markdown body into HTML.
  */
-const wordpressBlogLoader: Loader = {
-  name: "wordpress-blog",
-  load: async ({ store, logger, parseData, generateDigest }) => {
-    logger.info("Fetching blog posts from WordPress (WPGraphQL)…");
-
-    let posts;
-    try {
-      posts = await fetchAllPosts();
-    } catch (error) {
-      logger.error(`Could not fetch WordPress posts: ${(error as Error).message}`);
-      // Keep the previous store (if any) rather than wiping the blog on a
-      // transient network/API hiccup during a rebuild.
-      if (store.keys().length > 0) {
-        logger.warn("Reusing previously cached posts from the data store.");
-        return;
-      }
-      logger.warn("No previously cached posts found. Continuing with empty blog collection.");
-      posts = [];
-    }
-
-    store.clear();
-
-    for (const post of posts) {
-      const data = await parseData({
-        id: post.slug,
-        data: {
-          title: post.title,
-          description: post.description,
-          html: post.html,
-          headings: post.headings,
-          category: post.category,
-          categorySlug: post.categorySlug,
-          categories: post.categories,
-          pubDate: post.pubDate,
-          updatedDate: post.updatedDate ?? undefined,
-          image: post.image ?? undefined,
-          imageAlt: post.imageAlt,
-          imageWidth: post.imageWidth ?? undefined,
-          imageHeight: post.imageHeight ?? undefined,
-          author: post.author,
-          readingTime: post.readingTime,
-          draft: false,
-        },
-      });
-
-      store.set({ id: post.slug, data, digest: generateDigest(data) });
-    }
-
-    logger.info(`Loaded ${posts.length} posts from WordPress.`);
-  },
-};
-
-const heading = z.object({
-  depth: z.number(),
-  slug: z.string(),
-  text: z.string(),
-});
-
 const category = z.object({
   name: z.string(),
   slug: z.string(),
 });
 
 const blog = defineCollection({
-  loader: wordpressBlogLoader,
+  loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/blog" }),
   schema: z.object({
     title: z.string(),
     description: z.string(),
-    html: z.string().default(""),
-    headings: z.array(heading).default([]),
     category: z.string(),
     categorySlug: z.string(),
     categories: z.array(category).default([]),
     pubDate: z.coerce.date(),
     updatedDate: z.coerce.date().optional(),
+    // Plain URL string (not Astro's `image()` helper) so it keeps working with
+    // both the /images/blog/... paths written by the importer/CMS and any
+    // remaining remote URLs, with zero changes to the existing <img src=...>
+    // call sites across the blog pages.
     image: z.string().optional(),
     imageAlt: z.string().default(""),
     imageWidth: z.number().optional(),
