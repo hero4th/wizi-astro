@@ -25,9 +25,13 @@ const FONTS = [
 ];
 
 async function uploadImage(file: File): Promise<string> {
-  const fd = new FormData();
-  fd.append("file", file);
-  const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
+  // Sent as a raw binary body, not FormData (multipart/form-data) — see
+  // upload.ts for why: Astro's CSRF guard blocks that content-type class.
+  const res = await fetch("/api/admin/upload", {
+    method: "POST",
+    headers: { "Content-Type": file.type, "X-Filename": encodeURIComponent(file.name) },
+    body: file,
+  });
   if (!res.ok) throw new Error(await res.text());
   const data = await res.json();
   return data.url as string;

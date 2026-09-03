@@ -11,21 +11,29 @@ export const POST: APIRoute = async ({ request, cookies }) => {
   // See posts.ts for why there's no separate Origin check here.
   if (!(await requireSession(cookies))) return new Response("Unauthorized", { status: 401 });
 
-  const form = await request.formData();
-  const file = form.get("file");
+  // The upload is sent as a raw binary body (not multipart/form-data via
+  // FormData) specifically so Astro's built-in CSRF guard doesn't see it:
+  // that guard triggers on form-urlencoded/multipart/text-plain content
+  // types (see the login fix for the same pattern), which a FormData
+  // upload would otherwise be.
+  const contentType = request.headers.get("content-type") ?? "";
+  const filenameHeader = request.headers.get("x-filename");
+  const filename = filenameHeader ? decodeURIComponent(filenameHeader) : "upload.bin";
 
-  if (!(file instanceof File)) return new Response("No file provided.", { status: 400 });
-  if (!ALLOWED_TYPES.has(file.type)) return new Response(`Tipo de archivo no permitido: ${file.type}`, { status: 415 });
-  if (file.size > MAX_BYTES) return new Response("La imagen supera el límite de 8 MB.", { status: 413 });
+  if (!ALLOWED_TYPES.has(contentType)) return new Response(`Tipo de archivo no permitido: ${contentType}`, { status: 415 });
 
-  const ext = file.name.split(".").pop()?.toLowerCase() || "bin";
+  const buffer = await request.arrayBuffer();
+  if (buffer.byteLength === 0) return new Response("No file provided.", { status: 400 });
+  if (buffer.byteLength > MAX_BYTES) return new Response("La imagen supera el límite de 8 MB.", { status: 413 });
+
+  const ext = filename.split(".").pop()?.toLowerCase() || "bin";
   const safeName = `${crypto.randomUUID()}.${ext}`;
 
   try {
-    const blob = await put(`blog/${safeName}`, file, {
+    const blob = await put(`blog/${safeName}`, buffer, {
       access: "public",
       addRandomSuffix: false,
-      contentType: file.type,
+      contentType,
     });
     return new Response(JSON.stringify({ url: blob.url }), {
       status: 201,
