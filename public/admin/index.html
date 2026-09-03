@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex, nofollow" />
     <title>Editor de Blog | Professional Academy</title>
+    <!-- Explicit absolute path: without this, visiting /admin (no trailing
+         slash) makes the browser resolve Decap's default relative "config.yml"
+         fetch against the site root (/config.yml → 404) instead of /admin/. -->
+    <link href="/admin/config.yml" type="text/yaml" rel="cms-config-url" />
     <style>
       body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
     </style>
