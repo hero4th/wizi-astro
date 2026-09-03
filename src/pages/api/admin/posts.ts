@@ -3,7 +3,7 @@ export const prerender = false;
 import type { APIRoute } from "astro";
 import { requireSession } from "@/lib/auth";
 import { sql } from "@/lib/db";
-import { renderMarkdown, readingTimeFromHtml } from "@/lib/markdown";
+import { processContentHtml, readingTimeFromHtml } from "@/lib/content";
 
 function slugify(text: string): string {
   return text
@@ -29,13 +29,15 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 
   const data = await request.json();
   const title: string = String(data.title ?? "").trim();
-  const body: string = String(data.body ?? "");
-  if (!title || !body) return new Response("Título y contenido son obligatorios.", { status: 400 });
+  const rawBody: string = String(data.body ?? "");
+  if (!title || !rawBody || rawBody === "<p></p>") {
+    return new Response("Título y contenido son obligatorios.", { status: 400 });
+  }
 
   let slug: string = data.slug?.trim() ? slugify(data.slug) : slugify(title);
   if (!slug) return new Response("No se pudo generar un slug válido.", { status: 400 });
 
-  const html = renderMarkdown(body);
+  const html = processContentHtml(rawBody);
   const readingTime = data.readingTime ? Number(data.readingTime) : readingTimeFromHtml(html);
   const categories = Array.isArray(data.categories) ? data.categories : [];
 
@@ -49,7 +51,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
         ${slug}, ${title}, ${data.description ?? ""}, ${data.category ?? "General"}, ${data.categorySlug ?? "general"},
         ${JSON.stringify(categories)}, ${data.pubDate ?? new Date().toISOString().slice(0, 10)}, ${data.updatedDate ?? null},
         ${data.image ?? null}, ${data.imageAlt ?? ""}, ${data.imageWidth ?? null}, ${data.imageHeight ?? null},
-        ${data.author ?? "Professional Academy"}, ${readingTime}, ${data.draft ?? true}, ${body}, ${html}
+        ${data.author ?? "Professional Academy"}, ${readingTime}, ${data.draft ?? true}, ${html}, ${html}
       )
       RETURNING id, slug
     `;

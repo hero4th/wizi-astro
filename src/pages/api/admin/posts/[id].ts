@@ -3,7 +3,7 @@ export const prerender = false;
 import type { APIRoute } from "astro";
 import { requireSession } from "@/lib/auth";
 import { sql } from "@/lib/db";
-import { renderMarkdown, readingTimeFromHtml } from "@/lib/markdown";
+import { processContentHtml, readingTimeFromHtml } from "@/lib/content";
 
 function isSameOrigin(request: Request): boolean {
   const origin = request.headers.get("origin");
@@ -31,11 +31,13 @@ export const PUT: APIRoute = async ({ params, request, cookies }) => {
 
   const data = await request.json();
   const title: string = String(data.title ?? "").trim();
-  const body: string = String(data.body ?? "");
-  if (!title || !body) return new Response("Título y contenido son obligatorios.", { status: 400 });
+  const rawBody: string = String(data.body ?? "");
+  if (!title || !rawBody || rawBody === "<p></p>") {
+    return new Response("Título y contenido son obligatorios.", { status: 400 });
+  }
 
   const slug: string = data.slug?.trim() ? slugify(data.slug) : slugify(title);
-  const html = renderMarkdown(body);
+  const html = processContentHtml(rawBody);
   const readingTime = data.readingTime ? Number(data.readingTime) : readingTimeFromHtml(html);
   const categories = Array.isArray(data.categories) ? data.categories : [];
 
@@ -57,7 +59,7 @@ export const PUT: APIRoute = async ({ params, request, cookies }) => {
         author = ${data.author ?? "Professional Academy"},
         reading_time = ${readingTime},
         draft = ${data.draft ?? true},
-        body = ${body},
+        body = ${html},
         html = ${html},
         updated_at = now()
       WHERE id = ${id}
