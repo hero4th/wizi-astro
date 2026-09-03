@@ -14,8 +14,8 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
     return new Response("Demasiados intentos fallidos. Espera 15 minutos e intenta de nuevo.", { status: 429 });
   }
 
-  const form = await request.formData();
-  const password = String(form.get("password") ?? "");
+  const data = await request.json().catch(() => ({}));
+  const password = String(data.password ?? "");
 
   const ok = password.length > 0 && (await verifyPassword(password));
   await recordLoginAttempt(ip, ok);
