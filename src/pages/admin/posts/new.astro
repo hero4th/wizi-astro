@@ -1,0 +1,121 @@
+---
+export const prerender = false;
+
+import AdminLayout from "@/layouts/AdminLayout.astro";
+import { requireSession } from "@/lib/auth";
+
+if (!(await requireSession(Astro.cookies))) return Astro.redirect("/admin/login", 303);
+
+const today = new Date().toISOString().slice(0, 10);
+---
+
+<AdminLayout title="Nuevo post">
+  <h1 style="font-size:1.4rem;margin:0 0 1.5rem">Nuevo post</h1>
+  <p id="form-error" class="error-banner" hidden></p>
+
+  <form class="stack" id="post-form">
+    <div>
+      <label for="title">Título</label>
+      <input id="title" name="title" type="text" required />
+    </div>
+
+    <div>
+      <label for="slug">Slug (URL) — se genera solo si lo dejas vacío</label>
+      <input id="slug" name="slug" type="text" placeholder="mi-nuevo-post" />
+    </div>
+
+    <div>
+      <label for="description">Descripción (SEO, ~155 caracteres)</label>
+      <textarea id="description" name="description" rows="2" required></textarea>
+    </div>
+
+    <div class="row">
+      <div>
+        <label for="category">Categoría</label>
+        <input id="category" name="category" type="text" placeholder="TOEFL" required />
+      </div>
+      <div>
+        <label for="categorySlug">Slug de categoría</label>
+        <input id="categorySlug" name="categorySlug" type="text" placeholder="toefl" required />
+      </div>
+    </div>
+
+    <div class="row">
+      <div>
+        <label for="pubDate">Fecha de publicación</label>
+        <input id="pubDate" name="pubDate" type="date" value={today} required />
+      </div>
+      <div>
+        <label for="author">Autor</label>
+        <input id="author" name="author" type="text" value="Professional Academy" />
+      </div>
+    </div>
+
+    <div class="row">
+      <div>
+        <label for="image">Imagen destacada (URL)</label>
+        <input id="image" name="image" type="text" placeholder="/images/blog-toefl.webp" />
+      </div>
+      <div>
+        <label for="imageAlt">Texto alternativo de la imagen</label>
+        <input id="imageAlt" name="imageAlt" type="text" />
+      </div>
+    </div>
+
+    <div class="checkbox-row">
+      <input id="draft" name="draft" type="checkbox" checked />
+      <label for="draft">Borrador (no se publica hasta desmarcarlo)</label>
+    </div>
+
+    <div>
+      <label for="body">Contenido (Markdown)</label>
+      <textarea id="body" name="body" rows="18" required placeholder="## Encabezado&#10;&#10;Escribe aquí en Markdown..."></textarea>
+      <p class="hint">Soporta Markdown estándar: ## encabezados, **negritas**, *cursivas*, listas, enlaces, tablas.</p>
+    </div>
+
+    <div style="display:flex;gap:0.75rem">
+      <button type="submit" class="btn btn-primary">Crear post</button>
+      <a href="/admin" class="btn btn-secondary">Cancelar</a>
+    </div>
+  </form>
+
+  <script>
+    const form = document.getElementById("post-form") as HTMLFormElement;
+    const errorBox = document.getElementById("form-error") as HTMLElement;
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      errorBox.hidden = true;
+
+      const fd = new FormData(form);
+      const payload = {
+        title: fd.get("title"),
+        slug: fd.get("slug"),
+        description: fd.get("description"),
+        category: fd.get("category"),
+        categorySlug: fd.get("categorySlug"),
+        categories: [{ name: fd.get("category"), slug: fd.get("categorySlug") }],
+        pubDate: fd.get("pubDate"),
+        author: fd.get("author"),
+        image: fd.get("image") || null,
+        imageAlt: fd.get("imageAlt") || "",
+        draft: fd.get("draft") === "on",
+        body: fd.get("body"),
+      };
+
+      const res = await fetch("/api/admin/posts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (res.ok) {
+        window.location.href = "/admin";
+      } else {
+        errorBox.textContent = await res.text();
+        errorBox.hidden = false;
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    });
+  </script>
+</AdminLayout>

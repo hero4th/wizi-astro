@@ -1,17 +1,24 @@
 /**
- * One-time (and re-runnable) importer: WordPress WXR export → local Markdown
- * blog posts under src/content/blog/.
+ * One-time (and re-runnable) importer: WordPress WXR export → the Postgres
+ * `posts` table (see scripts/db-schema.sql). Upserts by slug.
  *
  * Usage:
  *   npx tsx scripts/import-wordpress.ts path/to/export.xml
  *
  * Only items with wp:post_type=post and wp:status=publish are imported.
- * Featured images are downloaded into public/images/blog/.
- * Re-running is safe — it overwrites the .md file for each slug and skips
- * re-downloading an image that's already on disk.
+ * Featured images are downloaded into public/images/blog/ (requires a
+ * redeploy to go live, since that folder is a static build asset).
+ *
+ * NOTE: as of this writing, cms.proacademymx.com — including its
+ * /wp-content/uploads/ media URLs — is blocked for non-browser requests by
+ * the host's Imunify360 bot-protection (see project history). Until that's
+ * fixed, image downloads here will fail gracefully (post still imports,
+ * just without a featured image) and can be backfilled later by re-running
+ * this script once the block is lifted.
  */
 import { XMLParser } from "fast-xml-parser";
 import TurndownService from "turndown";
+import { neon } from "@neondatabase/serverless";
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
 import path from "node:path";
 import {
@@ -24,7 +31,6 @@ import {
   type BlogCategory,
 } from "../src/lib/wordpress";
 
-const CONTENT_DIR = path.resolve(process.cwd(), "src/content/blog");
 const IMAGES_DIR = path.resolve(process.cwd(), "public/images/blog");
 const IMAGES_PUBLIC_PREFIX = "/images/blog";
 
@@ -34,6 +40,16 @@ const turndown = new TurndownService({
   bulletListMarker: "-",
 });
 
+function loadLocalEnv() {
+  for (const name of [".env.local", ".env"]) {
+    if (!existsSync(name)) continue;
+    for (const line of readFileSync(name, "utf-8").split("\n")) {
+      const m = /^([A-Z0-9_]+)=(.*)$/.exec(line.trim());
+      if (m && !process.env[m[1]]) process.env[m[1]] = m[2].replace(/^"(.*)"$/, "$1");
+    }
+  }
+}
+
 async function main() {
   const xmlPath = process.argv[2];
   if (!xmlPath) {
@@ -41,14 +57,11 @@ async function main() {
     process.exit(1);
   }
 
-  const xml = readFileSync(xmlPath, "utf-8");
-  const parser = new XMLParser({
-    ignoreAttributes: false,
-    attributeNamePrefix: "@_",
-    // No cdataPropName: leaving it unset merges CDATA content as plain text
-    // (which is all WXR uses it for) instead of nesting it under its own key.
-    trimValues: false,
-  });
+  loadLocalEnv();
+  const sql = neon(process.env.DATABASE_URL_UNPOOLED || process.env.DATABASE_URL!);
+
+  const xml = readFileSync(xmlPath, "utf-8").replace(/\r\n/g, "\n");
+  const parser = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: "@_", trimValues: false });
 
   const doc = parser.parse(xml);
   const items: any[] = asArray(doc?.rss?.channel?.item);
@@ -57,7 +70,6 @@ async function main() {
     process.exit(1);
   }
 
-  // Attachment id → URL map, for resolving each post's featured image.
   const attachmentUrlById = new Map<string, string>();
   for (const item of items) {
     if (item["wp:post_type"] === "attachment" && item["wp:attachment_url"]) {
@@ -71,7 +83,6 @@ async function main() {
     process.exit(1);
   }
 
-  mkdirSync(CONTENT_DIR, { recursive: true });
   mkdirSync(IMAGES_DIR, { recursive: true });
 
   let imported = 0;
@@ -79,7 +90,7 @@ async function main() {
 
   for (const item of posts) {
     try {
-      await importOne(item, attachmentUrlById);
+      await importOne(item, attachmentUrlById, sql);
       imported++;
     } catch (err) {
       skipped++;
@@ -87,10 +98,10 @@ async function main() {
     }
   }
 
-  console.log(`\nImported ${imported} post(s), skipped ${skipped}. Files written to ${CONTENT_DIR}`);
+  console.log(`\nImported ${imported} post(s), skipped ${skipped}.`);
 }
 
-async function importOne(item: any, attachmentUrlById: Map<string, string>) {
+async function importOne(item: any, attachmentUrlById: Map<string, string>, sql: ReturnType<typeof neon>) {
   const slug = String(item["wp:post_name"] || "").trim();
   if (!slug) throw new Error("missing wp:post_name (slug)");
 
@@ -107,41 +118,44 @@ async function importOne(item: any, attachmentUrlById: Map<string, string>) {
   const primary = pickPrimaryCategory(categories);
   const featuredUrl = resolveFeaturedImage(item, attachmentUrlById);
 
-  let html = String(item["content:encoded"] ?? "");
-  html = stripInjectedChrome(html);
-  html = removeFeaturedImageFromContent(html, featuredUrl);
+  let cleanedHtml = String(item["content:encoded"] ?? "");
+  cleanedHtml = stripInjectedChrome(cleanedHtml);
+  cleanedHtml = removeFeaturedImageFromContent(cleanedHtml, featuredUrl);
 
-  const description = buildDescription(html, `${rawTitle}. Guía de preparación de Professional Academy.`);
-  const minutes = readingTime(html);
-  const markdownBody = turndown.turndown(html).trim();
+  const description = buildDescription(cleanedHtml, `${rawTitle}. Guía de preparación de Professional Academy.`);
+  const markdownBody = turndown.turndown(cleanedHtml).trim();
+
+  // Re-render the Markdown (not the raw WordPress HTML) so heading ids match
+  // what the admin-authored posts get, keeping the TOC consistent site-wide.
+  const { renderMarkdown, readingTimeFromHtml } = await import("../src/lib/markdown");
+  const html = renderMarkdown(markdownBody);
+  const minutes = readingTimeFromHtml(html);
 
   const pubDateRaw = String(item["wp:post_date"] ?? "").trim();
   const pubDate = pubDateRaw ? pubDateRaw.slice(0, 10) : new Date().toISOString().slice(0, 10);
   const author = decodeEntities(String(item["dc:creator"] ?? "").trim()) || "Professional Academy";
 
-  const frontmatter: Record<string, unknown> = {
-    title: rawTitle,
-    description,
-    category: primary.name,
-    categorySlug: primary.slug,
-    categories,
-    pubDate,
-    author,
-    readingTime: minutes,
-    draft: false,
-  };
+  let image: string | undefined;
+  if (featuredUrl) image = await downloadImage(featuredUrl, slug);
 
-  if (featuredUrl) {
-    const localPath = await downloadImage(featuredUrl, slug);
-    if (localPath) {
-      frontmatter.image = localPath;
-      frontmatter.imageAlt = rawTitle;
-    }
-  }
-
-  const fileContents = `---\n${toFrontmatterYaml(frontmatter)}---\n\n${markdownBody}\n`;
-  writeFileSync(path.join(CONTENT_DIR, `${slug}.md`), fileContents, "utf-8");
-  console.log(`✓ ${slug}.md${featuredUrl ? " (+ imagen)" : ""}`);
+  await sql`
+    INSERT INTO posts (
+      slug, title, description, category, category_slug, categories,
+      pub_date, image, image_alt, author, reading_time, draft, body, html
+    ) VALUES (
+      ${slug}, ${rawTitle}, ${description}, ${primary.name}, ${primary.slug},
+      ${JSON.stringify(categories)}, ${pubDate}, ${image ?? null}, ${image ? rawTitle : ""},
+      ${author}, ${minutes}, false, ${markdownBody}, ${html}
+    )
+    ON CONFLICT (slug) DO UPDATE SET
+      title = EXCLUDED.title, description = EXCLUDED.description,
+      category = EXCLUDED.category, category_slug = EXCLUDED.category_slug,
+      categories = EXCLUDED.categories, pub_date = EXCLUDED.pub_date,
+      image = COALESCE(EXCLUDED.image, posts.image), image_alt = EXCLUDED.image_alt,
+      author = EXCLUDED.author, reading_time = EXCLUDED.reading_time,
+      body = EXCLUDED.body, html = EXCLUDED.html, updated_at = now()
+  `;
+  console.log(`✓ ${slug}${image ? " (+ imagen)" : ""}`);
 }
 
 function resolveFeaturedImage(item: any, attachmentUrlById: Map<string, string>): string | null {
@@ -152,7 +166,7 @@ function resolveFeaturedImage(item: any, attachmentUrlById: Map<string, string>)
   return attachmentUrlById.get(attachmentId) ?? null;
 }
 
-/** Downloads a featured image to public/images/blog/, skipping if already present. Returns the public URL path, or undefined on failure. */
+/** Downloads a featured image to public/images/blog/, skipping if already present. */
 async function downloadImage(url: string, slug: string): Promise<string | undefined> {
   const ext = (url.split(".").pop()?.split("?")[0] ?? "jpg").toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg";
   const filename = `${slug}.${ext}`;
@@ -164,10 +178,6 @@ async function downloadImage(url: string, slug: string): Promise<string | undefi
   try {
     const res = await fetch(url, {
       headers: {
-        // The old host has bot-protection in front of it; a plain fetch
-        // without a browser-like UA gets a 200 HTML challenge page instead
-        // of a 404, so status alone doesn't prove success — content-type
-        // below is what actually catches that case.
         "User-Agent":
           "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36",
       },
@@ -191,42 +201,6 @@ async function downloadImage(url: string, slug: string): Promise<string | undefi
 function asArray<T>(value: T | T[] | undefined | null): T[] {
   if (value === undefined || value === null) return [];
   return Array.isArray(value) ? value : [value];
-}
-
-function toFrontmatterYaml(data: Record<string, unknown>): string {
-  return Object.entries(data).map(([key, value]) => yamlLine(key, value, 0)).join("\n") + "\n";
-}
-
-function yamlLine(key: string, value: unknown, indent: number): string {
-  const pad = "  ".repeat(indent);
-  if (Array.isArray(value)) {
-    if (value.length === 0) return `${pad}${key}: []`;
-    const items = value
-      .map((v) => {
-        if (v && typeof v === "object") {
-          const entries = Object.entries(v as Record<string, unknown>)
-            .map(([k, val], i) => (i === 0 ? `${k}: ${yamlScalar(val)}` : `${pad}    ${k}: ${yamlScalar(val)}`))
-            .join("\n");
-          return `${pad}  - ${entries}`;
-        }
-        return `${pad}  - ${yamlScalar(v)}`;
-      })
-      .join("\n");
-    return `${pad}${key}:\n${items}`;
-  }
-  return `${pad}${key}: ${yamlScalar(value)}`;
-}
-
-function yamlScalar(value: unknown): string {
-  if (value === undefined || value === null) return '""';
-  if (typeof value === "number" || typeof value === "boolean") return String(value);
-  const str = String(value);
-  // Quote unless it's a "safe" bare word — dates included, so pubDate/updatedDate
-  // round-trip as YYYY-MM-DD strings rather than YAML dates.
-  if (!/^[\w./-]+$/.test(str) || /^\d{4}-\d{2}-\d{2}$/.test(str)) {
-    return JSON.stringify(str);
-  }
-  return str;
 }
 
 main().catch((err) => {

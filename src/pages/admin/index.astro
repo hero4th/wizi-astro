@@ -1,0 +1,60 @@
+---
+export const prerender = false;
+
+import AdminLayout from "@/layouts/AdminLayout.astro";
+import { requireSession } from "@/lib/auth";
+import { sql } from "@/lib/db";
+
+if (!(await requireSession(Astro.cookies))) return Astro.redirect("/admin/login", 303);
+
+const posts = await sql`
+  SELECT id, slug, title, category, pub_date, draft
+  FROM posts
+  ORDER BY pub_date DESC
+`;
+
+const formatter = new Intl.DateTimeFormat("es-MX", { day: "numeric", month: "short", year: "numeric" });
+---
+
+<AdminLayout title="Posts">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem">
+    <h1 style="font-size:1.4rem;margin:0">Posts del blog ({posts.length})</h1>
+    <a href="/admin/posts/new" class="btn btn-primary">+ Nuevo post</a>
+  </div>
+
+  {posts.length === 0 ? (
+    <p style="color:#64748b">Todavía no hay posts. <a href="/admin/posts/new">Crea el primero</a>.</p>
+  ) : (
+    <table>
+      <thead>
+        <tr>
+          <th>Título</th>
+          <th>Categoría</th>
+          <th>Fecha</th>
+          <th>Estado</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {posts.map((post) => (
+          <tr>
+            <td>
+              <strong>{post.title}</strong>
+              <div style="color:#94a3b8;font-size:0.78rem">/blog/{post.slug}</div>
+            </td>
+            <td>{post.category}</td>
+            <td>{formatter.format(new Date(post.pub_date))}</td>
+            <td>
+              {post.draft
+                ? <span class="badge badge-draft">Borrador</span>
+                : <span class="badge badge-published">Publicado</span>}
+            </td>
+            <td style="text-align:right;white-space:nowrap">
+              <a href={`/admin/posts/edit/${post.id}`} class="btn btn-secondary" style="padding:0.4rem 0.75rem">Editar</a>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  )}
+</AdminLayout>

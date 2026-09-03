@@ -1,7 +1,36 @@
-import { getCollection, type CollectionEntry } from "astro:content";
+import { sql } from "./db";
 import { categoryDescription } from "./wordpress";
 
-export type Post = CollectionEntry<"blog">;
+export interface BlogCategoryRef {
+  name: string;
+  slug: string;
+}
+
+export interface PostData {
+  title: string;
+  description: string;
+  category: string;
+  categorySlug: string;
+  categories: BlogCategoryRef[];
+  pubDate: Date;
+  updatedDate?: Date;
+  image?: string;
+  imageAlt: string;
+  imageWidth?: number;
+  imageHeight?: number;
+  author: string;
+  readingTime: number;
+  draft: boolean;
+  html: string;
+  body: string;
+}
+
+/** Shaped like an Astro `CollectionEntry` ({id, data}) so existing templates
+ *  (post.id, post.data.title, …) keep working unchanged. */
+export interface Post {
+  id: string;
+  data: PostData;
+}
 
 export interface CategoryWithCount {
   name: string;
@@ -10,10 +39,45 @@ export interface CategoryWithCount {
   description: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function rowToPost(row: any): Post {
+  return {
+    id: row.slug,
+    data: {
+      title: row.title,
+      description: row.description,
+      category: row.category,
+      categorySlug: row.category_slug,
+      categories: row.categories ?? [],
+      pubDate: new Date(row.pub_date),
+      updatedDate: row.updated_date ? new Date(row.updated_date) : undefined,
+      image: row.image ?? undefined,
+      imageAlt: row.image_alt ?? "",
+      imageWidth: row.image_width ?? undefined,
+      imageHeight: row.image_height ?? undefined,
+      author: row.author,
+      readingTime: row.reading_time,
+      draft: row.draft,
+      html: row.html,
+      body: row.body,
+    },
+  };
+}
+
 /** All published posts, newest first. */
 export async function getPublishedPosts(): Promise<Post[]> {
-  const posts = await getCollection("blog", ({ data }) => !data.draft);
-  return posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+  const rows = await sql`
+    SELECT * FROM posts WHERE draft = false ORDER BY pub_date DESC
+  `;
+  return rows.map(rowToPost);
+}
+
+/** A single post by slug — published only, unless includeDrafts is set (admin preview). */
+export async function getPostBySlug(slug: string, includeDrafts = false): Promise<Post | null> {
+  const rows = includeDrafts
+    ? await sql`SELECT * FROM posts WHERE slug = ${slug}`
+    : await sql`SELECT * FROM posts WHERE slug = ${slug} AND draft = false`;
+  return rows[0] ? rowToPost(rows[0]) : null;
 }
 
 /** Every category that has at least one published post, most-used first. */

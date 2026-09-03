@@ -1,0 +1,144 @@
+---
+export const prerender = false;
+
+import AdminLayout from "@/layouts/AdminLayout.astro";
+import { requireSession } from "@/lib/auth";
+import { sql } from "@/lib/db";
+
+if (!(await requireSession(Astro.cookies))) return Astro.redirect("/admin/login", 303);
+
+const id = Number(Astro.params.id);
+const rows = await sql`SELECT * FROM posts WHERE id = ${id}`;
+const post = rows[0];
+if (!post) return Astro.redirect("/admin", 303);
+
+const pubDate = new Date(post.pub_date).toISOString().slice(0, 10);
+---
+
+<AdminLayout title={`Editar: ${post.title}`}>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem">
+    <h1 style="font-size:1.4rem;margin:0">Editar post</h1>
+    <button type="button" id="delete-btn" class="btn btn-danger">Eliminar post</button>
+  </div>
+  <p id="form-error" class="error-banner" hidden></p>
+
+  <form class="stack" id="post-form" data-id={post.id}>
+    <div>
+      <label for="title">Título</label>
+      <input id="title" name="title" type="text" required value={post.title} />
+    </div>
+
+    <div>
+      <label for="slug">Slug (URL)</label>
+      <input id="slug" name="slug" type="text" required value={post.slug} />
+      <p class="hint">Cambiar el slug cambia la URL del post — los enlaces viejos dejarán de funcionar.</p>
+    </div>
+
+    <div>
+      <label for="description">Descripción (SEO)</label>
+      <textarea id="description" name="description" rows="2" required>{post.description}</textarea>
+    </div>
+
+    <div class="row">
+      <div>
+        <label for="category">Categoría</label>
+        <input id="category" name="category" type="text" required value={post.category} />
+      </div>
+      <div>
+        <label for="categorySlug">Slug de categoría</label>
+        <input id="categorySlug" name="categorySlug" type="text" required value={post.category_slug} />
+      </div>
+    </div>
+
+    <div class="row">
+      <div>
+        <label for="pubDate">Fecha de publicación</label>
+        <input id="pubDate" name="pubDate" type="date" required value={pubDate} />
+      </div>
+      <div>
+        <label for="author">Autor</label>
+        <input id="author" name="author" type="text" value={post.author} />
+      </div>
+    </div>
+
+    <div class="row">
+      <div>
+        <label for="image">Imagen destacada (URL)</label>
+        <input id="image" name="image" type="text" value={post.image ?? ""} />
+      </div>
+      <div>
+        <label for="imageAlt">Texto alternativo de la imagen</label>
+        <input id="imageAlt" name="imageAlt" type="text" value={post.image_alt ?? ""} />
+      </div>
+    </div>
+
+    <div class="checkbox-row">
+      <input id="draft" name="draft" type="checkbox" checked={post.draft} />
+      <label for="draft">Borrador (no se publica hasta desmarcarlo)</label>
+    </div>
+
+    <div>
+      <label for="body">Contenido (Markdown)</label>
+      <textarea id="body" name="body" rows="18" required>{post.body}</textarea>
+    </div>
+
+    <div style="display:flex;gap:0.75rem">
+      <button type="submit" class="btn btn-primary">Guardar cambios</button>
+      <a href="/admin" class="btn btn-secondary">Cancelar</a>
+    </div>
+  </form>
+
+  <script>
+    const form = document.getElementById("post-form") as HTMLFormElement;
+    const errorBox = document.getElementById("form-error") as HTMLElement;
+    const deleteBtn = document.getElementById("delete-btn") as HTMLButtonElement;
+    const id = form.dataset.id;
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      errorBox.hidden = true;
+
+      const fd = new FormData(form);
+      const payload = {
+        title: fd.get("title"),
+        slug: fd.get("slug"),
+        description: fd.get("description"),
+        category: fd.get("category"),
+        categorySlug: fd.get("categorySlug"),
+        categories: [{ name: fd.get("category"), slug: fd.get("categorySlug") }],
+        pubDate: fd.get("pubDate"),
+        updatedDate: new Date().toISOString().slice(0, 10),
+        author: fd.get("author"),
+        image: fd.get("image") || null,
+        imageAlt: fd.get("imageAlt") || "",
+        draft: fd.get("draft") === "on",
+        body: fd.get("body"),
+      };
+
+      const res = await fetch(`/api/admin/posts/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (res.ok) {
+        window.location.href = "/admin";
+      } else {
+        errorBox.textContent = await res.text();
+        errorBox.hidden = false;
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    });
+
+    deleteBtn.addEventListener("click", async () => {
+      if (!confirm("¿Eliminar este post? Esta acción no se puede deshacer.")) return;
+      const res = await fetch(`/api/admin/posts/${id}`, { method: "DELETE" });
+      if (res.ok) {
+        window.location.href = "/admin";
+      } else {
+        errorBox.textContent = await res.text();
+        errorBox.hidden = false;
+      }
+    });
+  </script>
+</AdminLayout>

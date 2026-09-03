@@ -1,19 +1,17 @@
 ---
+export const prerender = false;
+
 import Base from "@/layouts/Base.astro";
-import { getPublishedPosts, getBlogCategories } from "@/lib/blog";
+import { getPublishedPosts, getBlogCategories, getPostsByCategory } from "@/lib/blog";
 import { SITE } from "@/data/site";
 import { breadcrumbSchema } from "@/lib/schema";
 
-export async function getStaticPaths() {
-  const posts = await getPublishedPosts();
-  const categories = await getBlogCategories(posts);
-  return categories.map((category) => ({
-    params: { categoria: category.slug },
-    props: { category, posts: posts.filter((p) => p.data.categories.some((c) => c.slug === category.slug)) },
-  }));
-}
+const allPosts = await getPublishedPosts();
+const categories = await getBlogCategories(allPosts);
+const category = categories.find((c) => c.slug === Astro.params.categoria);
+if (!category) return Astro.redirect("/blog", 307);
 
-const { category, posts } = Astro.props;
+const posts = await getPostsByCategory(category.slug, allPosts);
 const formatter = new Intl.DateTimeFormat("es-MX", { day: "numeric", month: "long", year: "numeric" });
 ---
 

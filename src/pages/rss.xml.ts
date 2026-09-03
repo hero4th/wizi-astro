@@ -1,3 +1,5 @@
+export const prerender = false;
+
 import rss from "@astrojs/rss";
 import type { APIContext } from "astro";
 import { SITE } from "@/data/site";
@@ -17,6 +19,7 @@ export async function GET(context: APIContext) {
       pubDate: post.data.pubDate,
       link: `/blog/${post.id}`,
       categories: post.data.categories.map((c) => c.name),
+      content: post.data.html,
     })),
     customData: "<language>es-MX</language>",
   });

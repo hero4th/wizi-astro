@@ -7,12 +7,19 @@ import vercel from "@astrojs/vercel";
 import icon from "astro-icon";
 import tailwindcss from "@tailwindcss/vite";
 import legacyBlogSlugs from "./src/data/legacy-redirects.mjs";
+import { getBlogSitemapUrls } from "./scripts/get-blog-sitemap-urls.mjs";
 
 // 301 redirects: old WordPress permalinks (/slug) → new Astro blog URLs (/blog/slug).
 // Preserves SEO for the posts already indexed at the root of proacademymx.com.
 const legacyRedirects = Object.fromEntries(
   legacyBlogSlugs.map((slug) => [`/${slug}`, `/blog/${slug}`])
 );
+
+const SITE_URL = "https://www.proacademymx.com";
+// /blog/[slug] is SSR now (posts live in Postgres), so Astro can't discover
+// those routes by scanning prerendered pages — fetch the published slugs here
+// so the sitemap still lists every post.
+const blogSitemapUrls = await getBlogSitemapUrls(SITE_URL);
 
 // https://astro.build/config
 export default defineConfig({
@@ -45,6 +52,7 @@ export default defineConfig({
       filter: (page) => !page.includes("/gracias"),
       changefreq: "weekly",
       priority: 0.7,
+      customPages: blogSitemapUrls,
     }),
   ],
   vite: {
