@@ -432,6 +432,96 @@ h4 {
   margin-block: 2.5rem;
 }
 
+/* Editor-authored blocks --------------------------------------------------*/
+/* These mirror what the post editor can produce; the content sanitizer
+   (src/lib/content.ts) is what decides which of this markup survives a save. */
+
+.prose-pa :where(mark) {
+  background-color: #fef08a;
+  color: inherit;
+  padding: 0.1em 0.2em;
+  border-radius: 0.25rem;
+}
+
+.prose-pa :where(sub, sup) {
+  font-size: 0.72em;
+  line-height: 0;
+}
+
+/* Task lists: the checkbox input is stripped on save, so the state is drawn
+   from the li's data-checked attribute instead. */
+.prose-pa :where(ul[data-type="taskList"]) {
+  list-style: none;
+  padding-left: 0;
+}
+.prose-pa :where(ul[data-type="taskList"] li) {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding-left: 0;
+}
+.prose-pa :where(ul[data-type="taskList"] li)::before {
+  content: "";
+  flex: 0 0 auto;
+  width: 1.05rem;
+  height: 1.05rem;
+  margin-top: 0.25rem;
+  border: 1.5px solid var(--color-ink-200);
+  border-radius: 0.3rem;
+  background: #fff;
+}
+.prose-pa :where(ul[data-type="taskList"] li[data-checked="true"])::before {
+  background: var(--color-teal-600)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E")
+    center / 0.75rem no-repeat;
+  border-color: var(--color-teal-600);
+}
+.prose-pa :where(ul[data-type="taskList"] li[data-checked="true"]) {
+  color: var(--color-ink-400);
+  text-decoration: line-through;
+}
+.prose-pa :where(ul[data-type="taskList"] li p) {
+  margin: 0;
+}
+
+/* Callouts */
+.prose-pa :where(aside[data-callout]) {
+  margin-block: 2rem;
+  padding: 1.15rem 1.35rem;
+  border-radius: 0.85rem;
+  border-left: 4px solid;
+  background: var(--color-ink-50);
+  border-color: var(--color-ink-300);
+}
+.prose-pa :where(aside[data-callout] > :first-child) { margin-top: 0; }
+.prose-pa :where(aside[data-callout] > :last-child) { margin-bottom: 0; }
+.prose-pa :where(aside[data-callout="info"]) {
+  background: rgb(20 184 166 / 0.08);
+  border-color: var(--color-teal-600);
+}
+.prose-pa :where(aside[data-callout="success"]) {
+  background: #ecfdf5;
+  border-color: #059669;
+}
+.prose-pa :where(aside[data-callout="warning"]) {
+  background: #fffbeb;
+  border-color: #d97706;
+}
+.prose-pa :where(aside[data-callout="danger"]) {
+  background: #fef2f2;
+  border-color: #dc2626;
+}
+
+/* Image sizing and alignment */
+.prose-pa :where(img[data-size="small"]) { max-width: min(100%, 320px); }
+.prose-pa :where(img[data-size="medium"]) { max-width: min(100%, 520px); }
+.prose-pa :where(img[data-size="large"]) { max-width: min(100%, 760px); }
+.prose-pa :where(img[data-size="full"]) { max-width: 100%; }
+.prose-pa :where(img[data-align="left"]) { margin-inline: 0 auto; }
+.prose-pa :where(img[data-align="center"]) { margin-inline: auto; }
+.prose-pa :where(img[data-align="right"]) { margin-inline: auto 0; }
+.prose-pa :where(img[data-size]) { display: block; height: auto; }
+
 /* Accordion ---------------------------------------------------------------*/
 details.faq-item summary::-webkit-details-marker {
   display: none;

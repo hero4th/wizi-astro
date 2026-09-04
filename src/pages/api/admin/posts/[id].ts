@@ -5,6 +5,7 @@ import { requireSession } from "@/lib/auth";
 import { sql } from "@/lib/db";
 import { processContentHtml, readingTimeFromHtml } from "@/lib/content";
 import { slugify } from "@/lib/slug";
+import { seoFields } from "@/lib/post-meta";
 
 export const PUT: APIRoute = async ({ params, request, cookies }) => {
   // See posts.ts for why there's no separate Origin check: the session
@@ -28,6 +29,7 @@ export const PUT: APIRoute = async ({ params, request, cookies }) => {
   const html = processContentHtml(rawBody);
   const readingTime = data.readingTime ? Number(data.readingTime) : readingTimeFromHtml(html);
   const categories = Array.isArray(data.categories) ? data.categories : [];
+  const seo = seoFields(data);
 
   try {
     const rows = await sql`
@@ -49,6 +51,12 @@ export const PUT: APIRoute = async ({ params, request, cookies }) => {
         draft = ${data.draft ?? true},
         body = ${html},
         html = ${html},
+        seo_title = ${seo.seoTitle},
+        seo_description = ${seo.seoDescription},
+        canonical_url = ${seo.canonicalUrl},
+        noindex = ${seo.noindex},
+        og_image = ${seo.ogImage},
+        keywords = ${seo.keywords},
         updated_at = now()
       WHERE id = ${id}
       RETURNING id, slug

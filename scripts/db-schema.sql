@@ -26,6 +26,22 @@ CREATE INDEX IF NOT EXISTS posts_pub_date_idx ON posts (pub_date DESC);
 CREATE INDEX IF NOT EXISTS posts_draft_idx ON posts (draft);
 CREATE INDEX IF NOT EXISTS posts_category_slug_idx ON posts (category_slug);
 
+-- Hidden/SEO metadata for a post: overrides that don't appear in the article body.
+ALTER TABLE posts ADD COLUMN IF NOT EXISTS seo_title TEXT;
+ALTER TABLE posts ADD COLUMN IF NOT EXISTS seo_description TEXT;
+ALTER TABLE posts ADD COLUMN IF NOT EXISTS canonical_url TEXT;
+ALTER TABLE posts ADD COLUMN IF NOT EXISTS noindex BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE posts ADD COLUMN IF NOT EXISTS og_image TEXT;
+ALTER TABLE posts ADD COLUMN IF NOT EXISTS keywords TEXT;
+
+-- Reusable content blocks the editor can save and re-insert.
+CREATE TABLE IF NOT EXISTS snippets (
+  id SERIAL PRIMARY KEY,
+  name TEXT NOT NULL,
+  html TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
 -- Basic login rate limiting for the admin panel (defense against password guessing).
 CREATE TABLE IF NOT EXISTS login_attempts (
   id SERIAL PRIMARY KEY,

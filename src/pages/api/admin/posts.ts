@@ -5,6 +5,7 @@ import { requireSession } from "@/lib/auth";
 import { sql } from "@/lib/db";
 import { processContentHtml, readingTimeFromHtml } from "@/lib/content";
 import { slugify } from "@/lib/slug";
+import { seoFields } from "@/lib/post-meta";
 
 export const POST: APIRoute = async ({ request, cookies }) => {
   // CSRF protection is the session cookie itself (httpOnly, secure,
@@ -29,18 +30,21 @@ export const POST: APIRoute = async ({ request, cookies }) => {
   const html = processContentHtml(rawBody);
   const readingTime = data.readingTime ? Number(data.readingTime) : readingTimeFromHtml(html);
   const categories = Array.isArray(data.categories) ? data.categories : [];
+  const seo = seoFields(data);
 
   try {
     const rows = await sql`
       INSERT INTO posts (
         slug, title, description, category, category_slug, categories,
         pub_date, updated_date, image, image_alt, image_width, image_height,
-        author, reading_time, draft, body, html
+        author, reading_time, draft, body, html,
+        seo_title, seo_description, canonical_url, noindex, og_image, keywords
       ) VALUES (
         ${slug}, ${title}, ${data.description ?? ""}, ${data.category ?? "General"}, ${data.categorySlug ?? "general"},
         ${JSON.stringify(categories)}, ${data.pubDate ?? new Date().toISOString().slice(0, 10)}, ${data.updatedDate ?? null},
         ${data.image ?? null}, ${data.imageAlt ?? ""}, ${data.imageWidth ?? null}, ${data.imageHeight ?? null},
-        ${data.author ?? "Professional Academy"}, ${readingTime}, ${data.draft ?? true}, ${html}, ${html}
+        ${data.author ?? "Professional Academy"}, ${readingTime}, ${data.draft ?? true}, ${html}, ${html},
+        ${seo.seoTitle}, ${seo.seoDescription}, ${seo.canonicalUrl}, ${seo.noindex}, ${seo.ogImage}, ${seo.keywords}
       )
       RETURNING id, slug
     `;

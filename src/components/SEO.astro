@@ -10,6 +10,9 @@ interface Props {
   ogImage?: string;
   ogType?: "website" | "article";
   noindex?: boolean;
+  /** Overrides the self-referencing canonical (e.g. content republished from elsewhere). */
+  canonicalUrl?: string;
+  keywords?: string;
 }
 
 const {
@@ -19,9 +22,13 @@ const {
   ogImage = "/og-default.png",
   ogType = "website",
   noindex = false,
+  canonicalUrl,
+  keywords,
 } = Astro.props;
 
-const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const canonical = canonicalUrl
+  ? new URL(canonicalUrl, Astro.site).href
+  : new URL(Astro.url.pathname, Astro.site).href;
 const ogImageAbs = new URL(ogImage, Astro.site).href;
 const graph = jsonLd(organizationSchema(), websiteSchema(), ...schema);
 ---
@@ -29,6 +36,7 @@ const graph = jsonLd(organizationSchema(), websiteSchema(), ...schema);
 <title>{title}</title>
 <meta name="description" content={description} />
 <link rel="canonical" href={canonical} />
+{keywords && <meta name="keywords" content={keywords} />}
 {noindex && <meta name="robots" content="noindex, nofollow" />}
 
 <meta property="og:type" content={ogType} />

@@ -19,10 +19,15 @@ interface Props {
   ogImage?: string;
   ogType?: "website" | "article";
   noindex?: boolean;
+  canonicalUrl?: string;
+  keywords?: string;
   stickyCta?: boolean;
 }
 
-const { title, description, schema, ogImage, ogType, noindex, stickyCta = true } = Astro.props;
+const {
+  title, description, schema, ogImage, ogType, noindex,
+  canonicalUrl, keywords, stickyCta = true,
+} = Astro.props;
 ---
 
 <!doctype html>
@@ -36,7 +41,7 @@ const { title, description, schema, ogImage, ogType, noindex, stickyCta = true }
     <link rel="sitemap" href="/sitemap-index.xml" />
     <link rel="alternate" type="application/rss+xml" title="Blog | Professional Academy" href="/rss.xml" />
     <meta name="theme-color" content="#f7faf9" />
-    <SEO {title} {description} {schema} {ogImage} {ogType} {noindex} />
+    <SEO {title} {description} {schema} {ogImage} {ogType} {noindex} {canonicalUrl} {keywords} />
     <Analytics />
   </head>
   <body>

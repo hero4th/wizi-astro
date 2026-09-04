@@ -23,6 +23,13 @@ export interface PostData {
   draft: boolean;
   html: string;
   body: string;
+  /** Hidden metadata: overrides for <head>, none of it shown in the article. */
+  seoTitle?: string;
+  seoDescription?: string;
+  canonicalUrl?: string;
+  noindex: boolean;
+  ogImage?: string;
+  keywords?: string;
 }
 
 /** Shaped like an Astro `CollectionEntry` ({id, data}) so existing templates
@@ -60,6 +67,12 @@ function rowToPost(row: any): Post {
       draft: row.draft,
       html: row.html,
       body: row.body,
+      seoTitle: row.seo_title ?? undefined,
+      seoDescription: row.seo_description ?? undefined,
+      canonicalUrl: row.canonical_url ?? undefined,
+      noindex: row.noindex ?? false,
+      ogImage: row.og_image ?? undefined,
+      keywords: row.keywords ?? undefined,
     },
   };
 }

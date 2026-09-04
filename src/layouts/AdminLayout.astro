@@ -267,6 +267,117 @@ const { title, fullBleed = false } = Astro.props;
       }
       .editor-error-banner button { background: transparent; color: inherit; padding: 0.1rem 0.4rem; font-size: 1rem; }
 
+      /* -- Toolbars ----------------------------------------------------------- */
+      .editor-toolbars {
+        position: sticky; top: 53px; z-index: 25;
+        background: rgba(255,255,255,0.96); backdrop-filter: blur(10px);
+        border-bottom: 1px solid var(--color-ink-100);
+      }
+      .editor-toolbar {
+        display: flex; flex-wrap: wrap; align-items: center; gap: 0.15rem;
+        padding: 0.4rem 0.85rem;
+      }
+      .editor-toolbar-context {
+        border-top: 1px dashed var(--color-ink-100);
+        background: rgba(13,148,136,0.05);
+      }
+      .tb-context-label {
+        font-family: var(--font-mono); font-size: 0.63rem; font-weight: 700;
+        text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-teal-700);
+        padding-right: 0.5rem;
+      }
+      .tb-group {
+        display: flex; align-items: center; gap: 0.1rem;
+        padding-right: 0.4rem; margin-right: 0.25rem;
+        border-right: 1px solid var(--color-ink-100);
+      }
+      .tb-group:last-child { border-right: 0; }
+      .tb-btn {
+        display: grid; place-items: center; min-width: 30px; height: 30px;
+        padding: 0 0.4rem; border-radius: 7px; background: transparent;
+        color: var(--color-ink-600); font-size: 0.78rem; font-weight: 600;
+        line-height: 1; border: 0; cursor: pointer;
+      }
+      .tb-btn-wide { min-width: auto; padding: 0 0.6rem; }
+      .tb-btn:hover:not(:disabled) { background: var(--color-ink-50); color: var(--color-ink-950); }
+      .tb-btn.is-active { background: var(--color-teal-600); color: #fff; }
+      .tb-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+      .tb-select {
+        height: 30px; border-radius: 7px; border: 1px solid var(--color-ink-100);
+        background: #fff; font-size: 0.76rem; font-family: var(--font-body);
+        color: var(--color-ink-700); padding: 0 0.35rem; width: auto;
+      }
+      .tb-select-font { max-width: 130px; }
+      .tb-select-size { width: 56px; text-align: center; }
+      .tb-color-chip {
+        width: 15px; height: 15px; border-radius: 4px;
+        border: 1px solid rgba(6,10,10,0.2); display: block;
+      }
+      .tb-hl-chip { color: #fef08a; text-shadow: 0 0 1px rgba(6,10,10,0.35); font-size: 1rem; }
+
+      .tb-pop-wrap { position: relative; }
+      .tb-pop {
+        position: absolute; top: calc(100% + 6px); left: 0; z-index: 60;
+        background: #fff; border: 1px solid var(--color-ink-100); border-radius: 11px;
+        box-shadow: 0 16px 40px -12px rgba(6,10,10,0.28); padding: 0.6rem;
+      }
+      .tb-pop-title {
+        margin: 0 0 0.5rem; font-family: var(--font-mono); font-size: 0.62rem;
+        font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em;
+        color: var(--color-ink-400);
+      }
+      .tb-pop-empty { margin: 0 0 0.5rem; font-size: 0.76rem; color: var(--color-ink-400); }
+      .tb-swatches { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
+      .tb-swatch {
+        width: 26px; height: 26px; border-radius: 6px; padding: 0;
+        border: 1px solid rgba(6,10,10,0.12); cursor: pointer;
+      }
+      .tb-swatch:hover { transform: scale(1.08); }
+      .tb-pop-action {
+        width: 100%; margin-top: 0.5rem; padding: 0.4rem; border-radius: 7px;
+        background: var(--color-ink-50); color: var(--color-ink-700);
+        font-size: 0.74rem; font-weight: 600; justify-content: center;
+      }
+      .tb-pop-action:hover { background: var(--color-ink-100); }
+      .tb-pop-item {
+        display: block; width: 100%; text-align: left; padding: 0.42rem 0.55rem;
+        border-radius: 7px; background: transparent; font-size: 0.8rem; font-weight: 500;
+        color: var(--color-ink-800);
+      }
+      .tb-pop-item:hover { background: var(--color-ink-50); }
+      .tb-pop-item.is-info { border-left: 3px solid var(--color-teal-600); }
+      .tb-pop-item.is-success { border-left: 3px solid #059669; }
+      .tb-pop-item.is-warning { border-left: 3px solid #d97706; }
+      .tb-pop-item.is-danger { border-left: 3px solid #dc2626; }
+      .tb-snippet-row { display: flex; align-items: center; gap: 0.2rem; }
+      .tb-snippet-del {
+        background: transparent; color: var(--color-ink-300); padding: 0.2rem 0.4rem;
+        border-radius: 6px; font-size: 0.95rem;
+      }
+      .tb-snippet-del:hover { background: #fef2f2; color: #dc2626; }
+
+      .drawer-tabs {
+        display: flex; gap: 0.2rem; padding: 0.5rem 1.35rem 0;
+        border-bottom: 1px solid var(--color-ink-100);
+      }
+      .drawer-tabs button {
+        background: transparent; color: var(--color-ink-400); font-size: 0.8rem;
+        font-weight: 600; padding: 0.5rem 0.7rem; border-radius: 8px 8px 0 0;
+        border-bottom: 2px solid transparent; margin-bottom: -1px;
+      }
+      .drawer-tabs button.is-active {
+        color: var(--color-teal-700); border-bottom-color: var(--color-teal-600);
+      }
+      .drawer-note {
+        background: var(--color-ink-50); padding: 0.6rem 0.75rem; border-radius: 8px;
+        margin: 0 0 0.25rem !important;
+      }
+      .hint-warn { color: #d97706; font-weight: 600; }
+      .og-preview {
+        margin-top: 0.6rem; width: 100%; max-height: 130px; object-fit: cover;
+        border-radius: 8px; border: 1px solid var(--color-ink-100);
+      }
+
       .editor-page { flex: 1; display: flex; justify-content: center; padding: 2.5rem 1.25rem 8rem; }
       .editor-canvas { width: 100%; max-width: 760px; }
 
@@ -387,6 +498,34 @@ const { title, fullBleed = false } = Astro.props;
         background: var(--color-ink-50); border-bottom: 1px solid var(--color-ink-100);
       }
       .preview-article { padding: 3.5rem 1.25rem 6rem; }
+
+      /* Inside the editor, task items keep a real (clickable) checkbox, so the
+         public ::before checkbox drawn from data-checked must not double up. */
+      .editor-canvas-content ul[data-type="taskList"] li::before { content: none; }
+      .editor-canvas-content ul[data-type="taskList"] li[data-checked="true"] {
+        text-decoration: none; color: inherit;
+      }
+      .editor-canvas-content ul[data-type="taskList"] li > label {
+        display: flex; align-items: center; margin-top: 0.3rem;
+      }
+      .editor-canvas-content ul[data-type="taskList"] input[type="checkbox"] {
+        width: 1rem; height: 1rem; accent-color: var(--color-teal-600); cursor: pointer;
+      }
+
+      /* Selected image / node feedback */
+      .editor-canvas-content img.ProseMirror-selectednode {
+        outline: 3px solid var(--color-teal-500); outline-offset: 2px; border-radius: 6px;
+      }
+      .editor-canvas-content .ProseMirror-selectednode {
+        outline: 2px solid var(--color-teal-500); outline-offset: 3px; border-radius: 6px;
+      }
+      /* Table cell selection + column resize handle */
+      .editor-canvas-content .selectedCell { background: rgba(20,184,166,0.14); }
+      .editor-canvas-content .column-resize-handle {
+        position: absolute; right: -2px; top: 0; bottom: 0; width: 4px;
+        background: var(--color-teal-500); pointer-events: none;
+      }
+      .editor-canvas-content iframe { pointer-events: none; }
 
       /* Table styling inside the editor (mirrors public prose-pa tables) */
       .editor-canvas-content table { border-collapse: collapse; width: 100%; margin: 1.5rem 0; }

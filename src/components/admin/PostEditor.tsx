@@ -1,15 +1,18 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import { BubbleMenu } from "@tiptap/react/menus";
+import { DOMSerializer } from "@tiptap/pm/model";
 import { DragHandle } from "@tiptap/extension-drag-handle-react";
 import StarterKit from "@tiptap/starter-kit";
-import TiptapImage from "@tiptap/extension-image";
 import Link from "@tiptap/extension-link";
 import Underline from "@tiptap/extension-underline";
 import TextAlign from "@tiptap/extension-text-align";
-import { TextStyle } from "@tiptap/extension-text-style";
-import FontFamily from "@tiptap/extension-font-family";
-import Color from "@tiptap/extension-color";
+import { TextStyle, FontFamily, FontSize, Color, BackgroundColor } from "@tiptap/extension-text-style";
+import Highlight from "@tiptap/extension-highlight";
+import Subscript from "@tiptap/extension-subscript";
+import Superscript from "@tiptap/extension-superscript";
+import { TaskList, TaskItem } from "@tiptap/extension-list";
+import Youtube from "@tiptap/extension-youtube";
 import Placeholder from "@tiptap/extension-placeholder";
 import CharacterCount from "@tiptap/extension-character-count";
 import { Table } from "@tiptap/extension-table";
@@ -17,6 +20,9 @@ import TableRow from "@tiptap/extension-table-row";
 import TableCell from "@tiptap/extension-table-cell";
 import TableHeader from "@tiptap/extension-table-header";
 import { SlashCommand } from "./slash-command";
+import { Callout, SizedImage } from "./extensions";
+import EditorToolbar, { TableToolbar, ImageToolbar, type Snippet } from "./EditorToolbar";
+import { cn } from "@/lib/utils";
 
 // ---------------------------------------------------------------------------
 
@@ -33,15 +39,14 @@ export interface PostInitial {
   imageAlt: string;
   draft: boolean;
   html: string;
+  /** Hidden metadata — never rendered in the article, only in <head>. */
+  seoTitle: string;
+  seoDescription: string;
+  canonicalUrl: string;
+  noindex: boolean;
+  ogImage: string;
+  keywords: string;
 }
-
-const FONTS = [
-  { label: "Predeterminada", value: "" },
-  { label: "Hanken Grotesk", value: "'Hanken Grotesk Variable', sans-serif" },
-  { label: "Bricolage Grotesque", value: "'Bricolage Grotesque Variable', sans-serif" },
-  { label: "IBM Plex Mono", value: "'IBM Plex Mono', monospace" },
-  { label: "Georgia (serif)", value: "Georgia, 'Times New Roman', serif" },
-];
 
 async function uploadFile(file: File): Promise<string> {
   // Raw binary body, not FormData — Astro's built-in CSRF guard blocks
@@ -89,12 +94,22 @@ export default function PostEditor({ isNew, initial }: { isNew: boolean; initial
   const [imageAlt, setImageAlt] = useState(initial.imageAlt);
   const [draft, setDraft] = useState(initial.draft);
 
+  // Hidden metadata
+  const [seoTitle, setSeoTitle] = useState(initial.seoTitle);
+  const [seoDescription, setSeoDescription] = useState(initial.seoDescription);
+  const [canonicalUrl, setCanonicalUrl] = useState(initial.canonicalUrl);
+  const [noindex, setNoindex] = useState(initial.noindex);
+  const [ogImage, setOgImage] = useState(initial.ogImage);
+  const [keywords, setKeywords] = useState(initial.keywords);
+
   const [mode, setMode] = useState<"edit" | "preview">("edit");
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [settingsTab, setSettingsTab] = useState<"post" | "seo">("post");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [uploadingCover, setUploadingCover] = useState(false);
   const [savedAt, setSavedAt] = useState<Date | null>(null);
+  const [snippets, setSnippets] = useState<Snippet[]>([]);
 
   const titleRef = useRef<HTMLTextAreaElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
@@ -106,11 +121,20 @@ export default function PostEditor({ isNew, initial }: { isNew: boolean; initial
       StarterKit.configure({ heading: { levels: [2, 3, 4] } }),
       Underline,
       Link.configure({ openOnClick: false, autolink: true }),
-      TiptapImage.configure({ inline: false, allowBase64: false }),
+      SizedImage.configure({ inline: false, allowBase64: false }),
       TextAlign.configure({ types: ["heading", "paragraph"] }),
       TextStyle,
       FontFamily,
+      FontSize,
       Color,
+      BackgroundColor,
+      Highlight.configure({ multicolor: true }),
+      Subscript,
+      Superscript,
+      TaskList,
+      TaskItem.configure({ nested: true }),
+      Youtube.configure({ nocookie: true, modestBranding: true, width: 640, height: 360 }),
+      Callout,
       Placeholder.configure({ placeholder: "Escribe '/' para insertar un bloque, o simplemente empieza a escribir…" }),
       CharacterCount,
       Table.configure({ resizable: true }),
@@ -201,7 +225,58 @@ export default function PostEditor({ isNew, initial }: { isNew: boolean; initial
     }
   };
 
-  const setLink = () => {
+  // --- Reusable blocks (snippets) -----------------------------------------
+  useEffect(() => {
+    fetch("/api/admin/snippets")
+      .then((r) => (r.ok ? r.json() : { snippets: [] }))
+      .then((d) => setSnippets(d.snippets ?? []))
+      .catch(() => setSnippets([]));
+  }, []);
+
+  const saveSnippet = async () => {
+    if (!editor) return;
+    const { from, to, empty } = editor.state.selection;
+    if (empty) {
+      setError("Selecciona primero el contenido que quieres guardar como bloque.");
+      return;
+    }
+    const name = window.prompt("Nombre del bloque (para reutilizarlo después)");
+    if (!name) return;
+
+    // Serialize just the selected slice, not the whole document.
+    const slice = editor.state.doc.slice(from, to);
+    const fragment = DOMSerializer.fromSchema(editor.schema).serializeFragment(slice.content);
+    const container = document.createElement("div");
+    container.appendChild(fragment);
+
+    const res = await fetch("/api/admin/snippets", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, html: container.innerHTML }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      setError(data.error ?? "No se pudo guardar el bloque.");
+      return;
+    }
+    setSnippets((prev) => [data.snippet, ...prev]);
+  };
+
+  const deleteSnippet = async (id: number) => {
+    if (!window.confirm("¿Eliminar este bloque guardado?")) return;
+    const res = await fetch("/api/admin/snippets", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    });
+    if (res.ok) setSnippets((prev) => prev.filter((s) => s.id !== id));
+  };
+
+  const insertSnippet = (s: Snippet) => {
+    editor?.chain().focus().insertContent(s.html).run();
+  };
+
+  const setSelectionLink = () => {
     if (!editor) return;
     const previous = editor.getAttributes("link").href as string | undefined;
     const url = window.prompt("URL del enlace", previous ?? "https://");
@@ -237,6 +312,12 @@ export default function PostEditor({ isNew, initial }: { isNew: boolean; initial
         imageAlt,
         draft: publishOverride ?? draft,
         body,
+        seoTitle,
+        seoDescription,
+        canonicalUrl,
+        noindex,
+        ogImage,
+        keywords,
       };
 
       try {
@@ -263,7 +344,8 @@ export default function PostEditor({ isNew, initial }: { isNew: boolean; initial
         setSaving(false);
       }
     },
-    [editor, title, slug, description, category, categorySlug, pubDate, author, image, imageAlt, draft, isNew, initial.id]
+    [editor, title, slug, description, category, categorySlug, pubDate, author, image, imageAlt, draft,
+     seoTitle, seoDescription, canonicalUrl, noindex, ogImage, keywords, isNew, initial.id]
   );
 
   const deletePost = async () => {
@@ -343,7 +425,21 @@ export default function PostEditor({ isNew, initial }: { isNew: boolean; initial
 
       {/* ---- Main area ---------------------------------------------------- */}
       {mode === "edit" ? (
-        <div className="editor-page">
+        <>
+          <div className="editor-toolbars">
+            <EditorToolbar
+              editor={editor}
+              snippets={snippets}
+              onInsertSnippet={insertSnippet}
+              onSaveSnippet={saveSnippet}
+              onDeleteSnippet={deleteSnippet}
+              onInsertImage={insertImageViaToolbar}
+            />
+            <TableToolbar editor={editor} />
+            <ImageToolbar editor={editor} />
+          </div>
+
+          <div className="editor-page">
           <div className="editor-canvas">
             {/* Cover image */}
             <div className={`cover-drop${image ? " has-image" : ""}${uploadingCover ? " is-uploading" : ""}`} onClick={() => coverInputRef.current?.click()}>
@@ -380,22 +476,11 @@ export default function PostEditor({ isNew, initial }: { isNew: boolean; initial
                   <span className="bubble-sep" />
                   <button type="button" className={editor.isActive("heading", { level: 2 }) ? "is-active" : ""} onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} aria-label="Título H2">H2</button>
                   <button type="button" className={editor.isActive("heading", { level: 3 }) ? "is-active" : ""} onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()} aria-label="Título H3">H3</button>
+                  <button type="button" className={editor.isActive("highlight") ? "is-active" : ""} onClick={() => editor.chain().focus().toggleHighlight({ color: "#fef08a" }).run()} aria-label="Resaltar">▮</button>
                   <span className="bubble-sep" />
-                  <button type="button" className={editor.isActive("link") ? "is-active" : ""} onClick={setLink} aria-label="Enlace">🔗</button>
-                  <select
-                    className="bubble-font-select"
-                    aria-label="Fuente"
-                    value={(editor.getAttributes("textStyle").fontFamily as string) ?? ""}
-                    onChange={(e) => {
-                      const v = e.target.value;
-                      if (v) editor.chain().focus().setFontFamily(v).run();
-                      else editor.chain().focus().unsetFontFamily().run();
-                    }}
-                  >
-                    {FONTS.map((f) => (
-                      <option key={f.label} value={f.value}>{f.label}</option>
-                    ))}
-                  </select>
+                  {/* Fonts, sizes and colours live in the always-visible toolbar;
+                      the bubble menu stays to the essentials for a selection. */}
+                  <button type="button" className={editor.isActive("link") ? "is-active" : ""} onClick={setSelectionLink} aria-label="Enlace">🔗</button>
                 </BubbleMenu>
               )}
 
@@ -406,7 +491,8 @@ export default function PostEditor({ isNew, initial }: { isNew: boolean; initial
               <EditorContent editor={editor} />
             </div>
           </div>
-        </div>
+          </div>
+        </>
       ) : (
         <PreviewPane data={previewData} html={editor.getHTML()} />
       )}
@@ -420,7 +506,19 @@ export default function PostEditor({ isNew, initial }: { isNew: boolean; initial
               <h2>Detalles del post</h2>
               <button type="button" className="btn-ghost" onClick={() => setSettingsOpen(false)} aria-label="Cerrar">✕</button>
             </div>
-            <div className="drawer-body">
+
+            <div className="drawer-tabs" role="tablist">
+              <button type="button" role="tab" aria-selected={settingsTab === "post"}
+                className={settingsTab === "post" ? "is-active" : ""} onClick={() => setSettingsTab("post")}>
+                Publicación
+              </button>
+              <button type="button" role="tab" aria-selected={settingsTab === "seo"}
+                className={settingsTab === "seo" ? "is-active" : ""} onClick={() => setSettingsTab("seo")}>
+                SEO y metadatos
+              </button>
+            </div>
+
+            <div className="drawer-body" hidden={settingsTab !== "post"}>
               <div className="field">
                 <label htmlFor="pe-slug">Slug (URL)</label>
                 <input id="pe-slug" type="text" value={slug} onChange={(e) => { setSlug(e.target.value); setSlugTouched(true); }} />
@@ -457,6 +555,63 @@ export default function PostEditor({ isNew, initial }: { isNew: boolean; initial
               <div className="checkbox-row">
                 <input id="pe-draft" type="checkbox" checked={draft} onChange={(e) => setDraft(e.target.checked)} />
                 <label htmlFor="pe-draft">Borrador (no se publica hasta desmarcarlo)</label>
+              </div>
+            </div>
+
+            {/* Hidden metadata: none of this appears in the article, only in <head>. */}
+            <div className="drawer-body" hidden={settingsTab !== "seo"}>
+              <p className="hint drawer-note">
+                Nada de esto se ve en el artículo: solo va en el &lt;head&gt; de la página,
+                para buscadores y redes sociales.
+              </p>
+
+              <div className="field">
+                <label htmlFor="pe-seotitle">Título SEO</label>
+                <input id="pe-seotitle" type="text" value={seoTitle} maxLength={200}
+                  placeholder={`${title || "Título del post"} | Professional Academy`}
+                  onChange={(e) => setSeoTitle(e.target.value)} />
+                <p className={cn("hint", seoTitle.length > 60 && "hint-warn")}>
+                  {seoTitle.length || 0}/60 recomendados · si lo dejas vacío se usa el título normal
+                </p>
+              </div>
+
+              <div className="field">
+                <label htmlFor="pe-seodesc">Meta descripción</label>
+                <textarea id="pe-seodesc" rows={3} value={seoDescription} maxLength={400}
+                  placeholder={description || "Se usa la descripción normal"}
+                  onChange={(e) => setSeoDescription(e.target.value)} />
+                <p className={cn("hint", seoDescription.length > 155 && "hint-warn")}>
+                  {seoDescription.length || 0}/155 recomendados
+                </p>
+              </div>
+
+              <div className="field">
+                <label htmlFor="pe-keywords">Palabras clave</label>
+                <input id="pe-keywords" type="text" value={keywords} maxLength={300}
+                  placeholder="toefl, examen, preparación"
+                  onChange={(e) => setKeywords(e.target.value)} />
+                <p className="hint">Separadas por comas.</p>
+              </div>
+
+              <div className="field">
+                <label htmlFor="pe-canonical">URL canónica</label>
+                <input id="pe-canonical" type="text" value={canonicalUrl}
+                  placeholder="Se genera sola — solo si el contenido se publicó antes en otro sitio"
+                  onChange={(e) => setCanonicalUrl(e.target.value)} />
+              </div>
+
+              <div className="field">
+                <label htmlFor="pe-ogimage">Imagen para redes sociales</label>
+                <input id="pe-ogimage" type="text" value={ogImage}
+                  placeholder="Si lo dejas vacío se usa la imagen destacada"
+                  onChange={(e) => setOgImage(e.target.value)} />
+                {ogImage && <img src={ogImage} alt="" className="og-preview" />}
+              </div>
+
+              <div className="checkbox-row">
+                <input id="pe-noindex" type="checkbox" checked={noindex}
+                  onChange={(e) => setNoindex(e.target.checked)} />
+                <label htmlFor="pe-noindex">No indexar (ocultar de Google)</label>
               </div>
             </div>
           </aside>

@@ -40,7 +40,16 @@ const schema = [
 ];
 ---
 
-<Base title={`${post.data.title} | Professional Academy`} description={post.data.description} schema={schema} ogType="article" ogImage={post.data.image}>
+<Base
+  title={post.data.seoTitle ?? `${post.data.title} | Professional Academy`}
+  description={post.data.seoDescription ?? post.data.description}
+  schema={schema}
+  ogType="article"
+  ogImage={post.data.ogImage ?? post.data.image}
+  noindex={post.data.noindex}
+  canonicalUrl={post.data.canonicalUrl}
+  keywords={post.data.keywords}
+>
   <article class="pt-36 pb-28">
     <div class="container-edge">
 
