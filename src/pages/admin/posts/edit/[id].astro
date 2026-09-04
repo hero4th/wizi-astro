@@ -2,7 +2,7 @@
 export const prerender = false;
 
 import AdminLayout from "@/layouts/AdminLayout.astro";
-import RichTextEditor from "@/components/admin/RichTextEditor";
+import PostEditor from "@/components/admin/PostEditor";
 import { requireSession } from "@/lib/auth";
 import { sql } from "@/lib/db";
 
@@ -14,138 +14,23 @@ const post = rows[0];
 if (!post) return Astro.redirect("/admin", 303);
 
 const pubDate = new Date(post.pub_date).toISOString().slice(0, 10);
+
+const initial = {
+  id: post.id,
+  title: post.title,
+  slug: post.slug,
+  description: post.description,
+  category: post.category,
+  categorySlug: post.category_slug,
+  pubDate,
+  author: post.author,
+  image: post.image ?? "",
+  imageAlt: post.image_alt ?? "",
+  draft: post.draft,
+  html: post.html,
+};
 ---
 
-<AdminLayout title={`Editar: ${post.title}`}>
-  <div class="list-header">
-    <h1>Editar post</h1>
-    <button type="button" id="delete-btn" class="btn btn-danger">Eliminar post</button>
-  </div>
-  <p id="form-error" class="error-banner" hidden></p>
-
-  <form class="stack" id="post-form" data-id={post.id}>
-    <div class="panel" style="display:flex;flex-direction:column;gap:1.1rem">
-      <div class="field">
-        <label for="title">Título</label>
-        <input id="title" name="title" type="text" required value={post.title} />
-      </div>
-
-      <div class="field">
-        <label for="slug">Slug (URL)</label>
-        <input id="slug" name="slug" type="text" required value={post.slug} />
-        <p class="hint">Cambiar el slug cambia la URL del post — los enlaces viejos dejarán de funcionar.</p>
-      </div>
-
-      <div class="field">
-        <label for="description">Descripción (SEO)</label>
-        <textarea id="description" name="description" rows="2" required>{post.description}</textarea>
-      </div>
-
-      <div class="field-row">
-        <div class="field">
-          <label for="category">Categoría</label>
-          <input id="category" name="category" type="text" required value={post.category} />
-        </div>
-        <div class="field">
-          <label for="categorySlug">Slug de categoría</label>
-          <input id="categorySlug" name="categorySlug" type="text" required value={post.category_slug} />
-        </div>
-      </div>
-
-      <div class="field-row">
-        <div class="field">
-          <label for="pubDate">Fecha de publicación</label>
-          <input id="pubDate" name="pubDate" type="date" required value={pubDate} />
-        </div>
-        <div class="field">
-          <label for="author">Autor</label>
-          <input id="author" name="author" type="text" value={post.author} />
-        </div>
-      </div>
-
-      <div class="field-row">
-        <div class="field">
-          <label for="image">Imagen destacada (URL)</label>
-          <input id="image" name="image" type="text" value={post.image ?? ""} />
-        </div>
-        <div class="field">
-          <label for="imageAlt">Texto alternativo de la imagen</label>
-          <input id="imageAlt" name="imageAlt" type="text" value={post.image_alt ?? ""} />
-        </div>
-      </div>
-
-      <div class="checkbox-row">
-        <input id="draft" name="draft" type="checkbox" checked={post.draft} />
-        <label for="draft">Borrador (no se publica hasta desmarcarlo)</label>
-      </div>
-    </div>
-
-    <div class="field">
-      <label>Contenido</label>
-      <RichTextEditor client:load initialContent={post.html} />
-    </div>
-
-    <div class="form-actions">
-      <button type="submit" class="btn btn-primary">Guardar cambios</button>
-      <a href="/admin" class="btn btn-secondary">Cancelar</a>
-    </div>
-  </form>
-
-  <script>
-    const form = document.getElementById("post-form") as HTMLFormElement;
-    const errorBox = document.getElementById("form-error") as HTMLElement;
-    const deleteBtn = document.getElementById("delete-btn") as HTMLButtonElement;
-    const id = form.dataset.id;
-
-    function getEditorHtml(): string {
-      return (window as unknown as { __rteGetHtml?: () => string }).__rteGetHtml?.() ?? "";
-    }
-
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      errorBox.hidden = true;
-
-      const fd = new FormData(form);
-      const payload = {
-        title: fd.get("title"),
-        slug: fd.get("slug"),
-        description: fd.get("description"),
-        category: fd.get("category"),
-        categorySlug: fd.get("categorySlug"),
-        categories: [{ name: fd.get("category"), slug: fd.get("categorySlug") }],
-        pubDate: fd.get("pubDate"),
-        updatedDate: new Date().toISOString().slice(0, 10),
-        author: fd.get("author"),
-        image: fd.get("image") || null,
-        imageAlt: fd.get("imageAlt") || "",
-        draft: fd.get("draft") === "on",
-        body: getEditorHtml(),
-      };
-
-      const res = await fetch(`/api/admin/posts/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      if (res.ok) {
-        window.location.href = "/admin";
-      } else {
-        errorBox.textContent = await res.text();
-        errorBox.hidden = false;
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      }
-    });
-
-    deleteBtn.addEventListener("click", async () => {
-      if (!confirm("¿Eliminar este post? Esta acción no se puede deshacer.")) return;
-      const res = await fetch(`/api/admin/posts/${id}`, { method: "DELETE" });
-      if (res.ok) {
-        window.location.href = "/admin";
-      } else {
-        errorBox.textContent = await res.text();
-        errorBox.hidden = false;
-      }
-    });
-  </script>
+<AdminLayout title={`Editar: ${post.title}`} fullBleed>
+  <PostEditor client:load isNew={false} initial={initial} />
 </AdminLayout>

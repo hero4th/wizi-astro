@@ -2,137 +2,28 @@
 export const prerender = false;
 
 import AdminLayout from "@/layouts/AdminLayout.astro";
-import RichTextEditor from "@/components/admin/RichTextEditor";
+import PostEditor from "@/components/admin/PostEditor";
 import { requireSession } from "@/lib/auth";
 
 if (!(await requireSession(Astro.cookies))) return Astro.redirect("/admin/login", 303);
 
 const today = new Date().toISOString().slice(0, 10);
+
+const initial = {
+  title: "",
+  slug: "",
+  description: "",
+  category: "",
+  categorySlug: "",
+  pubDate: today,
+  author: "Professional Academy",
+  image: "",
+  imageAlt: "",
+  draft: true,
+  html: "",
+};
 ---
 
-<AdminLayout title="Nuevo post">
-  <div class="list-header">
-    <h1>Nuevo post</h1>
-  </div>
-  <p id="form-error" class="error-banner" hidden></p>
-
-  <form class="stack" id="post-form">
-    <div class="panel" style="display:flex;flex-direction:column;gap:1.1rem">
-      <div class="field">
-        <label for="title">Título</label>
-        <input id="title" name="title" type="text" required />
-      </div>
-
-      <div class="field">
-        <label for="slug">Slug (URL)</label>
-        <input id="slug" name="slug" type="text" placeholder="se genera solo si lo dejas vacío" />
-      </div>
-
-      <div class="field">
-        <label for="description">Descripción (SEO, ~155 caracteres)</label>
-        <textarea id="description" name="description" rows="2" required></textarea>
-      </div>
-
-      <div class="field-row">
-        <div class="field">
-          <label for="category">Categoría</label>
-          <input id="category" name="category" type="text" placeholder="TOEFL" required />
-        </div>
-        <div class="field">
-          <label for="categorySlug">Slug de categoría</label>
-          <input id="categorySlug" name="categorySlug" type="text" placeholder="toefl" required />
-        </div>
-      </div>
-
-      <div class="field-row">
-        <div class="field">
-          <label for="pubDate">Fecha de publicación</label>
-          <input id="pubDate" name="pubDate" type="date" value={today} required />
-        </div>
-        <div class="field">
-          <label for="author">Autor</label>
-          <input id="author" name="author" type="text" value="Professional Academy" />
-        </div>
-      </div>
-
-      <div class="field-row">
-        <div class="field">
-          <label for="image">Imagen destacada (URL)</label>
-          <input id="image" name="image" type="text" placeholder="/images/blog-toefl.webp" />
-        </div>
-        <div class="field">
-          <label for="imageAlt">Texto alternativo de la imagen</label>
-          <input id="imageAlt" name="imageAlt" type="text" />
-        </div>
-      </div>
-
-      <div class="checkbox-row">
-        <input id="draft" name="draft" type="checkbox" checked />
-        <label for="draft">Borrador (no se publica hasta desmarcarlo)</label>
-      </div>
-    </div>
-
-    <div class="field">
-      <label>Contenido</label>
-      <RichTextEditor client:load initialContent="" />
-    </div>
-
-    <div class="form-actions">
-      <button type="submit" class="btn btn-primary">Crear post</button>
-      <a href="/admin" class="btn btn-secondary">Cancelar</a>
-    </div>
-  </form>
-
-  <script>
-    import type { Editor } from "@tiptap/react";
-
-    const form = document.getElementById("post-form") as HTMLFormElement;
-    const errorBox = document.getElementById("form-error") as HTMLElement;
-
-    function getEditorHtml(): string {
-      return (window as unknown as { __rteGetHtml?: () => string }).__rteGetHtml?.() ?? "";
-    }
-
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      errorBox.hidden = true;
-
-      const fd = new FormData(form);
-      const payload = {
-        title: fd.get("title"),
-        slug: fd.get("slug"),
-        description: fd.get("description"),
-        category: fd.get("category"),
-        categorySlug: fd.get("categorySlug"),
-        categories: [{ name: fd.get("category"), slug: fd.get("categorySlug") }],
-        pubDate: fd.get("pubDate"),
-        author: fd.get("author"),
-        image: fd.get("image") || null,
-        imageAlt: fd.get("imageAlt") || "",
-        draft: fd.get("draft") === "on",
-        body: getEditorHtml(),
-      };
-
-      if (!payload.body || payload.body === "<p></p>") {
-        errorBox.textContent = "Escribe algo de contenido antes de guardar.";
-        errorBox.hidden = false;
-        window.scrollTo({ top: 0, behavior: "smooth" });
-        return;
-      }
-
-      const res = await fetch("/api/admin/posts", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      if (res.ok) {
-        window.location.href = "/admin";
-      } else {
-        errorBox.textContent = await res.text();
-        errorBox.hidden = false;
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      }
-    });
-  </script>
+<AdminLayout title="Nuevo post" fullBleed>
+  <PostEditor client:load isNew initial={initial} />
 </AdminLayout>
