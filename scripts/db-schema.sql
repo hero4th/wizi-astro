@@ -35,3 +35,30 @@ CREATE TABLE IF NOT EXISTS login_attempts (
 );
 
 CREATE INDEX IF NOT EXISTS login_attempts_ip_time_idx ON login_attempts (ip, attempted_at DESC);
+
+-- Admin credentials. A single row (id = 1): this is a one-editor panel, not a
+-- multi-user system. The hash lives here rather than in ADMIN_PASSWORD_HASH so
+-- the password can be changed from the panel itself without a redeploy; the env
+-- var is still used to seed this row the first time.
+CREATE TABLE IF NOT EXISTS admin_credentials (
+  id SMALLINT PRIMARY KEY DEFAULT 1 CHECK (id = 1),
+  password_hash TEXT NOT NULL,
+  -- Sessions issued before this instant are rejected. Bumped whenever the
+  -- password changes or the admin signs out everywhere, so a leaked or stale
+  -- session cookie stops working immediately.
+  sessions_valid_from TIMESTAMPTZ NOT NULL DEFAULT now(),
+  password_changed_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- Rate limiting for sensitive admin actions beyond login (password changes).
+CREATE TABLE IF NOT EXISTS admin_action_attempts (
+  id SERIAL PRIMARY KEY,
+  ip TEXT NOT NULL,
+  action TEXT NOT NULL,
+  success BOOLEAN NOT NULL,
+  attempted_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS admin_action_attempts_idx
+  ON admin_action_attempts (ip, action, attempted_at DESC);

@@ -1,0 +1,30 @@
+---
+export const prerender = false;
+
+import AdminLayout from "@/layouts/AdminLayout.astro";
+import SecuritySettings from "@/components/admin/SecuritySettings";
+import { requireSession } from "@/lib/auth";
+import { sql } from "@/lib/db";
+
+if (!(await requireSession(Astro.cookies))) return Astro.redirect("/admin/login", 303);
+
+const rows = await sql`SELECT password_changed_at FROM admin_credentials WHERE id = 1`;
+
+// Formatted here, with an explicit time zone, rather than in the React island:
+// formatting on both sides would render UTC on the server and local time in the
+// browser, which is a hydration mismatch.
+const passwordChangedAt = rows[0]?.password_changed_at
+  ? new Intl.DateTimeFormat("es-MX", {
+      dateStyle: "long",
+      timeStyle: "short",
+      timeZone: "America/Mexico_City",
+    }).format(new Date(rows[0].password_changed_at as string))
+  : null;
+---
+
+<AdminLayout title="Seguridad">
+  <div class="list-header">
+    <h1>Seguridad</h1>
+  </div>
+  <SecuritySettings client:load passwordChangedAt={passwordChangedAt} />
+</AdminLayout>
