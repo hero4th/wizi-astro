@@ -1,93 +1,94 @@
-# Professional Academy — Plataforma web
+# Professional Academy MX
 
-Rebuild completo de [proacademymx.com](https://www.proacademymx.com): plataforma de
-preparación para TOEFL iBT, SAT, GRE, GMAT y PAA.
+![Home](./capture.png)
 
-## Stack
+> Sitio desarrollado por Leandro Marquez para Professional Academy MX
 
-- **Astro 5** (output estático, adapter Vercel)
-- **React 19** (islas: formulario de leads)
-- **Tailwind CSS v4** (tokens en `src/styles/global.css` vía `@theme`)
-- **GSAP + Lenis** (scroll choreography y smooth scrolling)
-- **Swiper** (carrusel de testimonios)
-- **MDX + Content Collections** (blog)
+Plataforma web de preparación para exámenes estandarizados internacionales (TOEFL iBT, SAT, GRE, GMAT, PAA). 
+Optimizada para SEO, rendimiento de carga y generación de leads.
 
-## Comandos
+---
 
-```bash
-npm install
-npm run dev       # http://localhost:4321
-npm run build     # genera dist/
-npm run preview
-npm run check     # astro check (tipos)
-```
+## Características Principales
 
-## Estructura
+- Rendimiento: Generación estática (SSG) mediante Astro 5.
+- Interactividad: Componentes de React 19 implementados bajo demanda.
+- Diseño: Tailwind CSS v4 para estilos globales y utilidades.
+- Motion: Animaciones de scroll mediante GSAP y Lenis.
+- Contenido: Sistema de blog con MDX y Content Collections con tipado estricto.
+- Leads: Formulario integrado con validación y redirección a WhatsApp.
 
-```
+## Stack Tecnológico
+
+- Framework Core: Astro 5 (Adaptador Vercel)
+- UI: React 19
+- Estilos: Tailwind CSS v4
+- Animaciones: GSAP, Lenis, Framer Motion
+- Componentes interactivos: Swiper, Tiptap
+- Base de Datos y Storage: Neon Database Serverless (PostgreSQL) + Vercel Blob
+
+## Estructura del Proyecto
+
+El código fuente se encuentra en el directorio `src/`:
+
+```text
 src/
-  pages/          rutas (home, cursos/[slug], blog, precios, etc.)
-  components/     UI compartida + home/ (secciones de la portada)
-  layouts/        Base.astro (SEO, analytics, header/footer, motion)
-  content/blog/   posts MDX (frontmatter validado en content.config.ts)
-  data/           sitio, programas, FAQs, testimonios, categorías
-  lib/schema.ts   constructores JSON-LD (Organization, Course, FAQ, etc.)
-  scripts/        motion.ts: motor global Lenis + GSAP (data-attributes)
-  styles/         global.css: design tokens y utilidades
+├── components/      Componentes UI reutilizables
+│   └── home/        Componentes de la página principal
+├── content/         Colecciones de contenido
+│   └── blog/        Entradas en formato MDX
+├── data/            Datos estáticos (FAQs, programas, testimonios)
+├── layouts/         Estructura base (SEO, Header, Footer)
+├── lib/             Lógica utilitaria y esquemas (JSON-LD)
+├── pages/           Rutas de la aplicación
+├── scripts/         Scripts globales del cliente (GSAP/Lenis)
+└── styles/          Tokens de diseño y CSS global
 ```
 
-## Sistema de motion (declarativo)
+## Desarrollo Local
 
-Atributos disponibles en cualquier elemento:
+Requisitos: Node.js (v18+) y npm (v9+).
 
-| Atributo | Efecto |
-|---|---|
-| `data-reveal` | fade + rise al entrar al viewport |
-| `data-reveal-line` | reveal de titular por líneas (`.line-mask > .line-inner`) |
-| `data-counter="100"` | contador animado |
-| `data-parallax="-80"` | deriva vertical en scroll |
-| `data-magnetic` | botón magnético (solo pointer fino) |
+1. Clonar el repositorio:
+   ```bash
+   git clone https://github.com/NewtonSupreme/Proacademy-astro.git
+   cd Proacademy-astro
+   ```
 
-`prefers-reduced-motion` desactiva todo automáticamente.
+2. Instalar dependencias:
+   ```bash
+   npm install
+   ```
 
-## Analytics
+3. Levantar entorno de desarrollo (`localhost:4321`):
+   ```bash
+   npm run dev
+   ```
 
-Todos los trackers se activan solo en producción y solo si su variable existe:
+4. Compilar código para producción:
+   ```bash
+   npm run build
+   ```
 
-| Variable | Servicio |
-|---|---|
-| `PUBLIC_GTM_ID` | Google Tag Manager (si existe, GA4 va dentro de GTM) |
-| `PUBLIC_GA4_ID` | Google Analytics 4 directo |
-| `PUBLIC_CLARITY_ID` | Microsoft Clarity (heatmaps y grabaciones) |
-| `PUBLIC_META_PIXEL_ID` | Meta Pixel |
-| `PUBLIC_LINKEDIN_PARTNER_ID` | LinkedIn Insight Tag |
+## Sistema de Animaciones
 
-Eventos personalizados: los elementos con `data-event="nombre"` y el formulario
-de leads hacen push a `dataLayer` (evento `generate_lead`).
+Sistema declarativo basado en atributos de datos (`data-*`):
 
-## Leads
+- `data-reveal`: Fade-in ascendente.
+- `data-reveal-line`: Revelado secuencial por líneas.
+- `data-counter="100"`: Animación de incremento numérico.
+- `data-parallax="-80"`: Desplazamiento parallax en scroll.
+- `data-magnetic`: Atracción del elemento hacia el cursor.
 
-`src/components/LeadForm.tsx` valida en cliente y entrega el lead por WhatsApp
-(canal de venta actual). Para conectar un CRM o endpoint propio, reemplaza el
-bloque `window.open(...)` por un `fetch` a tu API; la validación y el honeypot
-ya están resueltos.
+Las animaciones se desactivan si el usuario tiene `prefers-reduced-motion` activado a nivel de sistema operativo.
 
-## SEO
+## SEO y Analytics
 
-- Metadata dinámica + canonical + OpenGraph + Twitter Cards en `SEO.astro`
-- JSON-LD: Organization, WebSite, LocalBusiness, Course, FAQPage, BreadcrumbList, Article
-- `sitemap-index.xml` automático (@astrojs/sitemap), `robots.txt`, RSS en `/rss.xml`
+- El componente `SEO.astro` gestiona etiquetas canónicas, OpenGraph y esquemas JSON-LD.
+- Generación nativa de `sitemap.xml` y `robots.txt`.
+- Analytics condicionado al entorno de producción (requiere `PUBLIC_GTM_ID`, `PUBLIC_GA4_ID`, `PUBLIC_CLARITY_ID`, `PUBLIC_META_PIXEL_ID`).
+- DataLayer integrado para disparar eventos de conversión en el formulario principal.
 
-## Deploy (Vercel)
+## Despliegue
 
-1. Sube el repo a GitHub e importa en Vercel (framework: Astro, sin config extra).
-2. Define las variables `PUBLIC_*` de analytics en el proyecto.
-3. `vercel.json` ya incluye headers de seguridad (CSP, HSTS, etc.) y cache
-   inmutable para `/_astro/*`.
-
-## CMS
-
-El contenido vive en Content Collections (`src/content/blog`) y en los datos
-tipados de `src/data/`. Para migrar a Sanity/Contentful/Strapi basta con
-reemplazar el loader de la colección o las constantes por llamadas al CMS;
-los componentes consumen interfaces, no archivos.
+Despliegue configurado para Vercel. `vercel.json` autoconfigura cabeceras de seguridad HTTP y políticas de caché para los recursos compilados.
