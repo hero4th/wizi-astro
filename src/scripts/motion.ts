@@ -1,8 +1,8 @@
 /**
  * Global motion engine — Lenis smooth scrolling + GSAP scroll choreography.
  * Declarative via data attributes:
- *   data-reveal            fade + rise on enter (data-reveal-delay="0.15")
- *   data-reveal-line       staggered line mask reveal (.line-mask > .line-inner)
+ *   data-reveal            visible-first rise on enter (data-reveal-delay="0.15")
+ *   data-reveal-line       static visible heading lines (.line-mask > .line-inner)
  *   data-counter           animated number (data-counter="12000" data-decimals="1")
  *   data-parallax          vertical drift (data-parallax="-80" px over scroll)
  *   data-magnetic          cursor-magnetic hover
@@ -54,8 +54,8 @@ function init() {
   // source, with no risk of disturbing reveals that already fired.
   const setupScrollAnimations = () => {
     document.querySelectorAll<HTMLElement>("[data-reveal]").forEach((el) => {
-      gsap.to(el, {
-        opacity: 1,
+      gsap.fromTo(el, { y: 28 }, {
+        immediateRender: false,
         y: 0,
         duration: 1.1,
         delay: parseFloat(el.dataset.revealDelay ?? "0"),
@@ -64,16 +64,7 @@ function init() {
       });
     });
 
-    document.querySelectorAll<HTMLElement>("[data-reveal-line]").forEach((el) => {
-      const lines = el.querySelectorAll(".line-inner");
-      gsap.to(lines, {
-        y: 0,
-        duration: 1.2,
-        stagger: 0.09,
-        ease: "expo.out",
-        scrollTrigger: { trigger: el, start: "top 85%", once: true },
-      });
-    });
+    // Heading lines remain visible: never translate essential text outside its mask.
 
     document.querySelectorAll<HTMLElement>("[data-counter]").forEach((el) => {
       const target = parseFloat(el.dataset.counter ?? "0");

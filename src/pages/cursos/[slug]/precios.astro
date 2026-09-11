@@ -2,6 +2,8 @@
 import { Icon } from "astro-icon/components";
 import Base from "@/layouts/Base.astro";
 import FAQList from "@/components/FAQList.astro";
+import HourPricePicker from "@/components/HourPricePicker.astro";
+import { PAA_HOUR_PACKAGES, PAA_ESSENTIAL_PRICE_MXN } from "@/data/hour-packages";
 import { PROGRAMS } from "@/data/programs";
 import { SITE } from "@/data/site";
 import { breadcrumbSchema, faqSchema } from "@/lib/schema";
@@ -101,7 +103,7 @@ const paaTiers: Tier[] = [
     name: "Pro Esencial",
     description: "Para estudiantes disciplinados que<br/>buscan material de alta calidad.",
     priceNote: "Pago único, acceso por 6 meses",
-    price: "$2,490",
+    price: `$${PAA_ESSENTIAL_PRICE_MXN.toLocaleString("en-US")}`,
     priceUnit: "MXN",
     includesTitle: "¿QUÉ INCLUYE ESTE PLAN?",
     features: [
@@ -119,7 +121,7 @@ const paaTiers: Tier[] = [
     isInteractive: true,
     description: "Evalúa tu nivel y trabaja en tus debilidades<br/>con la ayuda de nuestros expertos.",
     priceNote: "Elige tus clases en vivo:",
-    price: "$8,500",
+    price: "$8,900",
     priceUnit: "MXN",
     includesTitle: "INCLUYE TODO DEL PLAN ESENCIAL, MÁS:",
     features: [
@@ -169,7 +171,19 @@ const paaTiers: Tier[] = [
   }
 ];
 
-const currentTiers = program.slug === "paa" ? paaTiers : tiers;
+// Herón confirmed SAT uses PAA tariffs and the existing four hour packages.
+// Clone SAT content so its guarantee and wording never mutate PAA.
+const isSat = program.slug === "sat";
+const satTiers: Tier[] = paaTiers.map((tier) => ({
+  ...tier,
+  guarantee: program.guarantee,
+  features: tier.features.map((feature) =>
+    typeof feature !== "string" && feature.label === "Clases 1:1 en vivo"
+      ? { ...feature, note: "Elige 5, 10, 20 o 30 horas" }
+      : feature,
+  ),
+}));
+const currentTiers = isSat ? satTiers : program.slug === "paa" ? paaTiers : tiers;
 
 const waLink = (plan: string) =>
   `https://wa.me/${SITE.whatsapp}?text=${encodeURIComponent(
@@ -195,6 +209,12 @@ const faqs = [
   },
 ];
 
+if (isSat) {
+  faqs[0].a = "Dependiendo del plan, tendrás acceso a la plataforma digital, más de 5,000 preguntas de práctica, 20 exámenes de simulación y clases en vivo. Consulta los servicios incluidos en cada tarjeta.";
+  faqs[2].a = "El plan Pro Esencial incluye 6 meses de acceso. En Pro Avanzado y Pro Élite, el acceso se mantiene durante tu programa de preparación, hasta la fecha de tu examen.";
+  faqs[3].a = `${program.guarantee} Aplican nuestros Términos y Condiciones.`;
+}
+
 const schema = [
   faqSchema(faqs),
   breadcrumbSchema([
@@ -208,7 +228,7 @@ const schema = [
 
 <Base
   title={`Precios del curso ${EXAM} | Professional Academy`}
-  description={`Elige tu modalidad de estudio para el ${EXAM}: Pro Essentials, Pro Advanced o Pro Plus. Simuladores oficiales, clases 1 a 1 y Garantía de Puntaje.`}
+  description={`Elige tu modalidad de estudio para el ${EXAM}: ${isSat ? "Pro Esencial, Pro Avanzado o Pro Élite" : "Pro Essentials, Pro Advanced o Pro Plus"}. Simuladores oficiales, clases 1 a 1 y Garantía de Puntaje.`}
   schema={schema}
   stickyCta={false}
 >
@@ -286,6 +306,9 @@ const schema = [
 
             <!-- Precio -->
             <div class:list={["mt-5 min-h-[5.5rem] lg:min-h-[5.75rem] flex flex-row justify-between", t.isInteractive ? "items-end" : "items-start"]}>
+              {t.isInteractive ? (
+                <HourPricePicker packages={PAA_HOUR_PACKAGES} exam={EXAM} note={t.priceNote} />
+              ) : (
               <div class="flex flex-col justify-start w-full">
                 <p class:list={["text-[14px] font-medium", t.dark ? "text-ink-300" : "text-[#475569]"]}>{t.priceNote}</p>
                 <div class="mt-1 flex items-end justify-between gap-2 sm:gap-3 xl:gap-4 w-full">
@@ -304,21 +327,6 @@ const schema = [
                   )}
                 </div>
               </div>
-
-              {t.isInteractive && (
-                <div class="bg-white rounded-2xl px-3.5 pt-3.5 pb-3 shadow-[0_2px_8px_rgba(0,0,0,0.04)] flex flex-col items-center gap-2 border border-ink-950/[0.03] shrink-0 ml-4 mb-0.5">
-                  <div class="text-[19px] sm:text-[21px] font-extrabold text-[#1b2a38] leading-none tracking-tight">
-                    <span id="interactive-hours">10</span> h
-                  </div>
-                  <div class="flex items-center gap-1.5 mt-0.5">
-                    <button id="btn-minus" class="w-[34px] h-[34px] rounded-full bg-[#f1f3f5] flex items-center justify-center text-[#1b2a38] hover:bg-[#e2e8f0] transition-colors disabled:opacity-30 cursor-pointer disabled:cursor-not-allowed">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 256 256"><path fill="currentColor" d="M228,128a12,12,0,0,1-12,12H40a12,12,0,0,1,0-24H216A12,12,0,0,1,228,128Z"/></svg>
-                    </button>
-                    <button id="btn-plus" class="w-[34px] h-[34px] rounded-full bg-[#f1f3f5] flex items-center justify-center text-[#1b2a38] hover:bg-[#e2e8f0] transition-colors disabled:opacity-30 cursor-pointer disabled:cursor-not-allowed">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 256 256"><path fill="currentColor" d="M228,128a12,12,0,0,1-12,12H140v76a12,12,0,0,1-24,0V140H40a12,12,0,0,1,0-24h76V40a12,12,0,0,1,24,0v76h76A12,12,0,0,1,228,128Z"/></svg>
-                    </button>
-                  </div>
-                </div>
               )}
             </div>
 
@@ -413,93 +421,7 @@ const schema = [
   </section>
 </Base>
 
-<script>
-  function initInteractivePricing() {
-    const btnMinus = document.getElementById("btn-minus");
-    const btnPlus = document.getElementById("btn-plus");
-    const hoursDisplay = document.getElementById("interactive-hours");
-    const priceDisplay = document.getElementById("interactive-price");
-    
-    if (btnMinus && btnPlus && hoursDisplay && priceDisplay) {
-      const hoursMap = [
-        { hours: 5, price: 4900 },
-        { hours: 10, price: 8900 },
-        { hours: 20, price: 16900 },
-        { hours: 30, price: 22900 }
-      ];
-      
-      let currentIndex = 1; // Default to 10 hours
-      let currentHours = hoursMap[currentIndex].hours;
-      let currentPrice = hoursMap[currentIndex].price;
-      
-      function animateValue(obj, start, end, duration, prefix = "") {
-        let startTimestamp = null;
-        const easeOutQuad = t => t * (2 - t);
-        
-        const step = (timestamp) => {
-          if (!startTimestamp) startTimestamp = timestamp;
-          let progress = Math.min((timestamp - startTimestamp) / duration, 1);
-          progress = easeOutQuad(progress);
-          const current = Math.floor(progress * (end - start) + start);
-          obj.textContent = prefix + current.toLocaleString('en-US');
-          if (progress < 1) {
-            window.requestAnimationFrame(step);
-          } else {
-            obj.textContent = prefix + end.toLocaleString('en-US');
-          }
-        };
-        window.requestAnimationFrame(step);
-      }
-      
-      const updateDisplay = (newIndex, animate = true) => {
-        const target = hoursMap[newIndex];
-        const newHours = target.hours;
-        const newPrice = target.price;
-        
-        if (animate) {
-          animateValue(hoursDisplay, currentHours, newHours, 350);
-          animateValue(priceDisplay, currentPrice, newPrice, 350, "$");
-        } else {
-          hoursDisplay.textContent = newHours.toString();
-          priceDisplay.textContent = "$" + newPrice.toLocaleString('en-US');
-        }
-        
-        currentHours = newHours;
-        currentPrice = newPrice;
-        currentIndex = newIndex;
-        
-        if(currentIndex <= 0) {
-           btnMinus.setAttribute('disabled', 'true');
-        } else {
-           btnMinus.removeAttribute('disabled');
-        }
-        
-        if(currentIndex >= hoursMap.length - 1) {
-           btnPlus.setAttribute('disabled', 'true');
-        } else {
-           btnPlus.removeAttribute('disabled');
-        }
-      };
-      
-      btnMinus.addEventListener("click", () => {
-        if (currentIndex > 0) {
-          updateDisplay(currentIndex - 1);
-        }
-      });
-      
-      btnPlus.addEventListener("click", () => {
-        if (currentIndex < hoursMap.length - 1) {
-          updateDisplay(currentIndex + 1);
-        }
-      });
-      
-      updateDisplay(currentIndex, false);
-    }
-  }
 
-  initInteractivePricing();
-  document.addEventListener('astro:page-load', initInteractivePricing);
-</script>
 
 <style>
   /* ---- HERO ---- */

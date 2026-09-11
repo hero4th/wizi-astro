@@ -232,15 +232,15 @@ html.lenis body {
   font-variant-numeric: tabular-nums;
 }
 
-/* Scroll reveal primitives (activated by motion.ts) ----------------------*/
+/* Visible without JavaScript; motion.ts supplies animation start states. */
 [data-reveal] {
-  opacity: 0;
-  transform: translateY(28px);
+  opacity: 1;
+  transform: none;
 }
 
 [data-reveal-line] .line-inner {
   display: block;
-  transform: translateY(110%);
+  transform: none;
 }
 
 [data-reveal-line] .line-mask {

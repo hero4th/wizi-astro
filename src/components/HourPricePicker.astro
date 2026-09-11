@@ -1,0 +1,63 @@
+---
+import type { HourPackage } from "@/data/hour-packages";
+
+interface Props {
+  packages: HourPackage[];
+  initialIndex?: number;
+  exam: string;
+  note: string;
+}
+const { packages, initialIndex = 1, exam, note } = Astro.props;
+const initial = packages[initialIndex];
+const formatPrice = (price: number) => `$${price.toLocaleString("en-US")}`;
+---
+
+<hour-price-picker
+  class="flex w-full flex-wrap items-end justify-between gap-3"
+  data-packages={JSON.stringify(packages)}
+  data-initial-index={initialIndex}
+>
+  <div>
+    <p class="text-[14px] font-medium text-[#475569]">{note}</p>
+    <p class="mt-1 font-display tracking-tight whitespace-nowrap text-[#1b2a38]">
+      <span data-price class="text-[2.6rem] sm:text-[2.85rem] xl:text-[3.1rem] font-extrabold leading-none">{formatPrice(initial.price)}</span>
+      <span class="ml-1.5 text-[14px] sm:text-[15px] font-extrabold tracking-wide text-[#5e7182]">MXN</span>
+    </p>
+  </div>
+  <div class="bg-white rounded-2xl p-3 shadow-sm flex flex-col items-center gap-2 border border-ink-950/[0.03] shrink-0">
+    <span class="text-[19px] font-extrabold text-[#1b2a38]"><span data-hours>{initial.hours}</span> h</span>
+    <div class="flex gap-1.5">
+      <button type="button" data-minus disabled={initialIndex === 0} aria-label={`Reducir horas de ${exam}`} class="size-11 rounded-full bg-[#f1f3f5] text-xl text-[#1b2a38] hover:bg-[#e2e8f0] disabled:opacity-30 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-teal-600">−</button>
+      <button type="button" data-plus disabled={initialIndex === packages.length - 1} aria-label={`Aumentar horas de ${exam}`} class="size-11 rounded-full bg-[#f1f3f5] text-xl text-[#1b2a38] hover:bg-[#e2e8f0] disabled:opacity-30 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-teal-600">+</button>
+    </div>
+  </div>
+  <span data-announcement class="sr-only" role="status" aria-live="polite" aria-atomic="true">{initial.hours} horas por {formatPrice(initial.price)} MXN</span>
+</hour-price-picker>
+
+<script>
+  import { nextPackageIndex, type HourPackage } from "@/data/hour-packages";
+
+  class HourPricePicker extends HTMLElement {
+    connectedCallback() {
+      if (this.dataset.ready) return;
+      this.dataset.ready = "true";
+      const packages: HourPackage[] = JSON.parse(this.dataset.packages!);
+      let index = Number(this.dataset.initialIndex);
+      const minus = this.querySelector<HTMLButtonElement>("[data-minus]")!;
+      const plus = this.querySelector<HTMLButtonElement>("[data-plus]")!;
+      const render = (direction: number) => {
+        index = nextPackageIndex(index, direction, packages.length);
+        const selected = packages[index];
+        const price = `$${selected.price.toLocaleString("en-US")}`;
+        this.querySelector("[data-hours]")!.textContent = String(selected.hours);
+        this.querySelector("[data-price]")!.textContent = price;
+        this.querySelector("[data-announcement]")!.textContent = `${selected.hours} horas por ${price} MXN`;
+        minus.disabled = index === 0;
+        plus.disabled = index === packages.length - 1;
+      };
+      minus.addEventListener("click", () => render(-1));
+      plus.addEventListener("click", () => render(1));
+    }
+  }
+  if (!customElements.get("hour-price-picker")) customElements.define("hour-price-picker", HourPricePicker);
+</script>

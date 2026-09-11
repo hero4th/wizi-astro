@@ -14,6 +14,7 @@ export function getStaticPaths() {
 }
 
 const { program } = Astro.props;
+const isSat = program.slug === "sat";
 
 const priceFormatted = new Intl.NumberFormat("es-MX", {
   style: "currency",
@@ -29,8 +30,9 @@ const stats = [
 ];
 
 const featureIcons = ["ph:book-open", "ph:clipboard-text", "ph:graduation-cap", "ph:seal-check"];
-const examIcons =
-  program.slug === "paa"
+const examIcons = isSat
+  ? ["ph:book-open", "ph:math-operations"]
+  : program.slug === "paa"
     ? ["ph:book-open", "ph:pencil-simple", "ph:calculator", "ph:globe-hemisphere-west"]
     : ["ph:book-open", "ph:headphones", "ph:pencil-simple", "ph:microphone"];
 const academicIntro = program.academicIntro ?? program.audience;
@@ -64,8 +66,9 @@ const schema = [
 ---
 
 <Base title={program.metaTitle} description={program.metaDescription} schema={schema} stickyCta={false}>
+  <div data-course={program.slug}>
   <!-- HERO (oscuro) -->
-  <section class="relative overflow-hidden hairline-b-dim" style="background-color: rgb(6 10 10)">
+  <section class="course-hero relative overflow-hidden hairline-b-dim" style="background-color: rgb(6 10 10)">
     <div class="pointer-events-none absolute -right-32 top-0 h-[34rem] w-[34rem] rounded-full bg-teal-600/12 blur-[130px]" aria-hidden="true"></div>
 
     <div class="container-edge relative pt-36 pb-16 lg:min-h-[44rem] lg:pb-0">
@@ -109,7 +112,7 @@ const schema = [
           loading="eager"
           decoding="async"
           class:list={[
-            "pointer-events-none mx-auto mt-12 w-full drop-shadow-2xl lg:absolute lg:bottom-0 lg:mx-0 lg:mt-0",
+            "course-hero-image pointer-events-none mx-auto mt-12 w-full drop-shadow-2xl lg:absolute lg:bottom-0 lg:mx-0 lg:mt-0",
             program.slug === 'sat' || program.slug === 'gmat'
               ? "max-w-4xl lg:right-[calc(50%-53vw)] lg:w-[78%] lg:max-w-[1350px]"
               : "max-w-2xl lg:right-[calc(50%-50vw)] lg:w-[65%] lg:max-w-[1100px]"
@@ -127,7 +130,7 @@ const schema = [
       {stats.map((s, i) => (
         <div class:list={["px-6 py-9", i > 0 && "border-l border-ink-950/8", i >= 2 && "max-lg:border-t max-lg:border-ink-950/8", i === 2 && "max-lg:border-l-0"]} data-reveal data-reveal-delay={String(i * 0.06)}>
           <p class="font-display text-4xl font-semibold tracking-tight text-ink-950 sm:text-5xl">
-            {s.prefix && <span class="text-teal-600">{s.prefix}</span>}<span data-counter={String(s.value)}>0</span>
+            {s.prefix && <span class="text-teal-600">{s.prefix}</span>}<span data-counter={isSat ? undefined : String(s.value)}>{s.value.toLocaleString("es-MX")}</span>
           </p>
           <p class="mt-2 font-mono text-[10px] tracking-[0.18em] text-ink-500 uppercase">{s.label}</p>
         </div>
@@ -136,7 +139,7 @@ const schema = [
   </section>
 
   <!-- PREPARACIÓN ACADÉMICA -->
-  <section class="py-24">
+  <section class="course-preparation py-24">
     <div class="container-edge">
       <h2 class="text-3xl sm:text-5xl" data-reveal>
         Preparación académica <em class="accent-em">a tu medida.</em>
@@ -185,10 +188,11 @@ const schema = [
   </section>
 
   <!-- DOMINA TU EXAMEN (oscuro) -->
-  <section class="relative overflow-hidden pt-12 pb-8 hairline-t-dim" style="background-color: rgb(8 13 13)" aria-label={`Secciones del examen ${program.exam}`}>
+  <section class="course-sections relative overflow-hidden pt-12 pb-8 hairline-t-dim" style="background-color: rgb(8 13 13)" aria-label={`Secciones del examen ${program.exam}`}>
     <!-- Fondo abstracto -->
     <div class="pointer-events-none absolute -left-40 top-0 h-[40rem] w-[40rem] rounded-full bg-[#0a1f1c] blur-[60px]" aria-hidden="true"></div>
 
+    {isSat && <div class="sat-study-art" aria-hidden="true"><span><Icon name="ph:check" /></span></div>}
     <!-- Imagen Desktop (pegada a pantalla) -->
     {program.skillsImage && (
       <img
@@ -216,13 +220,13 @@ const schema = [
         )}
       </div>
 
-      <div class="relative z-10 lg:pt-10 lg:pb-6" data-reveal>
+      <div class="course-exam-details relative z-10 lg:pt-10 lg:pb-6" data-reveal>
         <h2 class="font-display text-4xl font-semibold leading-[1.05] tracking-tight text-pearl sm:text-5xl">
-          Domina tu examen.<br />
+          {isSat ? "Domina tu examen" : "Domina tu examen."}<br />
           <em class="font-display italic font-medium text-teal-400">Todas las secciones.</em>
         </h2>
         <p class="mt-5 max-w-lg text-base leading-relaxed text-ink-300">
-          Cada sección del examen es una habilidad distinta. Tu plan ataca las cuatro con un enfoque y ejercicios específicos.
+          {isSat ? "Cada sección de la prueba evalúa tu razonamiento y habilidades académicas esenciales. Nuestro plan ataca las áreas clave con una estrategia enfocada en mejorar tu puntaje." : "Cada sección del examen es una habilidad distinta. Tu plan ataca las cuatro con un enfoque y ejercicios específicos."}
         </p>
 
         {program.examSections ? (
@@ -235,6 +239,9 @@ const schema = [
                   class="exam-tab flex flex-1 items-center justify-center gap-2 rounded-full px-2 py-2.5 font-display text-sm font-semibold text-ink-400 transition-all border border-transparent"
                   data-exam-tab
                   data-index={i}
+                  id={`exam-tab-${program.slug}-${i}`}
+                  aria-controls={`exam-panel-${program.slug}-${i}`}
+                  tabindex={i === 0 ? 0 : -1}
                   aria-selected={i === 0 ? "true" : "false"}
                 >
                   <Icon name={examIcons[i] ?? "ph:circle"} class="size-[1.125rem] shrink-0 opacity-70 transition-opacity" aria-hidden="true" />
@@ -244,12 +251,12 @@ const schema = [
             </div>
 
             {program.examSections.map((s, i) => (
-              <div class="exam-panel mt-4 flex min-h-[35rem] flex-col justify-between overflow-hidden rounded-[1.5rem] border border-white/[0.04] bg-transparent backdrop-blur-xl shadow-2xl shadow-black/20 sm:min-h-[32rem]" data-exam-panel data-index={i} hidden={i !== 0}>
+              <div class="exam-panel mt-4 flex min-h-[35rem] flex-col justify-between overflow-hidden rounded-[1.5rem] border border-white/[0.04] bg-transparent backdrop-blur-xl shadow-2xl shadow-black/20 sm:min-h-[32rem]" data-exam-panel data-index={i} id={`exam-panel-${program.slug}-${i}`} role="tabpanel" aria-labelledby={`exam-tab-${program.slug}-${i}`} tabindex="0" hidden={i !== 0}>
                 <!-- Mitad superior azul/turquesa -->
                 <div class="flex flex-1 flex-col justify-between bg-[#172c26]/75 p-7 sm:p-8">
                   <div>
                     <h3 class="font-display text-2xl font-semibold tracking-tight text-pearl sm:text-[1.7rem]">
-                      {s.name} <span class="font-body text-[1.125rem] font-normal text-pearl/80">— {s.label}</span>
+                      {s.name} {s.label && <span class="font-body text-[1.125rem] font-normal text-pearl/80">— {s.label}</span>}
                     </h3>
                     <p class="mt-3.5 max-w-2xl text-[15px] leading-relaxed text-pearl/70">{s.description}</p>
                   </div>
@@ -263,7 +270,7 @@ const schema = [
                       <p class="font-mono text-[9px] font-bold tracking-[0.2em] text-pearl/40 uppercase">Puntaje de sección</p>
                       <p class="mt-1 font-display text-[17px] font-semibold text-teal-400">
                         {s.scoreRange} 
-                        <span class="text-[13px] font-normal text-pearl/40 ml-1">(escala {program.scoreScale})</span>
+                        <span class="text-[13px] font-normal text-pearl/40 ml-1">{isSat ? "puntos" : `(escala ${program.scoreScale})`}</span>
                       </p>
                     </div>
                   </div>
@@ -304,7 +311,7 @@ const schema = [
   </section>
 
   <!-- LA MEJOR OPCIÓN / COMPARATIVA -->
-  <section class="bg-[#F8FAFC] py-24 sm:py-28 overflow-hidden">
+  <section class="course-comparison bg-[#F8FAFC] py-24 sm:py-28 overflow-hidden">
     <div class="container-edge grid items-center gap-16 lg:grid-cols-[0.75fr_1.25fr] lg:gap-12">
       <!-- Left side info -->
       <div data-reveal class="space-y-6">
@@ -334,7 +341,7 @@ const schema = [
 
       <!-- Right side: Custom Comparison Card Table -->
       <div class="relative max-w-xl lg:max-w-none mx-auto w-full overflow-x-auto pt-16 pb-12 scrollbar-none" data-reveal>
-        <div class="relative min-w-[580px] lg:min-w-0 bg-white rounded-[2.5rem] border border-slate-100/80 px-6 py-6 shadow-[0_20px_50px_rgba(0,0,0,0.02)] grid grid-cols-[1fr_1.6fr_1fr] items-stretch">
+        <div class="course-comparison-table relative min-w-[580px] lg:min-w-0 bg-white rounded-[2.5rem] border border-slate-100/80 px-6 py-6 shadow-[0_20px_50px_rgba(0,0,0,0.02)] grid grid-cols-[1fr_1.6fr_1fr] items-stretch">
           
           <!-- Background Card Overlay for Column 2 -->
           <div class="col-start-2 col-span-1 row-start-1 bg-[#07211E] rounded-[2.25rem] border border-teal-500/20 shadow-[0_20px_40px_rgba(0,0,0,0.3)] -my-10 z-0 pointer-events-none relative" style={`grid-row: 1 / span ${comparison.length + 2}`}>
@@ -413,13 +420,13 @@ const schema = [
   </section>
 
   <!-- RESOLVEMOS TUS DUDAS -->
-  <section class="py-24 hairline-t" aria-label={`Preguntas frecuentes sobre el curso ${program.exam}`}>
+  <section class="course-faq py-24 hairline-t" aria-label={`Preguntas frecuentes sobre el curso ${program.exam}`}>
     <div class="container-edge grid items-start gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
       <div class="lg:sticky lg:top-28" data-reveal>
         {program.faqImage ? (
           <div class="relative">
             <!-- Animación GIF (Sin fondo, detrás a la izquierda) -->
-            <img src="/images/animation-faq-trans.gif" alt="" width="300" height="300" class="absolute -left-0 top-[10%] z-0 w-[35%] max-w-[220px] sm:-left-4 lg:-left-6" aria-hidden="true" />
+            <img src={isSat ? "/images/sat/checklist.webp" : "/images/animation-faq-trans.gif"} alt="" width="300" height="300" class="absolute -left-0 top-[10%] z-0 w-[35%] max-w-[220px] sm:-left-4 lg:-left-6" aria-hidden="true" />
             
             <!-- Imagen de la laptop -->
             <img src={program.faqImage} alt="" width="980" height="785" loading="lazy" decoding="async" class="relative z-10 w-full drop-shadow-2xl" aria-hidden="true" />
@@ -450,7 +457,7 @@ const schema = [
       <form id="course-msg-form" class="mx-auto mt-9 max-w-3xl" novalidate data-reveal>
         <p class="text-[clamp(1.125rem,1.8vw,1.5rem)] leading-[2] font-display font-medium text-ink-100">
           Hola, me llamo <input name="nombre" type="text" required autocomplete="name" aria-label="Tu nombre completo" placeholder="nombre completo" class="cm-field w-[14ch]" />.
-          Quiero informes del <span class="font-semibold text-teal-400">curso {program.exam}</span>.
+          Quiero informes del <span class="font-semibold text-teal-400">curso {program.exam}{isSat ? " del College Board" : ""}</span>.
           Pueden escribirme a <input name="correo" type="email" required inputmode="email" autocomplete="email" spellcheck="false" aria-label="Tu correo electrónico" placeholder="tu@correo.com" class="cm-field w-[14ch]" />
           o llamarme al <input name="telefono" type="tel" inputmode="tel" autocomplete="tel" aria-label="Tu número de teléfono" placeholder="tu número" class="cm-field w-[10ch]" />.
         </p>
@@ -461,9 +468,82 @@ const schema = [
       </form>
     </div>
   </section>
+  </div>
 </Base>
 
 <style>
+  /* Variantes del frame SAT de María; los demás cursos conservan sus estilos. */
+  [data-course="sat"] { background: #fff; }
+  /* El contenido SAT nunca depende del arranque del motor global de animación. */
+  [data-course="sat"] [data-reveal],
+  [data-course="sat"] [data-reveal-line] .line-inner {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  [data-course="sat"] :is(h1,h2,h3, .font-display) { font-family: var(--font-body); }
+  [data-course="sat"] :is(h1,h2) { font-weight: 400; letter-spacing: -.035em; }
+  [data-course="sat"] :is(h1,h2) em { font-style: normal; font-weight: inherit; color: #0d9488; }
+  [data-course="sat"] h1 { font-size: clamp(2.75rem, 5.6vw, 4.5rem); line-height: 1.1; }
+  [data-course="sat"] .course-hero nav { display: none; }
+  [data-course="sat"] .course-hero h1 { margin-top: 0; }
+  [data-course="sat"] .course-preparation h3 { font-size: 1.5rem; font-weight: 500; }
+  [data-course="sat"] .course-preparation .rounded-3xl { border-radius: 1rem; background: #eaedec; min-height: 11.5rem; }
+  [data-course="sat"] .course-preparation img { position: static; align-self: end; width: 11rem; opacity: 1; transform: none; margin-top: 1rem; }
+  [data-course="sat"] .course-sections { background-color: #0d1614 !important; }
+  [data-course="sat"] .course-sections h2 { font-size: clamp(2.25rem,4vw,3rem); }
+  [data-course="sat"] .course-sections .exam-panel { min-height: 0; border-radius: 1.25rem; background: #172420; box-shadow: none; }
+  [data-course="sat"] .exam-panel > div:first-child { background: #1a3d36; padding: 1.5rem 2rem; }
+  [data-course="sat"] .exam-panel > div:last-child { padding: 1rem 2rem; }
+  [data-course="sat"] .exam-panel h3 { font-size: 1.625rem; }
+  [data-course="sat"] .exam-panel ul { margin-top: 1rem; }
+  [data-course="sat"] .exam-panel li + li { margin-top: 1rem; }
+  [data-course="sat"] [role="tablist"] { max-width: 22rem; padding: .25rem; border-radius: 1rem; }
+  [data-course="sat"] .exam-tab { border-radius: .75rem; font-size: .875rem; white-space: nowrap; }
+  [data-course="sat"] .exam-tab:first-child { flex: 1.4; }
+  [data-course="sat"] .exam-tab:focus-visible { outline: 2px solid #2dd4bf; outline-offset: 3px; }
+  [data-course="sat"] .course-comparison { background: #f0f4f3; }
+  [data-course="sat"] .course-comparison h2 span { font-style: normal; }
+  [data-course="sat"] .course-comparison h2 { font-size: clamp(2.5rem,4vw,3rem); }
+  [data-course="sat"] .course-comparison ul li { border-bottom: 1px solid #dce3e1; padding-bottom: 1rem; }
+  [data-course="sat"] .course-faq .hairline-t { border-top: 0; }
+  [data-course="sat"] :global(.faq-item[data-active="true"] .faq-icon) { background: transparent; border-color: #e2e8e6; color: #060a0a; }
+  .sat-study-art { display: none; }
+  @media (min-width: 64rem) {
+    [data-course="sat"] .course-hero > .container-edge { min-height: 42.5rem; padding-top: 11rem; }
+    [data-course="sat"] .course-hero > .container-edge > div { padding-top: 0; }
+    [data-course="sat"] .course-hero-image { left: 49%; right: auto; width: 92%; max-width: none; }
+    [data-course="sat"] .course-preparation .rounded-3xl { padding: 2rem; }
+    [data-course="sat"] .course-preparation .rounded-3xl:first-child { grid-column: span 8; }
+    [data-course="sat"] .course-preparation .rounded-3xl:nth-child(2) { grid-column: span 4; }
+    [data-course="sat"] .course-preparation .rounded-3xl:nth-child(3) { grid-column: span 5; }
+    [data-course="sat"] .course-preparation .rounded-3xl:last-child { grid-column: span 7; }
+    [data-course="sat"] .course-preparation .rounded-3xl:has(img) > div { max-width: 62%; }
+    [data-course="sat"] .course-preparation img { position: absolute; right: 1rem; top: auto; bottom: 0; width: 31%; margin: 0; }
+    [data-course="sat"] .course-preparation .rounded-3xl:last-child img { width: 36%; }
+    [data-course="sat"] .course-sections { min-height: 48rem; padding-block: 5.5rem 4rem; }
+    [data-course="sat"] .course-sections > img { height: 90%; width: 48%; max-width: none; left: 0; bottom: 0; object-fit: contain; object-position: right bottom; mask-image: none !important; -webkit-mask-image: none !important; }
+    [data-course="sat"] .course-sections .course-exam-details { padding-top: .5rem; }
+    [data-course="sat"] .course-comparison .course-comparison-table { grid-template-columns: .9fr 1.35fr 1.35fr; }
+    .sat-study-art { display: block; position: absolute; inset: 0 50% 0 0; overflow: hidden; }
+    .sat-study-art::before { content: ""; position: absolute; width: 70rem; height: 70rem; left: -6rem; top: 3rem; border: 8rem solid #12312b; border-radius: 50%; opacity: .5; }
+    .sat-study-art > span { position: absolute; z-index: 11; top: 23%; left: 20%; display: grid; place-items: center; width: 4.5rem; height: 4.5rem; border-radius: 50%; background: #0d9488; color: white; transform: rotate(-15deg); }
+    .sat-study-art svg { width: 2.75rem; height: 2.75rem; }
+  }
+  @media (max-width: 63.99rem) {
+    [data-course="sat"] .course-sections > .container-edge { display: flex; flex-direction: column-reverse; }
+  }
+  @media (max-width: 39.99rem) {
+    [data-course="sat"] .exam-panel > div { padding: 1.25rem; }
+    [data-course="sat"] .course-sections img { max-height: 22rem; }
+    [data-course="sat"] .course-comparison .course-comparison-table { min-width: 0; grid-template-columns: .9fr 1.2fr 1fr; padding-inline: .5rem; border-radius: 1rem; }
+    [data-course="sat"] .course-comparison .course-comparison-table > div { padding-inline: .4rem; gap: .25rem; font-size: .8125rem; overflow-wrap: normal; }
+    [data-course="sat"] .course-comparison .course-comparison-table h3 { font-size: .875rem; }
+    [data-course="sat"] .course-comparison .course-comparison-table svg { display: none; }
+    [data-course="sat"] .course-comparison .course-comparison-table .size-5 { display: none; }
+    [data-course="sat"] .course-comparison .course-comparison-table .rounded-2xl { padding: .5rem; }
+    [data-course="sat"] .course-comparison .course-comparison-table .rounded-2xl p { font-size: .65rem; }
+  }
+
   .exam-tab[aria-selected="true"] {
     background: #132a24;
     border-color: rgba(255, 255, 255, 0.08);
@@ -495,7 +575,7 @@ const schema = [
   .cm-field[aria-invalid="true"] { border-bottom-color: #f87171; }
 </style>
 
-<script define:vars={{ whatsapp: SITE.whatsapp, exam: program.exam }}>
+<script define:vars={{ whatsapp: SITE.whatsapp, exam: program.exam, isSat }}>
   function initCoursePage() {
     // Tabs de secciones del examen
     const tabsRoot = document.querySelector("[data-exam-tabs]");
@@ -503,10 +583,22 @@ const schema = [
       tabsRoot.dataset.bound = "true";
       const tabs = Array.from(tabsRoot.querySelectorAll("[data-exam-tab]"));
       const panels = Array.from(tabsRoot.querySelectorAll("[data-exam-panel]"));
+      tabsRoot.addEventListener("keydown", (event) => {
+        if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+        const current = tabs.indexOf(document.activeElement);
+        if (current < 0) return;
+        event.preventDefault();
+        const next = event.key === "Home" ? 0 : event.key === "End" ? tabs.length - 1 : (current + (event.key === "ArrowRight" ? 1 : -1) + tabs.length) % tabs.length;
+        tabs[next].click();
+        tabs[next].focus();
+      });
       tabs.forEach((tab) => {
         tab.addEventListener("click", () => {
           const idx = tab.dataset.index;
-          tabs.forEach((t) => t.setAttribute("aria-selected", String(t === tab)));
+          tabs.forEach((t) => {
+            t.setAttribute("aria-selected", String(t === tab));
+            t.tabIndex = t === tab ? 0 : -1;
+          });
           panels.forEach((p) => (p.hidden = p.dataset.index !== idx));
         });
       });
@@ -533,6 +625,40 @@ const schema = [
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) return setError("correo", "Escribe un correo válido.");
         form.querySelectorAll("[aria-invalid]").forEach((el) => el.removeAttribute("aria-invalid"));
         if (status) status.textContent = "Enviando mensaje…";
+        if (isSat) {
+          if (form.dataset.submitting === "true") return;
+          form.dataset.submitting = "true";
+          const submit = form.querySelector('button[type="submit"]');
+          if (submit) submit.disabled = true;
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 15000);
+          fetch("/api/contact", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            signal: controller.signal,
+            body: JSON.stringify({ nombre, correo, telefono, curso: exam, fromUrl: window.location.href }),
+          }).then(async (response) => {
+            if (!response.ok || !(await response.json()).success) throw new Error("contact_failed");
+            if (status) status.textContent = "¡Mensaje enviado! Nuestro equipo se pondrá en contacto contigo.";
+            window.dataLayer?.push({ event: "generate_lead", lead_exam: exam });
+          }).catch(() => {
+            if (status) status.textContent = "No pudimos enviar el mensaje. Inténtalo de nuevo o contáctanos por WhatsApp.";
+          }).finally(() => {
+            clearTimeout(timeout);
+            form.dataset.submitting = "false";
+            if (submit) submit.disabled = false;
+            if (status) {
+              const link = document.createElement("a");
+              link.href = `https://wa.me/${whatsapp}?text=${encodeURIComponent(`Hola, me llamo ${nombre}. Quiero informes del curso ${exam}. Mi correo: ${correo}${telefono ? `. Mi teléfono: ${telefono}` : ""}`)}`;
+              link.target = "_blank";
+              link.rel = "noopener noreferrer";
+              link.className = "block mt-3 underline underline-offset-4";
+              link.textContent = "Continuar por WhatsApp";
+              status.append(link);
+            }
+          });
+          return;
+        }
         
         fetch("/api/contact", {
           method: "POST",

@@ -45,7 +45,7 @@ export default defineConfig({
     mdx(),
     icon({
       include: {
-        ph: ["phone", "map-pin", "arrow-right", "arrow-up-right", "plus", "check", "caret-down", "list", "x", "clock", "pencil-simple-line", "files", "chats-circle", "chat-circle", "envelope-simple", "seal-check", "seal-percent", "seal-percent-fill", "book-open", "headphones", "pencil-simple", "microphone", "clipboard-text", "graduation-cap", "check-circle", "calendar", "calendar-blank", "wrench", "toolbox", "cpu", "robot", "x-circle", "check-circle-fill", "seal-check-fill", "calculator", "globe-hemisphere-west", "stack", "target"],
+        ph: ["phone", "map-pin", "arrow-right", "arrow-up-right", "plus", "check", "caret-down", "list", "x", "clock", "pencil-simple-line", "files", "chats-circle", "chat-circle", "envelope-simple", "seal-check", "seal-percent", "seal-percent-fill", "book-open", "headphones", "pencil-simple", "microphone", "clipboard-text", "graduation-cap", "check-circle", "calendar", "calendar-blank", "wrench", "toolbox", "cpu", "robot", "x-circle", "check-circle-fill", "seal-check-fill", "calculator", "math-operations", "globe-hemisphere-west", "stack", "target"],
         "simple-icons": ["facebook", "instagram", "x", "whatsapp"],
       },
     }),
@@ -60,6 +60,9 @@ export default defineConfig({
     }),
   ],
   vite: {
+    // Build/check also create Vite optimizers. Keep them out of the live dev
+    // cache: replacing its metadata produces 504 Outdated Optimize Dep errors.
+    cacheDir: `node_modules/.vite/astro-${process.argv.find((arg) => ["dev", "build", "check", "preview"].includes(arg)) ?? "tools"}`,
     plugins: [tailwindcss()],
   },
   prefetch: {

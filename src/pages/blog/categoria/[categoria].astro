@@ -120,9 +120,8 @@ const formatter = new Intl.DateTimeFormat("es-MX", { day: "numeric", month: "lon
         onEnter: (batch) => {
           gsap.fromTo(
             batch,
-            { opacity: 0, y: 16 },
+            { y: 16 },
             {
-              opacity: 1,
               y: 0,
               duration: 0.65,
               stagger: 0,

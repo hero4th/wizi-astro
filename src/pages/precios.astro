@@ -53,11 +53,11 @@ const included = [
               {p.sessions} sesiones, {p.evaluations} simulacros completos y más de {p.exercises.toLocaleString("es-MX")} ejercicios.
             </p>
             <div class="text-left sm:text-right">
-              <p class="font-display text-3xl font-semibold tracking-tight text-ink-950">{fmt(p.priceMXN)}</p>
-              <p class="font-mono text-[10px] tracking-widest text-ink-400 uppercase">MXN, pagos a meses</p>
+              <p class="font-display text-3xl font-semibold tracking-tight text-ink-950">{p.slug === "sat" && <span class="text-base">Desde </span>}{fmt(p.priceMXN)}</p>
+              <p class="font-mono text-[10px] tracking-widest text-ink-400 uppercase">{p.slug === "sat" ? "MXN · Plan Pro Esencial" : "MXN, pagos a meses"}</p>
             </div>
-            <a href={`/cursos/${p.slug}`} class="btn-ghost justify-self-start !px-5 !py-2.5 !text-[11px] sm:justify-self-end" data-event={`pricing_view_${p.slug}`}>
-              Ver programa
+            <a href={p.slug === "sat" ? "/cursos/sat/precios" : `/cursos/${p.slug}`} class="btn-ghost justify-self-start !px-5 !py-2.5 !text-[11px] sm:justify-self-end" data-event={`pricing_view_${p.slug}`}>
+              {p.slug === "sat" ? "Ver planes SAT" : "Ver programa"}
             </a>
           </div>
         ))}

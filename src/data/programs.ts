@@ -1,3 +1,5 @@
+import { PAA_ESSENTIAL_PRICE_MXN } from "./hour-packages";
+
 export interface ProgramSection {
   name: string;
   detail: string;
@@ -160,19 +162,19 @@ export const PROGRAMS: Program[] = [
     headline: "El puntaje que exigen",
     accent: "las mejores universidades.",
     subheadline:
-      "Preparación Digital SAT con estrategias de Evidence-Based Reading, Writing y Math adaptadas al nuevo formato adaptativo.",
+      "Preparación integral en Reading and Writing y Math para ingresar a universidades internacionales. Estudia con material alineado al College Board y simuladores reales.",
     description:
       "Curso completo para el Digital SAT con simuladores adaptativos, técnicas de manejo de tiempo y tutorías personalizadas para admisión a universidades de Estados Unidos y el Tec de Monterrey.",
     metaTitle: "Curso SAT Digital Garantizado | Preparación para Universidades Top",
     metaDescription:
       "Domina el Digital SAT con simuladores adaptativos, clases 1 a 1 y Garantía de Puntaje. Preparación para admisión a universidades de EE. UU. y el Tec de Monterrey.",
     audience: "Estudiantes de preparatoria que buscan admisión en universidades de EE. UU. o programas internacionales.",
-    guarantee: "+100 puntos garantizados sobre tu diagnóstico o te devolvemos tu inversión.",
-    priceMXN: 14900,
+    guarantee: "Si tu puntuación en el examen oficial es menor al 90% del total o no eres admitido, te devolvemos el 100% de tu inversión.",
+    priceMXN: PAA_ESSENTIAL_PRICE_MXN,
     sessions: 40,
-    exercises: 1800,
-    evaluations: 6,
-    hours: 22,
+    exercises: 5000,
+    evaluations: 20,
+    hours: 60,
     scoreScale: "400-1600",
     skills: [
       { name: "Reading & Writing", detail: "Comprensión de lectura basada en evidencia, gramática y retórica con pasajes del formato digital." },
@@ -187,71 +189,52 @@ export const PROGRAMS: Program[] = [
       "Preparación válida para becas académicas",
     ],
     features: [
-      { title: "Formato digital", detail: "Simuladores que replican Bluebook, la aplicación oficial del College Board." },
-      { title: "Plan adaptativo", detail: "Diagnóstico inicial y ruta de aprendizaje personalizada día a día." },
-      { title: "Tutores expertos", detail: "Docentes con puntajes 1500+ y años de experiencia preparando admisiones." },
-      { title: "Análisis de errores", detail: "Cada simulacro genera un reporte por tipo de pregunta para atacar tus debilidades." },
+      { title: "Materiales de estudio", detail: "Acceso a bancos de preguntas y reactivos actualizados según la estructura de evaluación de College Board." },
+      { title: "Simuladores reales", detail: "Practica con el formato, tiempo y preguntas del examen oficial durante toda tu preparación." },
+      { title: "Expertos en la prueba SAT", detail: "Maestros que superaron la prueba del College Board, enfocados en las metodologías y trucos del examen." },
+      { title: "Garantía de puntaje", detail: "Si tu puntuación en el examen oficial es menor al 90% del total o no eres admitido, te devolvemos el 100% de tu inversión." },
     ],
     faqs: [
-      { q: "¿El curso cubre el nuevo Digital SAT?", a: "Sí, todo el programa está construido alrededor del formato digital adaptativo vigente, incluyendo práctica con la interfaz tipo Bluebook y el uso de Desmos." },
-      { q: "¿Sirve para el Tec de Monterrey?", a: "Sí. La PAA y el SAT comparten estructura de College Board; nuestro curso prepara puntajes competitivos para admisión al Tec y universidades de EE. UU." },
-      { q: "¿Cuántos simulacros incluye?", a: "Seis evaluaciones completas cronometradas más simulacros parciales por sección, todos con reporte detallado de desempeño." },
-      { q: "¿Tienen garantía de puntaje?", a: "Garantizamos un aumento mínimo de 100 puntos sobre tu diagnóstico inicial o te devolvemos el 100% de tu inversión." },
+      { q: "¿Qué incluye el curso de preparación SAT?", a: "Acceso ilimitado a nuestra plataforma con simuladores interactivos, bancos de ejercicios por sección (Reading and Writing y Math) y retroalimentación personalizada de expertos para las preguntas más difíciles." },
+      { q: "¿Cómo funciona la garantía de puntaje?", a: "Estamos tan seguros de nuestra metodología que si tu puntuación oficial en el SAT es menor al 90% del total o no eres admitido después de completar el curso, te devolvemos el 100% de tu inversión. Nuestro objetivo es asegurar tu lugar en la universidad." },
+      { q: "¿De qué manera se puntúa el examen SAT?", a: "El SAT se califica en una escala total de 400 a 1600 puntos, que se obtiene sumando los resultados de sus dos secciones principales: Reading and Writing, que va de 200 a 800 puntos, y Math, que también va de 200 a 800 puntos. Solo las preguntas correctas suman puntos, por lo que siempre conviene contestar todas las preguntas." },
+      { q: "¿Cuánto dura el programa de preparación?", a: "El programa está diseñado para completarse de manera óptima en las horas contratadas, dedicando breves momentos a la semana. Sin embargo, si necesitas una preparación más flexible, puedes contratar más horas y avanzar a tu propio ritmo." },
     ],
     heroImage: "/sat-hero.png",
-    guideImage: "/images/ibt-guia.webp",
-    guaranteeImage: "/images/ibt-garantias.webp",
-    skillsImage: "/images/domina-toefl.webp",
-    faqImage: "/images/ibt-laptop.webp",
+    guideImage: "/images/sat/materiales.webp",
+    guaranteeImage: "/images/sat/resultados.webp",
+    skillsImage: "/images/sat/estudiante.webp",
+    faqImage: "/images/sat/laptop.webp",
     academicIntro:
-      "El Digital SAT es el examen clave para acceder a universidades top en EE. UU. y el Tec de Monterrey. Nuestro plan te capacita en el formato adaptativo digital con precisión y rapidez.",
+      "Asegura tu admisión en universidades de Estados Unidos con un buen puntaje en el examen SAT. Nuestro plan de estudio te garantiza el éxito en poco tiempo.",
+    comparison: [
+      { label: "Duración del curso", pa: "20 horas de clase 1:1 en vivo", trad: "8 semanas" },
+      { label: "Herramientas", pa: "Acceso a plataforma premium", trad: "Libro limitado" },
+      { label: "Simuladores reales", pa: "20 exámenes de simulación", trad: "Bancos de preguntas" },
+      { label: "Sesiones de estudio", pa: "Horarios flexibles adaptables", trad: "Sujetas a disponibilidad" },
+      { label: "Temario", pa: "Plan de estudio personalizado", trad: "Varía por programa" },
+    ],
     examSections: [
       {
-        name: "Reading",
-        label: "Comprensión Lectora",
-        description:
-          "Evalúa tu capacidad para analizar textos literarios, científicos e históricos del formato digital del College Board, identificando evidencia y estructura.",
-        time: "~32 min",
-        scoreRange: "200 – 800",
+        name: "Reading & Writing",
+        label: "",
+        description: "Evalúa tus habilidades de comprensión lectora, análisis crítico, vocabulario en contexto, gramática y edición de redacción según el estándar académico universitario.",
+        time: "~64 min",
+        scoreRange: "200–800",
         activities: [
-          { title: "Words in Context", detail: "Elegir el vocabulario académico preciso según el contexto del párrafo." },
-          { title: "Textual Evidence", detail: "Identificar la evidencia que mejor respalda la hipótesis o argumento del autor." },
+          { title: "Craft and Structure & Information", detail: "Leer pasajes breves para inferir ideas clave, propósitos y vocabulario en contexto." },
+          { title: "Expression of Ideas & English Conventions", detail: "Aplicar reglas gramaticales y de puntuación para mejorar una redacción." },
         ],
       },
       {
-        name: "Writing",
-        label: "Gramática y Retórica",
-        description:
-          "Mide tu dominio de las convenciones del inglés estándar, puntuación, concordancia, conectores lógicos y síntesis retórica en párrafos cortos.",
-        time: "~32 min",
-        scoreRange: "200 – 800",
+        name: "Math",
+        label: "",
+        description: "Mide tu capacidad de razonamiento matemático, resolución de problemas algebraicos, funciones avanzadas, análisis de datos, geometría y trigonometría.",
+        time: "~70 min",
+        scoreRange: "200–800",
         activities: [
-          { title: "Standard English Conventions", detail: "Corregir puntuación, concordancia y estructura de oraciones complejas." },
-          { title: "Rhetorical Synthesis", detail: "Integrar notas informativas para cumplir un objetivo retórico específico." },
-        ],
-      },
-      {
-        name: "Algebra",
-        label: "Álgebra Fundamental",
-        description:
-          "Enfocado en ecuaciones lineales, sistemas de ecuaciones, funciones y análisis numérico utilizando la calculadora Desmos integrada.",
-        time: "~35 min",
-        scoreRange: "200 – 800",
-        activities: [
-          { title: "Linear Equations", detail: "Modelar y resolver ecuaciones algebraicas y sistemas lineales con agilidad." },
-          { title: "Problem Solving & Data", detail: "Interpretar tasas, porcentajes, tablas y dispersión de datos estadísticos." },
-        ],
-      },
-      {
-        name: "Advanced Math",
-        label: "Matemáticas Avanzadas",
-        description:
-          "Módulo adaptativo con problemas de alta complejidad de funciones no lineales, geometría, trigonometría y números complejos.",
-        time: "~35 min",
-        scoreRange: "200 – 800",
-        activities: [
-          { title: "Nonlinear Functions", detail: "Analizar parábolas, exponenciales y funciones racionales complejas." },
-          { title: "Geometry & Trigonometry", detail: "Cálculo de áreas, volúmenes, semejanza de triángulos y razones trigonométricas." },
+          { title: "Algebra & Advanced Math", detail: "Resolver ecuaciones, desigualdades, expresiones algebraicas y funciones complejas." },
+          { title: "Problem-Solving, Data & Geometry", detail: "Interpretar tablas, gráficos y proporciones para resolver problemas matemáticos." },
         ],
       },
     ],
