@@ -9,7 +9,7 @@ import { getPostBySlug, getPublishedPosts } from "@/lib/blog";
 import { extractHeadings } from "@/lib/headings";
 
 const post = await getPostBySlug(Astro.params.slug!);
-if (!post) return Astro.redirect("/blog", 307);
+if (!post) return Astro.rewrite("/404");
 
 const headings = extractHeadings(post.data.html);
 
@@ -31,6 +31,8 @@ const schema = [
     url,
     datePublished: post.data.pubDate.toISOString(),
     dateModified: post.data.updatedDate?.toISOString(),
+    image: post.data.image,
+    author: post.data.author,
   }),
   breadcrumbSchema([
     { name: "Inicio", url: SITE.url },

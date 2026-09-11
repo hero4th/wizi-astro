@@ -1,5 +1,7 @@
 User-agent: *
 Allow: /
 Disallow: /gracias
+Disallow: /admin
+Disallow: /api
 
 Sitemap: https://www.proacademymx.com/sitemap-index.xml

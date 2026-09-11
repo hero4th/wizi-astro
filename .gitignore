@@ -6,6 +6,9 @@ dist/
 # dependencies
 node_modules/
 
+# Local recovery snapshots include unpublished editorial content and DB baselines.
+snapshots/
+
 # environment
 .env*
 

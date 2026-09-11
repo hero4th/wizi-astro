@@ -17,7 +17,7 @@ export interface Heading {
 /** Extract the {depth, slug, text} list out of already-processed HTML (for the TOC). */
 export function extractHeadings(html: string): Heading[] {
   const headings: Heading[] = [];
-  const re = /<h([23])\s+id="([^"]+)">([\s\S]*?)<\/h\1>/gi;
+  const re = /<h([23])\b[^>]*\bid="([^"]+)"[^>]*>([\s\S]*?)<\/h\1>/gi;
   let m: RegExpExecArray | null;
   while ((m = re.exec(html))) {
     headings.push({

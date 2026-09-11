@@ -9,7 +9,7 @@ import { breadcrumbSchema } from "@/lib/schema";
 const allPosts = await getPublishedPosts();
 const categories = await getBlogCategories(allPosts);
 const category = categories.find((c) => c.slug === Astro.params.categoria);
-if (!category) return Astro.redirect("/blog", 307);
+if (!category) return Astro.rewrite("/404");
 
 const posts = await getPostsByCategory(category.slug, allPosts);
 const formatter = new Intl.DateTimeFormat("es-MX", { day: "numeric", month: "long", year: "numeric" });

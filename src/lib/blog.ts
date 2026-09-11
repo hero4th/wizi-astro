@@ -1,5 +1,6 @@
 import { sql } from "./db";
 import { categoryDescription } from "./wordpress";
+import { publicBlogLinks } from "./blog-links";
 
 export interface BlogCategoryRef {
   name: string;
@@ -65,7 +66,7 @@ function rowToPost(row: any): Post {
       author: row.author,
       readingTime: row.reading_time,
       draft: row.draft,
-      html: row.html,
+      html: publicBlogLinks(row.html),
       body: row.body,
       seoTitle: row.seo_title ?? undefined,
       seoDescription: row.seo_description ?? undefined,

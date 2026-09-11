@@ -24,10 +24,13 @@ export async function getBlogSitemapUrls(siteUrl) {
 
   try {
     const sql = neon(process.env.DATABASE_URL);
-    const rows = await sql`SELECT slug FROM posts WHERE draft = false`;
-    return rows.map((r) => `${siteUrl}/blog/${r.slug}`);
-  } catch (err) {
-    console.warn(`[sitemap] Could not fetch blog post URLs: ${err.message}`);
-    return [];
+    const rows = await sql`SELECT slug, categories FROM posts WHERE draft = false AND noindex = false`;
+    const categories = new Set(rows.flatMap((r) => (r.categories ?? []).map((c) => c.slug)));
+    return [
+      ...rows.map((r) => `${siteUrl}/blog/${r.slug}`),
+      ...[...categories].map((slug) => `${siteUrl}/blog/categoria/${slug}`),
+    ];
+  } catch {
+    throw new Error('Cannot build a complete blog sitemap: database read failed.');
   }
 }

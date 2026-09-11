@@ -129,6 +129,7 @@ export function articleSchema(opts: {
   datePublished: string;
   dateModified?: string;
   image?: string;
+  author?: string;
 }) {
   return {
     "@type": "Article",
@@ -139,7 +140,9 @@ export function articleSchema(opts: {
     datePublished: opts.datePublished,
     dateModified: opts.dateModified ?? opts.datePublished,
     image: opts.image ?? `${SITE.url}/og-default.png`,
-    author: { "@id": ORG_ID },
+    author: opts.author && opts.author !== SITE.name
+      ? { "@type": "Person", name: opts.author }
+      : { "@id": ORG_ID },
     publisher: { "@id": ORG_ID },
     mainEntityOfPage: { "@type": "WebPage", "@id": opts.url },
   };
