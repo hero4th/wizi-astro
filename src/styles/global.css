@@ -55,9 +55,23 @@ html {
 }
 
 a,
-button {
+button,
+[role="button"] {
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
+  cursor: pointer;
+}
+
+button:disabled,
+[role="button"][aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
+/* Guarantee closed overlays never intercept pointer events on mobile */
+#mobile-menu:not(.is-open),
+#diag-modal:not([aria-hidden="false"]),
+#tm-modal:not([aria-hidden="false"]) {
+  pointer-events: none !important;
 }
 
 body {

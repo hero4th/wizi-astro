@@ -99,13 +99,16 @@ const activeSlug = courseSlugs.find((slug) => pathname.includes(`/cursos/${slug}
         </a>
         <button
           id="menu-toggle"
-          class="grid size-10 place-items-center rounded-full border border-pearl/15 lg:hidden"
+          class="grid size-10 place-items-center rounded-full border border-pearl/15 lg:hidden cursor-pointer pointer-events-auto"
           aria-label="Abrir menú"
           aria-expanded="false"
           aria-controls="mobile-menu"
         >
-          <svg class="size-5 text-pearl/70" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <svg id="menu-icon-open" class="size-5 text-pearl/70 pointer-events-none transition-transform duration-300" viewBox="0 0 16 16" fill="none" aria-hidden="true">
             <path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+          </svg>
+          <svg id="menu-icon-close" class="hidden size-5 text-pearl/70 pointer-events-none transition-transform duration-300" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M3 3l10 10M13 3 3 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
           </svg>
         </button>
       </div>
@@ -114,9 +117,9 @@ const activeSlug = courseSlugs.find((slug) => pathname.includes(`/cursos/${slug}
 
   <div
     id="mobile-menu"
-    class="invisible fixed inset-0 z-40 bg-ink-950/97 opacity-0 backdrop-blur-xl transition-all duration-400 lg:hidden"
+    class="invisible fixed inset-0 z-40 bg-ink-950/97 opacity-0 backdrop-blur-xl transition-all duration-400 lg:hidden overflow-y-auto pointer-events-none"
   >
-    <div class="container-edge flex h-full flex-col justify-center gap-2 pt-20">
+    <div class="container-edge flex min-h-full flex-col justify-center gap-2 py-24">
       {NAV_LINKS.map((link, i) => {
         const isTestimonios = link.label === "Testimonios";
         const targetHref = isTestimonios && activeSlug ? `/cursos/${activeSlug}/testimonios` : link.href;
@@ -180,7 +183,11 @@ const activeSlug = courseSlugs.find((slug) => pathname.includes(`/cursos/${slug}
     border-color: rgb(247 250 249 / 0.12);
     box-shadow: 0 16px 48px -16px rgb(0 0 0 / 0.30);
   }
+  #mobile-menu {
+    pointer-events: none;
+  }
   #mobile-menu.is-open {
+    pointer-events: auto !important;
     visibility: visible;
     opacity: 1;
   }
@@ -189,16 +196,48 @@ const activeSlug = courseSlugs.find((slug) => pathname.includes(`/cursos/${slug}
 <script>
   const toggle = document.getElementById("menu-toggle");
   const menu = document.getElementById("mobile-menu");
-  toggle?.addEventListener("click", () => {
-    const open = menu?.classList.toggle("is-open");
-    toggle.setAttribute("aria-expanded", String(!!open));
-    toggle.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
-    document.documentElement.classList.toggle("lenis-stopped", !!open);
+  const iconOpen = document.getElementById("menu-icon-open");
+  const iconClose = document.getElementById("menu-icon-close");
+
+  function setMenuState(open: boolean) {
+    if (open) {
+      menu?.classList.add("is-open");
+      iconOpen?.classList.add("hidden");
+      iconClose?.classList.remove("hidden");
+      toggle?.setAttribute("aria-expanded", "true");
+      toggle?.setAttribute("aria-label", "Cerrar menú");
+      document.documentElement.classList.add("lenis-stopped");
+    } else {
+      menu?.classList.remove("is-open");
+      iconOpen?.classList.remove("hidden");
+      iconClose?.classList.add("hidden");
+      toggle?.setAttribute("aria-expanded", "false");
+      toggle?.setAttribute("aria-label", "Abrir menú");
+      document.documentElement.classList.remove("lenis-stopped");
+    }
+  }
+
+  toggle?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const isOpen = menu?.classList.contains("is-open");
+    setMenuState(!isOpen);
   });
+
+  menu?.addEventListener("click", (e) => {
+    if (e.target === menu) {
+      setMenuState(false);
+    }
+  });
+
   menu?.querySelectorAll("a").forEach((a) =>
     a.addEventListener("click", () => {
-      menu.classList.remove("is-open");
-      document.documentElement.classList.remove("lenis-stopped");
+      setMenuState(false);
     })
   );
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && menu?.classList.contains("is-open")) {
+      setMenuState(false);
+    }
+  });
 </script>

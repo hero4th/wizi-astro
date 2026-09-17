@@ -126,8 +126,8 @@ function init() {
     setupScrollAnimations();
   }
 
-  // -- Magnetic buttons (pointer devices only) ----------------------------------
-  if (window.matchMedia("(pointer: fine)").matches) {
+  // -- Magnetic buttons (mouse / hover pointer devices only) ------------------
+  if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
     document.querySelectorAll<HTMLElement>("[data-magnetic]").forEach((el) => {
       const strength = 22;
       const xTo = gsap.quickTo(el, "x", { duration: 0.5, ease: "power3.out" });
