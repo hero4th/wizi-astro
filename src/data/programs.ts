@@ -498,7 +498,6 @@ export const PROGRAMS: Program[] = [
     faqImage: "/images/laptop-paa.png",
     academicIntro:
       "Asegura tu lugar en el Tec de Monterrey e importantes universidades que aplican la PAA con una preparación adaptada a tu ritmo. Domina las secciones de Lectura, Redacción, Matemáticas e Inglés con simuladores oficiales y clases en vivo.",
-    exam: "PAA",
     examSections: [
       {
         name: "Lectura",

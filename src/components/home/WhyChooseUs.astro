@@ -262,6 +262,7 @@
     }
 
     function updateUI() {
+      if (!video || !overlay || !playBtn || !pauseBtn || !miniPlay || !miniPause || !muteBtn || !unmuteBtn) return;
       if (video.paused) {
         // Paused state: overlay is visible, backdrop-blur is active, play button shows
         overlay.className = "absolute inset-0 z-20 flex flex-col justify-end p-4 sm:p-6 transition-all duration-300 bg-black/45 backdrop-blur-[4px] opacity-100 pointer-events-auto";
