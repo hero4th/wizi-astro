@@ -47,6 +47,40 @@ export interface CategoryWithCount {
   description: string;
 }
 
+import fallbackPostsData from "@/data/blog-fallback.json";
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function getFallbackPosts(): Post[] {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (fallbackPostsData as any[]).map((item) => ({
+    id: item.slug,
+    data: {
+      title: item.title,
+      description: item.description,
+      category: item.category,
+      categorySlug: item.categorySlug,
+      categories: item.categories ?? [],
+      pubDate: new Date(item.pubDate),
+      updatedDate: item.updatedDate ? new Date(item.updatedDate) : undefined,
+      image: item.image ?? undefined,
+      imageAlt: item.imageAlt ?? "",
+      imageWidth: item.imageWidth ?? undefined,
+      imageHeight: item.imageHeight ?? undefined,
+      author: item.author,
+      readingTime: item.readingTime,
+      draft: item.draft,
+      html: publicBlogLinks(item.html),
+      body: item.body,
+      seoTitle: item.seoTitle ?? undefined,
+      seoDescription: item.seoDescription ?? undefined,
+      canonicalUrl: item.canonicalUrl ?? undefined,
+      noindex: item.noindex ?? false,
+      ogImage: item.ogImage ?? undefined,
+      keywords: item.keywords ?? undefined,
+    },
+  }));
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function rowToPost(row: any): Post {
   return {
@@ -84,11 +118,13 @@ export async function getPublishedPosts(): Promise<Post[]> {
     const rows = await sql`
       SELECT * FROM posts WHERE draft = false ORDER BY pub_date DESC
     `;
-    return rows.map(rowToPost);
+    if (rows && rows.length > 0) {
+      return rows.map(rowToPost);
+    }
   } catch (err) {
-    console.error("[blog] Error al consultar posts publicados en la base de datos:", err);
-    return [];
+    console.error("[blog] Error al consultar posts en base de datos, usando respaldo local:", err);
   }
+  return getFallbackPosts();
 }
 
 /** A single post by slug — published only, unless includeDrafts is set (admin preview). */
@@ -97,11 +133,14 @@ export async function getPostBySlug(slug: string, includeDrafts = false): Promis
     const rows = includeDrafts
       ? await sql`SELECT * FROM posts WHERE slug = ${slug}`
       : await sql`SELECT * FROM posts WHERE slug = ${slug} AND draft = false`;
-    return rows[0] ? rowToPost(rows[0]) : null;
+    if (rows && rows.length > 0) {
+      return rowToPost(rows[0]);
+    }
   } catch (err) {
-    console.error(`[blog] Error al consultar post '${slug}' en la base de datos:`, err);
-    return null;
+    console.error(`[blog] Error al consultar post '${slug}' en base de datos, usando respaldo local:`, err);
   }
+  const fallback = getFallbackPosts().find((p) => p.id === slug);
+  return fallback ?? null;
 }
 
 /** Every category that has at least one published post, most-used first. */

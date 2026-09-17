@@ -31,7 +31,19 @@ export async function getBlogSitemapUrls(siteUrl) {
       ...[...categories].map((slug) => `${siteUrl}/blog/categoria/${slug}`),
     ];
   } catch (err) {
-    console.warn('[get-blog-sitemap-urls] No se pudo obtener la lista de URLs del blog desde la base de datos:', err?.message || err);
+    console.warn('[get-blog-sitemap-urls] Base de datos no disponible, usando URLs de blog-fallback.json');
+    try {
+      const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
+      const fallbackFile = path.join(root, "src/data/blog-fallback.json");
+      if (existsSync(fallbackFile)) {
+        const rows = JSON.parse(readFileSync(fallbackFile, "utf-8"));
+        const categories = new Set(rows.flatMap((r) => (r.categories ?? []).map((c) => c.slug)));
+        return [
+          ...rows.map((r) => `${siteUrl}/blog/${r.slug}`),
+          ...[...categories].map((slug) => `${siteUrl}/blog/categoria/${slug}`),
+        ];
+      }
+    } catch {}
     return [];
   }
 }
