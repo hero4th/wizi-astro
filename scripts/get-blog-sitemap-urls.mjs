@@ -30,7 +30,8 @@ export async function getBlogSitemapUrls(siteUrl) {
       ...rows.map((r) => `${siteUrl}/blog/${r.slug}`),
       ...[...categories].map((slug) => `${siteUrl}/blog/categoria/${slug}`),
     ];
-  } catch {
-    throw new Error('Cannot build a complete blog sitemap: database read failed.');
+  } catch (err) {
+    console.warn('[get-blog-sitemap-urls] No se pudo obtener la lista de URLs del blog desde la base de datos:', err?.message || err);
+    return [];
   }
 }

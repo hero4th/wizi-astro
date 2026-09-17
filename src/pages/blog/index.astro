@@ -12,6 +12,8 @@ const activeCategories = await getBlogCategories(posts);
 const [featured, ...rest] = posts;
 const fullFmt = new Intl.DateTimeFormat("es-MX", { day: "numeric", month: "long", year: "numeric" });
 const shortFmt = new Intl.DateTimeFormat("es-MX", { day: "numeric", month: "short", year: "numeric" });
+
+Astro.response.headers.set("Content-Type", "text/html; charset=utf-8");
 ---
 
 <Base
@@ -178,6 +180,29 @@ const shortFmt = new Intl.DateTimeFormat("es-MX", { day: "numeric", month: "shor
               </div>
             </a>
           ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  {!featured && (
+    <section class="pb-28 pt-8" aria-label="Aviso">
+      <div class="container-edge">
+        <div class="text-center py-16 px-6 rounded-3xl hairline bg-white max-w-2xl mx-auto shadow-sm">
+          <div class="inline-flex size-12 items-center justify-center rounded-full bg-teal-500/10 text-teal-600 mb-4">
+            <svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
+            </svg>
+          </div>
+          <p class="font-display text-xl font-semibold text-ink-900">
+            Los artículos del blog se están actualizando
+          </p>
+          <p class="mt-2 text-sm text-ink-500 max-w-md mx-auto leading-relaxed">
+            Estamos optimizando nuestros contenidos y base de datos. Por favor vuelve a consultar en unos minutos.
+          </p>
+          <a href="/" class="btn-primary mt-6 inline-block !text-xs !py-3 !px-7">
+            Volver al inicio
+          </a>
         </div>
       </div>
     </section>

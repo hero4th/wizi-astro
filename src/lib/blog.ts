@@ -80,18 +80,28 @@ function rowToPost(row: any): Post {
 
 /** All published posts, newest first. */
 export async function getPublishedPosts(): Promise<Post[]> {
-  const rows = await sql`
-    SELECT * FROM posts WHERE draft = false ORDER BY pub_date DESC
-  `;
-  return rows.map(rowToPost);
+  try {
+    const rows = await sql`
+      SELECT * FROM posts WHERE draft = false ORDER BY pub_date DESC
+    `;
+    return rows.map(rowToPost);
+  } catch (err) {
+    console.error("[blog] Error al consultar posts publicados en la base de datos:", err);
+    return [];
+  }
 }
 
 /** A single post by slug — published only, unless includeDrafts is set (admin preview). */
 export async function getPostBySlug(slug: string, includeDrafts = false): Promise<Post | null> {
-  const rows = includeDrafts
-    ? await sql`SELECT * FROM posts WHERE slug = ${slug}`
-    : await sql`SELECT * FROM posts WHERE slug = ${slug} AND draft = false`;
-  return rows[0] ? rowToPost(rows[0]) : null;
+  try {
+    const rows = includeDrafts
+      ? await sql`SELECT * FROM posts WHERE slug = ${slug}`
+      : await sql`SELECT * FROM posts WHERE slug = ${slug} AND draft = false`;
+    return rows[0] ? rowToPost(rows[0]) : null;
+  } catch (err) {
+    console.error(`[blog] Error al consultar post '${slug}' en la base de datos:`, err);
+    return null;
+  }
 }
 
 /** Every category that has at least one published post, most-used first. */

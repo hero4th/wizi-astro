@@ -11,6 +11,8 @@ import { extractHeadings } from "@/lib/headings";
 const post = await getPostBySlug(Astro.params.slug!);
 if (!post) return Astro.rewrite("/404");
 
+Astro.response.headers.set("Content-Type", "text/html; charset=utf-8");
+
 const headings = extractHeadings(post.data.html);
 
 const url = `${SITE.url}/blog/${post.id}`;

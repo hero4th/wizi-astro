@@ -13,6 +13,8 @@ if (!category) return Astro.rewrite("/404");
 
 const posts = await getPostsByCategory(category.slug, allPosts);
 const formatter = new Intl.DateTimeFormat("es-MX", { day: "numeric", month: "long", year: "numeric" });
+
+Astro.response.headers.set("Content-Type", "text/html; charset=utf-8");
 ---
 
 <Base
