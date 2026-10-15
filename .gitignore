@@ -3,6 +3,9 @@ dist/
 .vercel/
 .astro/
 
+# admin-uploaded images (persisted on the server, not in git)
+/uploads/
+
 # dependencies
 node_modules/
 
