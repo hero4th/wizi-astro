@@ -21,7 +21,13 @@ const sql = neon(url);
 
 // --- 1. Schema -------------------------------------------------------------
 const schema = readFileSync(new URL("./db-schema.sql", import.meta.url), "utf8");
+// Strip `--` comment lines first: some comments contain ";", which would
+// otherwise break the naive split below.
 const statements = schema
+  .split("\n")
+  .map((line) => line.trim())
+  .filter((line) => line && !line.startsWith("--"))
+  .join("\n")
   .split(";")
   .map((s) => s.trim())
   .filter(Boolean);
