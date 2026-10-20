@@ -154,26 +154,43 @@ export const GET: APIRoute = async ({ cookies, request }) => {
     let downloaded = 0;
     let failed = 0;
 
-    await Promise.all(
-      [...allUrls].map(async (url) => {
-        const file = await downloadImage(url);
-        if (!file) { failed++; return; }
+    // Download in small batches: firing all requests at once saturates the
+    // remote host (WordPress rate-limits / resets concurrent connections) and
+    // most downloads silently fail. Bounded parallelism + one retry per URL
+    // keeps the host happy while still finishing well inside the function
+    // timeout.
+    const CONCURRENCY = 6;
+    const urls = [...allUrls];
 
-        // Ensure unique key inside the ZIP.
-        let key = safeKey(url);
-        const ext = Object.entries(EXT_MIME).find(([, e]) => file.contentType.includes(e.split("/")[1]))?.[1] ?? "";
-        if (ext && !key.endsWith(ext)) key += ext;
-        let uniqueKey = key;
-        let n = 2;
-        while (imageMap[url] !== undefined || Object.values(imageMap).includes(uniqueKey)) {
-          uniqueKey = `${n++}-${key}`;
-        }
+    for (let i = 0; i < urls.length; i += CONCURRENCY) {
+      const batch = urls.slice(i, i + CONCURRENCY);
+      await Promise.all(
+        batch.map(async (url) => {
+          let file = await downloadImage(url);
+          if (!file) {
+            // One retry after a short pause — transient resets are common
+            // when several requests hit the same host back to back.
+            await new Promise((r) => setTimeout(r, 600));
+            file = await downloadImage(url);
+          }
+          if (!file) { failed++; return; }
 
-        imagesFolder.file(uniqueKey, file.data);
-        imageMap[url] = `images/${uniqueKey}`;
-        downloaded++;
-      })
-    );
+          // Ensure unique key inside the ZIP.
+          let key = safeKey(url);
+          const ext = Object.entries(EXT_MIME).find(([, e]) => file.contentType.includes(e.split("/")[1]))?.[1] ?? "";
+          if (ext && !key.endsWith(ext)) key += ext;
+          let uniqueKey = key;
+          let n = 2;
+          while (imageMap[url] !== undefined || Object.values(imageMap).includes(uniqueKey)) {
+            uniqueKey = `${n++}-${key}`;
+          }
+
+          imagesFolder.file(uniqueKey, file.data);
+          imageMap[url] = `images/${uniqueKey}`;
+          downloaded++;
+        })
+      );
+    }
 
     // --- Build data.json ---
     const dataJson = {
