@@ -10,13 +10,12 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "start": "node server.mjs",
     "preview": "astro preview",
     "check": "astro check"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.0",
-    "@astrojs/node": "^9.5.5",
+    "@astrojs/netlify": "^6.6.5",
     "@astrojs/react": "^4.3.0",
     "@astrojs/rss": "^4.0.12",
     "@astrojs/sitemap": "^3.4.1",
@@ -27,6 +26,7 @@
     "@iconify-json/ph": "^1.2.2",
     "@iconify-json/simple-icons": "^1.2.86",
     "@neondatabase/serverless": "^1.1.0",
+    "@netlify/blobs": "^11.1.4",
     "@tailwindcss/vite": "^4.1.11",
     "@tiptap/extension-character-count": "^3.31.2",
     "@tiptap/extension-color": "^3.31.2",

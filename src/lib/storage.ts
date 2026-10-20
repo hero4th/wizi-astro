@@ -1,10 +1,10 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
-import { existsSync } from "node:fs";
-import path from "node:path";
+import { getStore } from "@netlify/blobs";
 
-// Where uploaded images live on disk. Must be persistent across deploys, so it
-// defaults to an `uploads/` folder in the app root (override with UPLOAD_DIR).
-export const UPLOAD_DIR = process.env.UPLOAD_DIR || path.join(process.cwd(), "uploads");
+// Admin uploads are stored in Netlify Blobs, not on disk: Netlify Functions
+// only have a read-only filesystem (plus an ephemeral /tmp), so anything written
+// to disk is lost between requests and redeploys. Blobs persist and are shared
+// across every function invocation.
+const STORE_NAME = "uploads";
 
 const MIME_BY_EXT: Record<string, string> = {
   jpg: "image/jpeg",
@@ -20,23 +20,25 @@ export function contentTypeFor(filename: string): string {
   return MIME_BY_EXT[ext] ?? "application/octet-stream";
 }
 
+function store() {
+  return getStore({ name: STORE_NAME, consistency: "strong" });
+}
+
 export async function saveUpload(buffer: ArrayBuffer, filename: string): Promise<string> {
-  await mkdir(UPLOAD_DIR, { recursive: true });
-  await writeFile(path.join(UPLOAD_DIR, filename), Buffer.from(buffer));
+  await store().set(filename, buffer);
   return filename;
 }
 
-// Resolves a request path segment to a file inside UPLOAD_DIR, rejecting any
-// attempt to escape the directory (path traversal).
-export function resolveUpload(segments: string[]): string | null {
+// Resolves a request path segment to a blob key, rejecting any attempt to
+// escape the uploads namespace (path traversal).
+export async function getUpload(
+  segments: string[]
+): Promise<{ data: ArrayBuffer; contentType: string } | null> {
   const name = segments.join("/");
   if (!name || name.includes("..") || name.includes("\0")) return null;
-  const full = path.resolve(UPLOAD_DIR, name);
-  const root = path.resolve(UPLOAD_DIR) + path.sep;
-  if (!full.startsWith(root)) return null;
-  return existsSync(full) ? full : null;
-}
 
-export async function readUpload(fullPath: string): Promise<Buffer> {
-  return readFile(fullPath);
+  const data = await store().get(name, { type: "arrayBuffer" });
+  if (!data) return null;
+
+  return { data, contentType: contentTypeFor(name) };
 }
