@@ -1,0 +1,16 @@
+---
+export const prerender = false;
+
+import AdminLayout from "@/layouts/AdminLayout.astro";
+import { requireSession } from "@/lib/auth";
+import BackupPanel from "@/components/admin/BackupPanel";
+
+if (!(await requireSession(Astro.cookies))) return Astro.redirect("/admin/login", 303);
+---
+
+<AdminLayout title="Backup">
+  <div class="list-header">
+    <h1>Backup e importación</h1>
+  </div>
+  <BackupPanel client:load />
+</AdminLayout>

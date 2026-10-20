@@ -7,6 +7,18 @@ import { processContentHtml, readingTimeFromHtml } from "@/lib/content";
 import { slugify } from "@/lib/slug";
 import { seoFields } from "@/lib/post-meta";
 
+export const GET: APIRoute = async ({ cookies }) => {
+  if (!(await requireSession(cookies))) return new Response("Unauthorized", { status: 401 });
+  const rows = await sql`
+    SELECT id, slug, title, category, category_slug, pub_date, draft
+    FROM posts ORDER BY pub_date DESC
+  `;
+  return new Response(JSON.stringify(rows), {
+    status: 200,
+    headers: { "Content-Type": "application/json", "Cache-Control": "no-store" },
+  });
+};
+
 export const POST: APIRoute = async ({ request, cookies }) => {
   // CSRF protection is the session cookie itself (httpOnly, secure,
   // sameSite=strict — never sent on a cross-site request in the first
