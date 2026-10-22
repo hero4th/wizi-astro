@@ -105,13 +105,13 @@ const schema = [
 
       {program.heroImage && (
         <img
-          src={program.heroImage}
+          src={program.heroImage.src}
           alt={`Plataforma de práctica ${program.exam}`}
-          width="1200"
-          height="577"
+          width={program.heroImage.width}
+          height={program.heroImage.height}
           loading="eager"
           fetchpriority="high"
-          decoding="async"
+          decoding="sync"
           class:list={[
             "course-hero-image pointer-events-none mx-auto mt-12 w-full drop-shadow-2xl lg:absolute lg:bottom-0 lg:mx-0 lg:mt-0",
             program.slug === 'sat' || program.slug === 'gmat'
