@@ -110,6 +110,7 @@ const schema = [
           width="1200"
           height="577"
           loading="eager"
+          fetchpriority="high"
           decoding="async"
           class:list={[
             "course-hero-image pointer-events-none mx-auto mt-12 w-full drop-shadow-2xl lg:absolute lg:bottom-0 lg:mx-0 lg:mt-0",
@@ -117,8 +118,6 @@ const schema = [
               ? "max-w-4xl lg:right-[calc(50%-53vw)] lg:w-[78%] lg:max-w-[1350px]"
               : "max-w-2xl lg:right-[calc(50%-50vw)] lg:w-[65%] lg:max-w-[1100px]"
           ]}
-          data-reveal
-          data-reveal-delay="0.1"
         />
       )}
     </div>
@@ -128,7 +127,7 @@ const schema = [
   <section class="hairline-b" aria-label="El programa en números">
     <div class="container-edge grid grid-cols-2 lg:grid-cols-4">
       {stats.map((s, i) => (
-        <div class:list={["px-6 py-9", i > 0 && "border-l border-ink-950/8", i >= 2 && "max-lg:border-t max-lg:border-ink-950/8", i === 2 && "max-lg:border-l-0"]} data-reveal data-reveal-delay={String(i * 0.06)}>
+        <div class:list={["px-6 py-9", i > 0 && "border-l border-ink-950/8", i >= 2 && "max-lg:border-t max-lg:border-ink-950/8", i === 2 && "max-lg:border-l-0"]} data-reveal>
           <p class="font-display text-4xl font-semibold tracking-tight text-ink-950 sm:text-5xl">
             {s.prefix && <span class="text-teal-600">{s.prefix}</span>}<span data-counter={isSat ? undefined : String(s.value)}>{s.value.toLocaleString("es-MX")}</span>
           </p>
@@ -151,7 +150,7 @@ const schema = [
           const isWide = i === 0 || i === program.features.length - 1;
           const img = i === 0 ? program.guideImage : i === program.features.length - 1 ? program.guaranteeImage : undefined;
           return (
-            <div class:list={["relative flex flex-col justify-center overflow-hidden rounded-3xl border border-ink-950/[0.06] bg-ink-50 p-6 sm:p-8", isWide ? "lg:col-span-7" : "lg:col-span-5"]} data-reveal data-reveal-delay={String((i % 2) * 0.07)}>
+            <div class:list={["relative flex flex-col justify-center overflow-hidden rounded-3xl border border-ink-950/[0.06] bg-ink-50 p-6 sm:p-8", isWide ? "lg:col-span-7" : "lg:col-span-5"]} data-reveal>
               <div class="relative z-10 max-w-sm lg:max-w-[17rem] xl:max-w-xs">
                 <div class="flex items-center gap-4">
                   <span class="grid size-12 shrink-0 place-items-center rounded-full bg-teal-600 text-white">
@@ -474,12 +473,6 @@ const schema = [
 <style>
   /* Variantes del frame SAT de María; los demás cursos conservan sus estilos. */
   [data-course="sat"] { background: #fff; }
-  /* El contenido SAT nunca depende del arranque del motor global de animación. */
-  [data-course="sat"] [data-reveal],
-  [data-course="sat"] [data-reveal-line] .line-inner {
-    opacity: 1 !important;
-    transform: none !important;
-  }
   [data-course="sat"] :is(h1,h2,h3, .font-display) { font-family: var(--font-body); }
   [data-course="sat"] :is(h1,h2) { font-weight: 400; letter-spacing: -.035em; }
   [data-course="sat"] :is(h1,h2) em { font-style: normal; font-weight: inherit; color: #0d9488; }

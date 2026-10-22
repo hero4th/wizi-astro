@@ -246,10 +246,26 @@ html.lenis body {
   font-variant-numeric: tabular-nums;
 }
 
-/* Visible without JavaScript; motion.ts supplies animation start states. */
-[data-reveal] {
-  opacity: 1;
-  transform: none;
+/* Reveal: fade + 12px rise, triggered by motion.ts adding .is-revealed.
+   Hidden only when scripts run and motion is allowed, so content stays visible
+   without JavaScript, with reduced motion, or in browsers without the
+   `scripting` media feature. A keyframe (not a transition) with `backwards`
+   fill leaves hover transitions/translates of the element untouched. */
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  [data-reveal]:not(.is-revealed) {
+    opacity: 0;
+  }
+
+  [data-reveal].is-revealed {
+    animation: reveal 500ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  }
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    translate: 0 12px;
+  }
 }
 
 [data-reveal-line] .line-inner {
@@ -260,21 +276,6 @@ html.lenis body {
 [data-reveal-line] .line-mask {
   display: block;
   overflow: hidden;
-}
-
-html.no-motion [data-reveal],
-html.no-motion [data-reveal-line] .line-inner {
-  opacity: 1 !important;
-  transform: none !important;
-}
-
-@media (prefers-reduced-motion: reduce) {
-
-  [data-reveal],
-  [data-reveal-line] .line-inner {
-    opacity: 1;
-    transform: none;
-  }
 }
 
 /* Headline defaults -------------------------------------------------------*/
