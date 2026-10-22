@@ -36,7 +36,7 @@ export interface Program {
   features: { title: string; detail: string }[];
   faqs: { q: string; a: string }[];
   scoreScale: string;
-  heroImage?: string;
+  heroImage?: { src: string; width: number; height: number };
   /** Imágenes específicas para la página de curso rediseñada. */
   guideImage?: string;
   guaranteeImage?: string;
@@ -97,7 +97,7 @@ export const PROGRAMS: Program[] = [
       { q: "¿Qué nivel de inglés necesito para iniciar?", a: "Ninguno en particular: el diagnóstico inicial define tu punto de partida y el plan se adapta a tu nivel actual, desde B1 hasta C1." },
       { q: "¿Cuánto dura el programa de preparación?", a: "El programa estándar dura de 8 a 12 semanas según tu meta de puntaje y disponibilidad, con horarios totalmente flexibles." },
     ],
-    heroImage: "/images/hero-toefl-ibt.webp",
+    heroImage: { src: "/images/hero-toefl-ibt.webp", width: 1200, height: 577 },
     guideImage: "/images/ibt-guia.webp",
     guaranteeImage: "/images/ibt-garantias.webp",
     skillsImage: "/images/domina-toefl.webp",
@@ -200,7 +200,7 @@ export const PROGRAMS: Program[] = [
       { q: "¿De qué manera se puntúa el examen SAT?", a: "El SAT se califica en una escala total de 400 a 1600 puntos, que se obtiene sumando los resultados de sus dos secciones principales: Reading and Writing, que va de 200 a 800 puntos, y Math, que también va de 200 a 800 puntos. Solo las preguntas correctas suman puntos, por lo que siempre conviene contestar todas las preguntas." },
       { q: "¿Cuánto dura el programa de preparación?", a: "El programa está diseñado para completarse de manera óptima en las horas contratadas, dedicando breves momentos a la semana. Sin embargo, si necesitas una preparación más flexible, puedes contratar más horas y avanzar a tu propio ritmo." },
     ],
-    heroImage: "/sat-hero.png",
+    heroImage: { src: "/sat-hero.webp", width: 2000, height: 785 },
     guideImage: "/images/sat/materiales.webp",
     guaranteeImage: "/images/sat/resultados.webp",
     skillsImage: "/images/sat/estudiante.webp",
@@ -285,7 +285,7 @@ export const PROGRAMS: Program[] = [
       { q: "¿Qué nivel de inglés necesito para iniciar?", a: "Recomendamos un nivel B2 de inglés. El diagnóstico inicial confirma tu punto de partida y ajusta el plan." },
       { q: "¿Cuánto dura el programa de preparación?", a: "Entre 8 y 12 semanas según tu meta, con 40 sesiones de clase y horarios flexibles." },
     ],
-    heroImage: "/images/gre-hero.png",
+    heroImage: { src: "/images/gre-hero.webp", width: 1024, height: 889 },
     guideImage: "/images/ibt-guia.webp",
     guaranteeImage: "/images/ibt-garantias.webp",
     skillsImage: "/images/domina-toefl.webp",
@@ -388,7 +388,7 @@ export const PROGRAMS: Program[] = [
       { q: "¿Cuánto dura la preparación?", a: "De 10 a 14 semanas en promedio, con 40 sesiones y horarios flexibles para profesionistas." },
       { q: "¿Tienen garantía?", a: "Sí, garantizamos un aumento medible sobre tu diagnóstico inicial o te devolvemos el 100% de tu inversión." },
     ],
-    heroImage: "/images/gmat-hero.png",
+    heroImage: { src: "/images/gmat-hero.webp", width: 500, height: 236 },
     guideImage: "/images/ibt-guia.webp",
     guaranteeImage: "/images/ibt-garantias.webp",
     skillsImage: "/images/domina-toefl.webp",
@@ -491,11 +491,11 @@ export const PROGRAMS: Program[] = [
       { q: "¿Necesito conocimientos de matemáticas o inglés para iniciar?", a: "Lo que hayas aprendido en preparatoria es más que suficiente. El curso inicia desde las bases. Te enseñamos las fórmulas clave, trucos de descarte y gestión del tiempo desde cero." },
       { q: "¿Cuánto dura el programa de preparación PAA?", a: "El programa está diseñado para completarse de manera óptima en las horas contratadas, dedicando breves momentos a la semana. Sin embargo, si necesitas una preparación más flexible, puedes contratar más horas y avanzar a tu propio ritmo." },
     ],
-    heroImage: "/images/hero paa.png",
-    guideImage: "/images/preparacion-paa.png",
-    guaranteeImage: "/images/preparacion-paa-2.png",
-    skillsImage: "/images/domina-paa.png",
-    faqImage: "/images/laptop-paa.png",
+    heroImage: { src: "/images/hero-paa.webp", width: 848, height: 407 },
+    guideImage: "/images/preparacion-paa.webp",
+    guaranteeImage: "/images/preparacion-paa-2.webp",
+    skillsImage: "/images/domina-paa.webp",
+    faqImage: "/images/laptop-paa.webp",
     academicIntro:
       "Asegura tu lugar en el Tec de Monterrey e importantes universidades que aplican la PAA con una preparación adaptada a tu ritmo. Domina las secciones de Lectura, Redacción, Matemáticas e Inglés con simuladores oficiales y clases en vivo.",
     examSections: [

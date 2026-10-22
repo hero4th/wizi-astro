@@ -39,12 +39,12 @@ import { breadcrumbSchema } from "@/lib/schema";
           <span class="line-mask"><span class="line-inner">Los resultados</span></span>
           <span class="line-mask"><span class="line-inner"><em class="accent-em">lo dicen todo.</em></span></span>
         </h1>
-        <p class="mt-7 max-w-xl text-lg leading-relaxed text-ink-600 tm-hero-fade">
+        <p class="mt-7 max-w-xl text-lg leading-relaxed text-ink-600" data-reveal>
           Más de 10,000 alumnos han alcanzado su puntaje objetivo con nosotros.
           Conoce sus resultados académicos y profesionales.
         </p>
 
-        <div class="mt-9 flex flex-wrap gap-3 tm-hero-fade">
+        <div class="mt-9 flex flex-wrap gap-3" data-reveal>
           <span class="inline-flex items-center gap-1.5 rounded-full border border-ink-200 bg-white/80 px-4 py-2 text-sm font-medium text-ink-700 backdrop-blur-sm">
             <svg class="size-4 text-teal-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
             Garantía por Contrato
@@ -69,7 +69,6 @@ import { breadcrumbSchema } from "@/lib/schema";
         {TESTIMONIALS.map((t, i) => (
           <div
             data-reveal
-            data-reveal-delay={String((i % 3) * 0.08)}
             class:list={[
               "testimonial-wrapper flex w-full sm:w-[calc((100%-1.5rem)/2)] lg:w-[calc((100%-3rem)/3)]",
               { "hidden": i >= 9 }
@@ -331,15 +330,8 @@ import { breadcrumbSchema } from "@/lib/schema";
 </style>
 
 <style>
-  .tm-hero-fade {
-    opacity: 0;
-  }
-  html.no-motion .tm-hero-fade {
-    opacity: 1;
-  }
   [data-hero-line] .line-inner {
     display: block;
-    transform: translateY(110%);
   }
   [data-hero-line] .line-mask {
     display: block;
@@ -347,33 +339,3 @@ import { breadcrumbSchema } from "@/lib/schema";
   }
 </style>
 
-<script>
-  import gsap from "gsap";
-
-  function initTestimonialsHero() {
-    if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      const tl = gsap.timeline({ defaults: { ease: "expo.out" } });
-      tl.to("#testimonials-hero [data-hero-line] .line-inner", {
-        y: 0,
-        duration: 1.2,
-        stagger: 0.1,
-        delay: 0.1,
-      }).fromTo(
-        "#testimonials-hero .tm-hero-fade",
-        { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, duration: 1, stagger: 0.08 },
-        "-=0.8"
-      );
-    } else {
-      document.querySelectorAll(".tm-hero-fade").forEach((el) => {
-        (el as HTMLElement).style.opacity = "1";
-      });
-      document.querySelectorAll("[data-hero-line] .line-inner").forEach((el) => {
-        (el as HTMLElement).style.transform = "none";
-      });
-    }
-  }
-
-  initTestimonialsHero();
-  document.addEventListener("astro:page-load", initTestimonialsHero);
-</script>

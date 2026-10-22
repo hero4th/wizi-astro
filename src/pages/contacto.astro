@@ -79,7 +79,7 @@ const channels = [
             <span class="line-mask"><span class="line-inner font-medium text-teal-600">Progresa más rápido</span></span>
           </h1>
 
-          <form id="contact-msg-form" class="mt-6 contact-fade" novalidate>
+          <form id="contact-msg-form" class="mt-6" data-reveal novalidate>
             <div class="space-y-2.5 font-display text-[clamp(1.05rem,1.5vw,1.35rem)] font-medium leading-relaxed text-ink-950">
               <p>Hola, me llamo <input
                 name="nombre" type="text" required autocomplete="name"
@@ -108,7 +108,7 @@ const channels = [
           <!-- Beneficios -->
           <ul class="mt-6 max-w-xl divide-y divide-ink-950/10 border-t border-ink-950/10">
             {benefits.map((b) => (
-              <li class="flex items-center gap-3.5 py-2.5 contact-fade">
+              <li class="flex items-center gap-3.5 py-2.5" data-reveal>
                 <span class="grid size-7 shrink-0 place-items-center rounded-full bg-teal-600 text-white" aria-hidden="true">
                   <svg class="size-4" viewBox="0 0 16 16" fill="none">
                     <path d="m3.5 8.5 3 3 6-7" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" />
@@ -131,11 +131,10 @@ const channels = [
       </h2>
 
       <ul class="mt-14 grid gap-6 sm:grid-cols-3">
-        {channels.map((ch, i) => (
+        {channels.map((ch) => (
           <li
             class="flex flex-col items-center gap-5 rounded-3xl border border-ink-950/[0.06] bg-ink-50 px-6 py-10 text-center transition-all duration-300 hover:-translate-y-1 hover:border-teal-500/30 hover:bg-white hover:shadow-card-lg"
             data-reveal
-            data-reveal-delay={String(i * 0.07)}
           >
             <span class="grid size-14 place-items-center rounded-full bg-teal-600 text-white" aria-hidden="true">
               <Icon name={ch.icon} class="size-6" aria-hidden="true" />
@@ -169,7 +168,7 @@ const channels = [
         ))}
       </ul>
 
-      <div class="mt-6 flex flex-wrap items-center justify-center gap-2 rounded-2xl border border-ink-950/[0.06] bg-ink-50 px-6 py-5 text-center" data-reveal data-reveal-delay="0.21">
+      <div class="mt-6 flex flex-wrap items-center justify-center gap-2 rounded-2xl border border-ink-950/[0.06] bg-ink-50 px-6 py-5 text-center" data-reveal>
         <Icon name="ph:map-pin" class="size-4 shrink-0 text-teal-600" aria-hidden="true" />
         <span class="font-mono text-[11px] tracking-[0.2em] text-ink-500 uppercase">Dirección (oficina administrativa)</span>
         <span class="font-display text-lg font-medium text-ink-950">
@@ -294,15 +293,8 @@ const channels = [
 </script>
 
 <style>
-  .contact-fade {
-    opacity: 0;
-  }
-  html.no-motion .contact-fade {
-    opacity: 1;
-  }
   [data-hero-line] .line-inner {
     display: block;
-    transform: translateY(110%);
   }
   [data-hero-line] .line-mask {
     display: block;
@@ -310,33 +302,3 @@ const channels = [
   }
 </style>
 
-<script>
-  import gsap from "gsap";
-
-  function initContactHero() {
-    if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      const tl = gsap.timeline({ defaults: { ease: "expo.out" } });
-      tl.to("#contact-hero [data-hero-line] .line-inner", {
-        y: 0,
-        duration: 1.2,
-        stagger: 0.1,
-        delay: 0.1,
-      }).fromTo(
-        "#contact-hero .contact-fade",
-        { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, duration: 1, stagger: 0.08 },
-        "-=0.8"
-      );
-    } else {
-      document.querySelectorAll(".contact-fade").forEach((el) => {
-        (el as HTMLElement).style.opacity = "1";
-      });
-      document.querySelectorAll("[data-hero-line] .line-inner").forEach((el) => {
-        (el as HTMLElement).style.transform = "none";
-      });
-    }
-  }
-
-  initContactHero();
-  document.addEventListener("astro:page-load", initContactHero);
-</script>

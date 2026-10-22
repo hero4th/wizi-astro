@@ -64,8 +64,11 @@ export default function HeroBackgroundCarousel() {
             key={`${src}-${idx}`}
             className="h-full w-full shrink-0 relative overflow-hidden"
           >
+            {/* Only the current and next slide get a src, so the hero downloads 2 images
+                instead of all of them; the last slide repeats the first (already cached). */}
             <img
-              src={src}
+              src={idx <= currentIndex + 1 || idx === slides.length - 1 ? src : undefined}
+              fetchPriority={idx === 0 ? "high" : undefined}
               alt=""
               className="w-full h-full object-cover"
               style={{
