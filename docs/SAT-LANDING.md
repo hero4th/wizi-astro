@@ -17,7 +17,7 @@ Las métricas del Figma son 40 sesiones, más de 5.000 ejercicios, 20 evaluacion
 
 La tarjeta de garantía del diseño dice menor al 90% del total o no admisión, con devolución del 100%. El FAQ de Figma conservaba texto de PAA y 90 puntos. El usuario confirmó usar la condición de la tarjeta SAT y corregir el FAQ copiado. Se eliminó la promesa anterior de +100 puntos del registro de garantía SAT.
 
-`public/images/sat/` contiene imágenes WebP derivadas de los recursos originales incrustados en el SVG exportado de Figma: guías, resultados, estudiante, laptop y checklist. Las composiciones de guías/resultados conservan los recortes y transformaciones del diseño. El hero existente `/sat-hero.png` coincide con la referencia y se reutiliza. No se generaron imágenes nuevas ni se incorporó el SVG completo de 20 MB al repositorio.
+`public/images/sat/` contiene imágenes WebP derivadas de los recursos originales incrustados en el SVG exportado de Figma: guías, resultados, estudiante, laptop y checklist. Las composiciones de guías/resultados conservan los recortes y transformaciones del diseño. El hero existente `/sat-hero.webp` coincide con la referencia y se reutiliza. No se generaron imágenes nuevas ni se incorporó el SVG completo de 20 MB al repositorio.
 
 ## Validación
 
