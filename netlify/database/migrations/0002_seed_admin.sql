@@ -1,0 +1,9 @@
+-- Seed del admin: intencionalmente vacío.
+--
+-- La credencial se siembra en tiempo de ejecución desde la variable de
+-- entorno ADMIN_PASSWORD_HASH (ver src/lib/auth.ts → getCredentials), así que
+-- este repo no debe contener ningún hash real: Netlify Secrets Scanning falla
+-- el build cuando detecta el valor de una env var en el código.
+--
+-- Se conserva el archivo para no romper el historial de migraciones ya
+-- aplicadas en bases de datos existentes.
