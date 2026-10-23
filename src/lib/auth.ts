@@ -26,7 +26,7 @@ export const PASSWORD_MAX_BYTES = 72;
 export const PASSWORD_MIN_LENGTH = 12;
 
 function getSecret(): Uint8Array {
-  const secret = import.meta.env.SESSION_SECRET;
+  const secret = process.env.SESSION_SECRET ?? import.meta.env.SESSION_SECRET;
   if (!secret) throw new Error("SESSION_SECRET is not configured.");
   return new TextEncoder().encode(secret);
 }
@@ -56,7 +56,7 @@ async function getCredentials(): Promise<Credentials> {
     };
   }
 
-  const seed = import.meta.env.ADMIN_PASSWORD_HASH;
+  const seed = process.env.ADMIN_PASSWORD_HASH ?? import.meta.env.ADMIN_PASSWORD_HASH;
   if (!seed) {
     throw new Error(
       "No admin credentials in the database and ADMIN_PASSWORD_HASH is not configured."

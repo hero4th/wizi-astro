@@ -73,21 +73,21 @@ const steps = [
           <div data-method-line class="h-full w-full origin-top scale-y-0 bg-teal-500"></div>
         </div>
 
-        {steps.map((step, i) => (
+        {steps.map((step) => (
           <li
             class="group relative flex gap-6 pb-12 last:pb-0"
             data-method-step
             data-reveal
-            data-reveal-delay={String(i * 0.06)}
           >
             <span
-              class="relative z-10 grid size-[3.25rem] shrink-0 place-items-center rounded-full bg-ink-950 text-teal-400 transition-all duration-500 group-hover:scale-110 group-hover:ring-2 group-hover:ring-teal-500/40 hairline-dim"
+              class="relative z-10 grid size-[3.25rem] shrink-0 place-items-center rounded-full bg-ink-950 text-teal-400 transition-all duration-500 group-has-[[data-method-trigger]:hover]:scale-110 group-has-[[data-method-trigger]:hover]:ring-2 group-has-[[data-method-trigger]:hover]:ring-teal-500/40 hairline-dim"
               data-method-icon
+              data-method-trigger
             >
               <Icon name={step.icon} class="size-6" aria-hidden="true" />
             </span>
             <div class="pt-2.5">
-              <h3 class="font-display text-xl font-semibold tracking-tight text-ink-950 sm:text-2xl">
+              <h3 data-method-trigger class="w-fit font-display text-xl font-semibold tracking-tight text-ink-950 sm:text-2xl">
                 {step.title}
               </h3>
               <p class="mt-2.5 max-w-md text-[15px] leading-relaxed text-ink-600">{step.detail}</p>
@@ -124,8 +124,7 @@ const steps = [
     }
   }
 
-  // Animación de iconos line-md: reproducir de forma continua mientras la
-  // sección está a la vista, además de al pasar el cursor por cada paso.
+  // Animación de iconos line-md: se reproduce al pasar el cursor por el icono o el título.
   function replayIcon(span: Element | null) {
     span
       ?.querySelectorAll("animate, animateTransform, animateMotion, set")
@@ -137,29 +136,12 @@ const steps = [
   }
 
   function initMethodIcons() {
-    const icons = Array.from(document.querySelectorAll("[data-method-icon]"));
-    if (!icons.length) return;
-
-    document.querySelectorAll("[data-method-step]").forEach((step) => {
-      step.addEventListener("mouseenter", () => replayIcon(step.querySelector("[data-method-icon]")));
+    // Solo el icono y el título disparan la animación, no el párrafo.
+    document.querySelectorAll("[data-method-trigger]").forEach((el) => {
+      el.addEventListener("mouseenter", () =>
+        replayIcon(el.closest("[data-method-step]")?.querySelector("[data-method-icon]") ?? null)
+      );
     });
-
-    if (reduced) return;
-
-    const section = document.querySelector("[data-method-section]");
-    let inView = false;
-    if (section) {
-      new IntersectionObserver(
-        (entries) => {
-          inView = entries[0].isIntersecting;
-          if (inView) icons.forEach(replayIcon); // dispara al entrar
-        },
-        { threshold: 0.15 }
-      ).observe(section);
-      window.setInterval(() => {
-        if (inView) icons.forEach(replayIcon);
-      }, 3200);
-    }
   }
 
   initMethodIcons();

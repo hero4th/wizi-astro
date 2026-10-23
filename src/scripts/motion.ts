@@ -1,7 +1,7 @@
 /**
  * Global motion engine — Lenis smooth scrolling + GSAP scroll choreography.
  * Declarative via data attributes:
- *   data-reveal            visible-first rise on enter (data-reveal-delay="0.15")
+ *   data-reveal            fade + 12px rise on enter, auto-staggered per batch (CSS in global.css)
  *   data-reveal-line       static visible heading lines (.line-mask > .line-inner)
  *   data-counter           animated number (data-counter="12000" data-decimals="1")
  *   data-parallax          vertical drift (data-parallax="-80" px over scroll)
@@ -44,7 +44,25 @@ function init() {
     });
   });
 
-  // -- Reveals, counters, parallax, progress lines -----------------------------
+  // -- Reveals -------------------------------------------------------------------
+  // global.css hides [data-reveal] until it gets .is-revealed, then plays the
+  // keyframe. Elements entering in the same batch (a row of cards, the hero
+  // copy on load) are staggered; one entering alone does not wait.
+  const REVEAL_STAGGER_MS = 80;
+  const revealObserver = new IntersectionObserver(
+    (entries) => {
+      entries.filter((entry) => entry.isIntersecting).forEach((entry, index) => {
+        const el = entry.target as HTMLElement;
+        el.style.animationDelay = `${index * REVEAL_STAGGER_MS}ms`;
+        el.classList.add("is-revealed");
+        revealObserver.unobserve(el);
+      });
+    },
+    { rootMargin: "0px 0px -10% 0px" }
+  );
+  document.querySelectorAll("[data-reveal]").forEach((el) => revealObserver.observe(el));
+
+  // -- Counters, parallax, progress lines ------------------------------------------
   // These all read layout (getBoundingClientRect) at creation time to set their
   // scroll trigger positions. Variable web fonts can still be swapping in and
   // resizing text right after the initial script runs, which used to leave
@@ -53,19 +71,6 @@ function init() {
   // Waiting for fonts to be ready before creating them fixes that at the
   // source, with no risk of disturbing reveals that already fired.
   const setupScrollAnimations = () => {
-    document.querySelectorAll<HTMLElement>("[data-reveal]").forEach((el) => {
-      gsap.fromTo(el, { y: 28 }, {
-        immediateRender: false,
-        y: 0,
-        duration: 1.1,
-        delay: parseFloat(el.dataset.revealDelay ?? "0"),
-        ease: "expo.out",
-        scrollTrigger: { trigger: el, start: "top 88%", once: true },
-      });
-    });
-
-    // Heading lines remain visible: never translate essential text outside its mask.
-
     document.querySelectorAll<HTMLElement>("[data-counter]").forEach((el) => {
       const target = parseFloat(el.dataset.counter ?? "0");
       const decimals = parseInt(el.dataset.decimals ?? "0", 10);

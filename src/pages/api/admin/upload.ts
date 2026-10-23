@@ -1,8 +1,8 @@
 export const prerender = false;
 
 import type { APIRoute } from "astro";
-import { put } from "@vercel/blob";
 import { requireSession } from "@/lib/auth";
+import { saveUpload } from "@/lib/storage";
 
 const MAX_BYTES = 8 * 1024 * 1024; // 8 MB
 const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/gif", "image/svg+xml"]);
@@ -30,12 +30,8 @@ export const POST: APIRoute = async ({ request, cookies }) => {
   const safeName = `${crypto.randomUUID()}.${ext}`;
 
   try {
-    const blob = await put(`blog/${safeName}`, buffer, {
-      access: "public",
-      addRandomSuffix: false,
-      contentType,
-    });
-    return new Response(JSON.stringify({ url: blob.url }), {
+    await saveUpload(buffer, safeName);
+    return new Response(JSON.stringify({ url: `/uploads/${safeName}` }), {
       status: 201,
       headers: { "Content-Type": "application/json" },
     });

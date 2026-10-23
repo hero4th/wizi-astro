@@ -134,7 +134,7 @@ Astro.response.headers.set("Content-Type", "text/html; charset=utf-8");
           {rest.map((post) => (
             <a
               href={`/blog/${post.id}`}
-              class="blog-card group flex flex-col overflow-hidden rounded-2xl hairline bg-white transition-all duration-300 hover:shadow-[0_12px_36px_-8px_rgb(20_184_166/0.18)] hover:border-teal-500/40 hover:-translate-y-1.5"
+              data-reveal class="blog-card group flex flex-col overflow-hidden rounded-2xl hairline bg-white transition-all duration-300 hover:shadow-[0_12px_36px_-8px_rgb(20_184_166/0.18)] hover:border-teal-500/40 hover:-translate-y-1.5"
             >
               <!-- Featured image or accent band -->
               {post.data.image ? (
@@ -208,41 +208,4 @@ Astro.response.headers.set("Content-Type", "text/html; charset=utf-8");
     </section>
   )}
 
-  <script>
-    import gsap from "gsap";
-    import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-    gsap.registerPlugin(ScrollTrigger);
-
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    if (!reducedMotion) {
-      const cards = gsap.utils.toArray<HTMLElement>(".blog-card");
-
-      ScrollTrigger.batch(cards, {
-        start: "top 93%",
-        onEnter: (batch) => {
-          gsap.fromTo(
-            batch,
-            { y: 16 },
-            {
-              y: 0,
-              duration: 0.65,
-              stagger: 0,
-              ease: "power2.out",
-              overwrite: "auto",
-              onComplete: () => {
-                gsap.set(batch, { clearProps: "opacity,transform" });
-              },
-            }
-          );
-        },
-        once: true,
-      });
-
-      window.addEventListener("load", () => {
-        ScrollTrigger.refresh();
-      });
-    }
-  </script>
 </Base>

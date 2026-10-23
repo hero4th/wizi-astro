@@ -9,8 +9,8 @@ const transporter = nodemailer.createTransport({
   secure: false, // STARTTLS en el puerto 587 (no SSL directo)
   requireTLS: true,
   auth: {
-    user: import.meta.env.SMTP_USER,
-    pass: import.meta.env.SMTP_PASS,
+    user: process.env.SMTP_USER ?? import.meta.env.SMTP_USER,
+    pass: process.env.SMTP_PASS ?? import.meta.env.SMTP_PASS,
   },
 });
 

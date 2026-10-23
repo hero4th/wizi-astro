@@ -3,7 +3,7 @@ import { defineConfig } from "astro/config";
 import react from "@astrojs/react";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
-import vercel from "@astrojs/vercel";
+import netlify from "@astrojs/netlify";
 import icon from "astro-icon";
 import tailwindcss from "@tailwindcss/vite";
 import legacyBlogSlugs from "./src/data/legacy-redirects.mjs";
@@ -26,10 +26,10 @@ const blogSitemapUrls = await getBlogSitemapUrls(SITE_URL);
 export default defineConfig({
   site: "https://www.proacademymx.com",
   output: "static",
+  trailingSlash: "ignore",
   redirects: legacyRedirects,
-  adapter: vercel({
-    webAnalytics: { enabled: false },
-    imageService: true,
+  adapter: netlify({
+    imageCDN: true,
   }),
   image: {
     // Allow featured/content images served from the headless WordPress backend.
