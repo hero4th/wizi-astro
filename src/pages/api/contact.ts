@@ -3,24 +3,53 @@ export const prerender = false;
 import nodemailer from "nodemailer";
 import type { APIRoute } from "astro";
 
-const transporter = nodemailer.createTransport({
-  host: "mail.oqumail.com", // Servidor SMTP de OquMail (envío)
-  port: 587,
-  secure: false, // STARTTLS en el puerto 587 (no SSL directo)
-  requireTLS: true,
-  auth: {
-    user: process.env.SMTP_USER ?? import.meta.env.SMTP_USER,
-    pass: process.env.SMTP_PASS ?? import.meta.env.SMTP_PASS,
-  },
-});
+const SMTP_USER = process.env.SMTP_USER ?? import.meta.env.SMTP_USER;
+const SMTP_PASS = process.env.SMTP_PASS ?? import.meta.env.SMTP_PASS;
+const CONTACT_TO = process.env.CONTACT_TO ?? "contacto@proacademymx.com";
+
+const transporter =
+  SMTP_USER && SMTP_PASS
+    ? nodemailer.createTransport({
+        host: "mail.oqumail.com", // Servidor SMTP de OquMail (envío)
+        port: 587,
+        secure: false, // STARTTLS en el puerto 587 (no SSL directo)
+        requireTLS: true,
+        auth: {
+          user: SMTP_USER,
+          pass: SMTP_PASS,
+        },
+      })
+    : null;
+
+const json = (body: unknown, status = 200) =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: {
+      "Content-Type": "application/json",
+      "Cache-Control": "no-store",
+    },
+  });
 
 export const POST: APIRoute = async ({ request }) => {
+  if (!transporter) {
+    console.error(
+      "[contact] SMTP no configurado: faltan SMTP_USER y/o SMTP_PASS en el entorno de Netlify.",
+    );
+    return json(
+      {
+        error:
+          "El formulario no está disponible en este momento. Escríbenos por WhatsApp y te atendemos de inmediato.",
+      },
+      503,
+    );
+  }
+
   try {
     const data = await request.json();
     const { nombre, correo, telefono, curso, notas, fromUrl } = data;
 
     if (!nombre || !correo) {
-      return new Response(JSON.stringify({ error: "Faltan campos obligatorios" }), { status: 400 });
+      return json({ error: "Faltan campos obligatorios" }, 400);
     }
 
     const htmlContent = `
@@ -115,22 +144,23 @@ export const POST: APIRoute = async ({ request }) => {
 
     await transporter.sendMail({
       from: '"Professional Academy Web" <contacto@proacademymx.com>',
-      to: "contacto@proacademymx.com",
+      to: CONTACT_TO,
+      replyTo: correo,
       subject: `Nuevo prospecto: ${nombre} (${curso})`,
       html: htmlContent,
     });
 
-    return new Response(JSON.stringify({ success: true }), {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    return json({ success: true });
   } catch (error: any) {
-    console.error("Error enviando correo:", error);
-    return new Response(JSON.stringify({ error: error.message || "Error al enviar correo" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+    // Log the real SMTP error for Netlify's function logs, but never leak it to
+    // the visitor: the form shows a friendly message and offers WhatsApp.
+    console.error("[contact] Error enviando correo:", error?.message || error);
+    return json(
+      {
+        error:
+          "No pudimos enviar tu mensaje. Intenta de nuevo o escríbenos por WhatsApp.",
+      },
+      500,
+    );
   }
 };
