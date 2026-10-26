@@ -1,7 +1,7 @@
 export const SITE = {
   name: "Professional Academy",
   legalName: "Professional Academy®",
-  url: "https://www.proacademymx.com",
+  url: "https://proacademymx.com",
   tagline: "Tu examen es solo el comienzo.",
   description:
     "Academia mexicana especializada en preparación para TOEFL iBT, SAT, GRE, GMAT y PAA. Clases 1 a 1, simuladores idénticos al examen real y Garantía de Puntaje de +10 puntos.",

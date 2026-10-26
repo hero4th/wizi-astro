@@ -25,3 +25,25 @@
   for = "/_astro/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
+
+# One canonical host: www permanently redirects to the apex domain (the origin
+# the site is actually served from and the one used in canonicals/sitemap).
+[[redirects]]
+  from = "https://www.proacademymx.com/*"
+  to = "https://proacademymx.com/:splat"
+  status = 301
+  force = true
+
+# Canonical URLs never carry a trailing slash. Collapse the duplicate URLs
+# Astro accepts for SSR blog routes (e.g. /blog/post/ → /blog/post).
+[[redirects]]
+  from = "/blog/"
+  to = "/blog"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/blog/*/"
+  to = "/blog/:splat"
+  status = 301
+  force = true

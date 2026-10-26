@@ -1,11 +1,11 @@
 ---
-export const prerender = false;
-
+// Static on purpose: the blog is generated at build time so public traffic is
+// served by Netlify's CDN and never wakes the Netlify Database. Publishing
+// requires a new deploy until the build hook is wired up.
 import Base from "@/layouts/Base.astro";
 import { getPublishedPosts, getBlogCategories } from "@/lib/blog";
 import { SITE } from "@/data/site";
 import { breadcrumbSchema } from "@/lib/schema";
-import { cacheBlogResponse } from "@/lib/cache";
 
 const posts = await getPublishedPosts();
 const activeCategories = await getBlogCategories(posts);
@@ -13,9 +13,6 @@ const activeCategories = await getBlogCategories(posts);
 const [featured, ...rest] = posts;
 const fullFmt = new Intl.DateTimeFormat("es-MX", { day: "numeric", month: "long", year: "numeric" });
 const shortFmt = new Intl.DateTimeFormat("es-MX", { day: "numeric", month: "short", year: "numeric" });
-
-Astro.response.headers.set("Content-Type", "text/html; charset=utf-8");
-cacheBlogResponse(Astro.response);
 ---
 
 <Base

@@ -4,9 +4,9 @@ import type { APIRoute } from "astro";
 import { requireSession } from "@/lib/auth";
 import { sql } from "@/lib/db";
 import { processContentHtml, readingTimeFromHtml } from "@/lib/content";
+import { stripFeaturedImageDuplicates } from "@/lib/blog-images";
 import { slugify } from "@/lib/slug";
 import { seoFields } from "@/lib/post-meta";
-import { purgeBlogCache } from "@/lib/cache";
 
 export const PUT: APIRoute = async ({ params, request, cookies }) => {
   // See posts.ts for why there's no separate Origin check: the session
@@ -27,7 +27,7 @@ export const PUT: APIRoute = async ({ params, request, cookies }) => {
   }
 
   const slug: string = data.slug?.trim() ? slugify(data.slug) : slugify(title);
-  const html = processContentHtml(rawBody);
+  const html = stripFeaturedImageDuplicates(processContentHtml(rawBody), data.image);
   const readingTime = data.readingTime ? Number(data.readingTime) : readingTimeFromHtml(html);
   const categories = Array.isArray(data.categories) ? data.categories : [];
   const seo = seoFields(data);
@@ -63,7 +63,6 @@ export const PUT: APIRoute = async ({ params, request, cookies }) => {
       RETURNING id, slug
     `;
     if (rows.length === 0) return new Response("Post no encontrado.", { status: 404 });
-    await purgeBlogCache();
     return new Response(JSON.stringify(rows[0]), { status: 200, headers: { "Content-Type": "application/json" } });
   } catch (err) {
     const message = (err as Error).message;
@@ -82,6 +81,5 @@ export const DELETE: APIRoute = async ({ params, cookies }) => {
   if (!Number.isInteger(id)) return new Response("Invalid id", { status: 400 });
 
   await sql`DELETE FROM posts WHERE id = ${id}`;
-  await purgeBlogCache();
   return new Response(null, { status: 204 });
 };

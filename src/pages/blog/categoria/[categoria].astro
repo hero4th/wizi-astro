@@ -1,22 +1,37 @@
 ---
-export const prerender = false;
-
+// Static on purpose: one HTML file per category, generated at build time.
 import Base from "@/layouts/Base.astro";
-import { getPublishedPosts, getBlogCategories, getPostsByCategory } from "@/lib/blog";
+import {
+  getPublishedPosts,
+  getBlogCategories,
+  type CategoryWithCount,
+  type Post,
+} from "@/lib/blog";
 import { SITE } from "@/data/site";
 import { breadcrumbSchema } from "@/lib/schema";
-import { cacheBlogResponse } from "@/lib/cache";
 
-const allPosts = await getPublishedPosts();
-const categories = await getBlogCategories(allPosts);
-const category = categories.find((c) => c.slug === Astro.params.categoria);
-if (!category) return Astro.rewrite("/404");
+export async function getStaticPaths() {
+  const allPosts = await getPublishedPosts();
+  const categories = await getBlogCategories(allPosts);
 
-const posts = await getPostsByCategory(category.slug, allPosts);
+  return categories.map((category) => ({
+    params: { categoria: category.slug },
+    props: {
+      category,
+      posts: allPosts.filter((post) =>
+        post.data.categories.some((c) => c.slug === category.slug),
+      ),
+    },
+  }));
+}
+
+interface Props {
+  category: CategoryWithCount;
+  posts: Post[];
+}
+
+const { category, posts } = Astro.props;
 const formatter = new Intl.DateTimeFormat("es-MX", { day: "numeric", month: "long", year: "numeric" });
-
-Astro.response.headers.set("Content-Type", "text/html; charset=utf-8");
-cacheBlogResponse(Astro.response);
 ---
 
 <Base

@@ -4,9 +4,9 @@ import type { APIRoute } from "astro";
 import { requireSession, clientIp, isActionRateLimited, recordActionAttempt } from "@/lib/auth";
 import { sql } from "@/lib/db";
 import { processContentHtml, readingTimeFromHtml } from "@/lib/content";
+import { stripFeaturedImageDuplicates } from "@/lib/blog-images";
 import { slugify } from "@/lib/slug";
 import { seoFields } from "@/lib/post-meta";
-import { purgeBlogCache } from "@/lib/cache";
 
 const headers = { "Cache-Control": "no-store", "Content-Type": "application/json" };
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers });
@@ -69,7 +69,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       const slug = raw.slug?.trim() ? slugify(raw.slug) : slugify(title);
       if (!slug) { postsSkipped++; continue; }
 
-      const html = processContentHtml(rawBody);
+      const html = stripFeaturedImageDuplicates(processContentHtml(rawBody), raw.image);
       const readingTime = raw.reading_time || readingTimeFromHtml(html);
       const categories = Array.isArray(raw.categories) ? raw.categories : [];
       const cat = Array.isArray(categories) && categories.length > 0 ? categories[0] : null;
@@ -144,7 +144,6 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     }
 
     await recordActionAttempt(ip, "data-import", true);
-    await purgeBlogCache();
 
     return json({ posts: postsImported, postsSkipped, snippets: snippetsImported });
   } catch (err) {

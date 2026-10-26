@@ -26,11 +26,23 @@ const {
   keywords,
 } = Astro.props;
 
-const canonical = canonicalUrl
-  ? new URL(canonicalUrl, Astro.site).href
-  : new URL(Astro.url.pathname, Astro.site).href;
+const canonical = normalizeCanonical(canonicalUrl ?? Astro.url.pathname);
 const ogImageAbs = new URL(ogImage, Astro.site).href;
 const graph = jsonLd(organizationSchema(), websiteSchema(), ...schema);
+
+/** Canonicals must be unique: apex host, no query/hash and no trailing slash. */
+function normalizeCanonical(value: string): string {
+  const url = new URL(value, Astro.site);
+  if (/(^|\.)proacademymx\.com$/i.test(url.hostname)) {
+    const site = new URL(SITE.url);
+    url.protocol = site.protocol;
+    url.host = site.host;
+  }
+  if (url.pathname !== "/") url.pathname = url.pathname.replace(/\/+$/, "");
+  url.search = "";
+  url.hash = "";
+  return url.href;
+}
 ---
 
 <title>{title}</title>

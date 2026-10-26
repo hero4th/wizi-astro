@@ -4,9 +4,9 @@ import type { APIRoute } from "astro";
 import { requireSession } from "@/lib/auth";
 import { sql } from "@/lib/db";
 import { processContentHtml, readingTimeFromHtml } from "@/lib/content";
+import { stripFeaturedImageDuplicates } from "@/lib/blog-images";
 import { slugify } from "@/lib/slug";
 import { seoFields } from "@/lib/post-meta";
-import { purgeBlogCache } from "@/lib/cache";
 
 export const GET: APIRoute = async ({ cookies }) => {
   if (!(await requireSession(cookies))) return new Response("Unauthorized", { status: 401 });
@@ -40,7 +40,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
   let slug: string = data.slug?.trim() ? slugify(data.slug) : slugify(title);
   if (!slug) return new Response("No se pudo generar un slug válido.", { status: 400 });
 
-  const html = processContentHtml(rawBody);
+  const html = stripFeaturedImageDuplicates(processContentHtml(rawBody), data.image);
   const readingTime = data.readingTime ? Number(data.readingTime) : readingTimeFromHtml(html);
   const categories = Array.isArray(data.categories) ? data.categories : [];
   const seo = seoFields(data);
@@ -61,7 +61,6 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       )
       RETURNING id, slug
     `;
-    await purgeBlogCache();
     return new Response(JSON.stringify(rows[0]), { status: 201, headers: { "Content-Type": "application/json" } });
   } catch (err) {
     const message = (err as Error).message;

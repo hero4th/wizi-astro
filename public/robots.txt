@@ -4,4 +4,4 @@ Disallow: /gracias
 Disallow: /admin
 Disallow: /api
 
-Sitemap: https://www.proacademymx.com/sitemap-index.xml
+Sitemap: https://proacademymx.com/sitemap-index.xml

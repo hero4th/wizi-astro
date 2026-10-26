@@ -38,7 +38,7 @@ export const POST: APIRoute = async ({ request }) => {
         <!-- Header -->
         <tr>
           <td style="background-color: #060a0a; text-align: center; padding: 40px 20px; border-bottom: 4px solid #0d9488;">
-            <img src="https://www.proacademymx.com/email-logo.png" alt="Professional Academy" width="180" height="46" style="display: block; margin: 0 auto; width: 180px; height: auto; max-width: 100%;" />
+            <img src="https://proacademymx.com/email-logo.png" alt="Professional Academy" width="180" height="46" style="display: block; margin: 0 auto; width: 180px; height: auto; max-width: 100%;" />
             <h1 style="color: #ffffff; margin: 24px 0 0 0; font-size: 20px; font-weight: 600; letter-spacing: 0.5px;">¡Nuevo contacto generado!</h1>
             <p style="color: #5eead4; margin: 8px 0 0 0; font-size: 13px; font-weight: 500; text-transform: uppercase; letter-spacing: 2px;">Sitio Web Oficial</p>
           </td>
@@ -104,7 +104,7 @@ export const POST: APIRoute = async ({ request }) => {
         <tr>
           <td style="background-color: #f8fafc; padding: 30px; border-top: 1px solid #e2e8f0; text-align: center;">
             <p style="margin: 0 0 8px 0; font-size: 12px; color: #64748b;">Este mensaje es confidencial y ha sido generado a través de tu plataforma web.</p>
-            <p style="margin: 0; font-size: 12px; color: #94a3b8;"><a href="${fromUrl || "https://www.proacademymx.com"}" style="color: #0d9488; text-decoration: none;">Ver página de origen</a> • Professional Academy</p>
+            <p style="margin: 0; font-size: 12px; color: #94a3b8;"><a href="${fromUrl || "https://proacademymx.com"}" style="color: #0d9488; text-decoration: none;">Ver página de origen</a> • Professional Academy</p>
           </td>
         </tr>
       </table>

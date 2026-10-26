@@ -11,7 +11,7 @@ test('public rendering resolves known course links and retains original heading 
   const input='<h2 class="wp-block-heading" id="old-anchor" title="Heading">Section</h2><a href="https://cms.proacademymx.com/paa/?x=1#part">PAA</a><a href="https://other.example/paa/">External</a>';
   assert.deepEqual(extractHeadings(input),[{depth:2,slug:'old-anchor',text:'Section'}]);
   const output=publicBlogLinks(input);
-  assert.ok(output.includes('https://www.proacademymx.com/cursos/paa?x=1#part'));
+  assert.ok(output.includes('https://proacademymx.com/cursos/paa?x=1#part'));
   assert.ok(output.includes('https://other.example/paa/'));
   assert.equal(publicBlogLinks('<a href="https://cms.proacademymx.com/unknown">Keep</a>'),'<a href="https://cms.proacademymx.com/unknown">Keep</a>');
 });
@@ -22,7 +22,7 @@ test('preserves semantic HTML, anchors and external links while removing executa
   assert.deepEqual(result.errors,[]);
   const $=load(result.html);
   assert.equal($('h1').attr('id'),'original');
-  assert.equal($('a').first().attr('href'),'https://www.proacademymx.com/blog/old?x=1#original');
+  assert.equal($('a').first().attr('href'),'https://proacademymx.com/blog/old?x=1#original');
   assert.equal($('a').eq(1).attr('href'),'https://example.com');
   assert.equal($('a').eq(2).attr('href'),undefined);
   assert.equal($('img').attr('onerror'),undefined);
@@ -72,7 +72,7 @@ test('real snapshot: every original article survives and historical routes keep 
     assert.deepEqual(e.validation.before,e.validation.after,e.row.slug);
     assert.equal(e.row.body,e.row.html);
     assert.equal(e.row.noindex,false);
-    assert.equal(e.row.canonical_url,`https://www.proacademymx.com/blog/${e.row.slug}`);
+    assert.equal(e.row.canonical_url,`https://proacademymx.com/blog/${e.row.slug}`);
     assert.equal(result.redirects[`/${e.row.slug}`],`/blog/${e.row.slug}`);
   }
   for(const slug of snapshot.legacySlugs)assert.equal(result.redirects[`/${slug}`],`/blog/${slug}`);

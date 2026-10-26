@@ -1,6 +1,7 @@
 import { sql } from "./db";
 import { categoryDescription } from "./wordpress";
 import { publicBlogLinks } from "./blog-links";
+import { stripFeaturedImageDuplicates } from "./blog-images";
 
 export interface BlogCategoryRef {
   name: string;
@@ -69,8 +70,8 @@ function getFallbackPosts(): Post[] {
       author: item.author,
       readingTime: item.readingTime,
       draft: item.draft,
-      html: publicBlogLinks(item.html),
-      body: item.body,
+      html: stripFeaturedImageDuplicates(publicBlogLinks(item.html), item.image),
+      body: stripFeaturedImageDuplicates(item.body, item.image),
       seoTitle: item.seoTitle ?? undefined,
       seoDescription: item.seoDescription ?? undefined,
       canonicalUrl: item.canonicalUrl ?? undefined,
@@ -100,8 +101,8 @@ function rowToPost(row: any): Post {
       author: row.author,
       readingTime: row.reading_time,
       draft: row.draft,
-      html: publicBlogLinks(row.html),
-      body: row.body,
+      html: stripFeaturedImageDuplicates(publicBlogLinks(row.html), row.image),
+      body: stripFeaturedImageDuplicates(row.body, row.image),
       seoTitle: row.seo_title ?? undefined,
       seoDescription: row.seo_description ?? undefined,
       canonicalUrl: row.canonical_url ?? undefined,

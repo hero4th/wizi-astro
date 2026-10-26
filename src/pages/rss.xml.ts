@@ -1,15 +1,13 @@
-export const prerender = false;
-
+// Static on purpose: the feed is generated at build time alongside the posts.
 import rss from "@astrojs/rss";
 import type { APIContext } from "astro";
 import { SITE } from "@/data/site";
 import { getPublishedPosts } from "@/lib/blog";
-import { cacheBlogResponse } from "@/lib/cache";
 
 export async function GET(context: APIContext) {
   const posts = await getPublishedPosts();
 
-  const response = await rss({
+  return rss({
     title: `Blog | ${SITE.name}`,
     description:
       "Guías de TOEFL, SAT, GRE, GMAT y PAA, técnicas de estudio y procesos de admisión.",
@@ -24,7 +22,4 @@ export async function GET(context: APIContext) {
     })),
     customData: "<language>es-MX</language>",
   });
-
-  cacheBlogResponse(response);
-  return response;
 }
