@@ -4,11 +4,12 @@ import rss from "@astrojs/rss";
 import type { APIContext } from "astro";
 import { SITE } from "@/data/site";
 import { getPublishedPosts } from "@/lib/blog";
+import { cacheBlogResponse } from "@/lib/cache";
 
 export async function GET(context: APIContext) {
   const posts = await getPublishedPosts();
 
-  return rss({
+  const response = await rss({
     title: `Blog | ${SITE.name}`,
     description:
       "Guías de TOEFL, SAT, GRE, GMAT y PAA, técnicas de estudio y procesos de admisión.",
@@ -23,4 +24,7 @@ export async function GET(context: APIContext) {
     })),
     customData: "<language>es-MX</language>",
   });
+
+  cacheBlogResponse(response);
+  return response;
 }

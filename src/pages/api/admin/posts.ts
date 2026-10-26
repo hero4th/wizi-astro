@@ -6,6 +6,7 @@ import { sql } from "@/lib/db";
 import { processContentHtml, readingTimeFromHtml } from "@/lib/content";
 import { slugify } from "@/lib/slug";
 import { seoFields } from "@/lib/post-meta";
+import { purgeBlogCache } from "@/lib/cache";
 
 export const GET: APIRoute = async ({ cookies }) => {
   if (!(await requireSession(cookies))) return new Response("Unauthorized", { status: 401 });
@@ -60,6 +61,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       )
       RETURNING id, slug
     `;
+    await purgeBlogCache();
     return new Response(JSON.stringify(rows[0]), { status: 201, headers: { "Content-Type": "application/json" } });
   } catch (err) {
     const message = (err as Error).message;

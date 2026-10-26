@@ -65,9 +65,13 @@ export default defineConfig({
     cacheDir: `node_modules/.vite/astro-${process.argv.find((arg) => ["dev", "build", "check", "preview"].includes(arg)) ?? "tools"}`,
     plugins: [tailwindcss()],
   },
+  // No prefetchear todos los enlaces del viewport: cada enlace visible a una
+  // ruta SSR (blog, categorías) es una invocación de Netlify Function y una
+  // consulta a Postgres, lo que multiplica el consumo de compute. El prefetch
+  // por hover sigue disponible para enlaces con `data-astro-prefetch`.
   prefetch: {
-    prefetchAll: true,
-    defaultStrategy: "viewport",
+    prefetchAll: false,
+    defaultStrategy: "hover",
   },
   compressHTML: true,
   build: {

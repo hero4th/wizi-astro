@@ -7,11 +7,13 @@ import { SITE } from "@/data/site";
 import { articleSchema, breadcrumbSchema } from "@/lib/schema";
 import { getPostBySlug, getPublishedPosts } from "@/lib/blog";
 import { extractHeadings } from "@/lib/headings";
+import { cacheBlogResponse } from "@/lib/cache";
 
 const post = await getPostBySlug(Astro.params.slug!);
 if (!post) return Astro.rewrite("/404");
 
 Astro.response.headers.set("Content-Type", "text/html; charset=utf-8");
+cacheBlogResponse(Astro.response);
 
 const headings = extractHeadings(post.data.html);
 

@@ -5,6 +5,7 @@ import Base from "@/layouts/Base.astro";
 import { getPublishedPosts, getBlogCategories, getPostsByCategory } from "@/lib/blog";
 import { SITE } from "@/data/site";
 import { breadcrumbSchema } from "@/lib/schema";
+import { cacheBlogResponse } from "@/lib/cache";
 
 const allPosts = await getPublishedPosts();
 const categories = await getBlogCategories(allPosts);
@@ -15,6 +16,7 @@ const posts = await getPostsByCategory(category.slug, allPosts);
 const formatter = new Intl.DateTimeFormat("es-MX", { day: "numeric", month: "long", year: "numeric" });
 
 Astro.response.headers.set("Content-Type", "text/html; charset=utf-8");
+cacheBlogResponse(Astro.response);
 ---
 
 <Base

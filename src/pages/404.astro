@@ -1,7 +1,14 @@
 ---
+// On-demand (not prerendered) on purpose: the blog and category pages rewrite
+// here when a slug does not exist, and Astro forbids rewriting an on-demand
+// route to a prerendered one. This page does not touch the database, so its
+// compute cost is minimal, and the response is cached at the edge.
 export const prerender = false;
 import Base from "@/layouts/Base.astro";
+import { cacheBlogResponse } from "@/lib/cache";
+
 Astro.response.status = 404;
+cacheBlogResponse(Astro.response);
 ---
 
 <Base

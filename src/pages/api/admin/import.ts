@@ -6,6 +6,7 @@ import { sql } from "@/lib/db";
 import { processContentHtml, readingTimeFromHtml } from "@/lib/content";
 import { slugify } from "@/lib/slug";
 import { seoFields } from "@/lib/post-meta";
+import { purgeBlogCache } from "@/lib/cache";
 
 const headers = { "Cache-Control": "no-store", "Content-Type": "application/json" };
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers });
@@ -143,6 +144,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     }
 
     await recordActionAttempt(ip, "data-import", true);
+    await purgeBlogCache();
 
     return json({ posts: postsImported, postsSkipped, snippets: snippetsImported });
   } catch (err) {
