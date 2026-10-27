@@ -10,16 +10,16 @@ const CONTACT_TO = process.env.CONTACT_TO ?? "contacto@proacademymx.com";
 const transporter =
   process.env.SMTP_USER && process.env.SMTP_PASS
     ? nodemailer.createTransport({
-        host: "mail.proacademymx.com",
-        port: 587,
-        secure: false,
-        requireTLS: true,
+        host: "198.59.144.25",
+        port: 465,
+        secure: true,
         auth: {
           user: process.env.SMTP_USER,
           pass: process.env.SMTP_PASS,
         },
         tls: {
           rejectUnauthorized: false,
+          servername: "mail.proacademymx.com",
         },
       })
     : null;
