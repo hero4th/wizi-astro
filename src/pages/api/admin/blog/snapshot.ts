@@ -2,7 +2,7 @@ export const prerender = false;
 
 import type { APIRoute } from "astro";
 import { requireSession } from "@/lib/auth";
-import { generateBlogSnapshot, triggerNetlifyBuild } from "@/lib/blog-snapshot";
+import { generateBlogSnapshot } from "@/lib/blog-snapshot";
 
 export const POST: APIRoute = async ({ cookies }) => {
   if (!(await requireSession(cookies))) {
@@ -11,13 +11,12 @@ export const POST: APIRoute = async ({ cookies }) => {
 
   try {
     const posts = await generateBlogSnapshot();
-    const triggered = await triggerNetlifyBuild();
     
     return new Response(
       JSON.stringify({ 
         success: true, 
         count: posts.length,
-        buildTriggered: triggered 
+        message: "Snapshot generado localmente. Para publicar los cambios en producción ejecuta un deploy manual en Netlify."
       }),
       { 
         status: 200, 

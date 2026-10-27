@@ -64,13 +64,6 @@ export const PUT: APIRoute = async ({ params, request, cookies }) => {
     `;
     if (rows.length === 0) return new Response("Post no encontrado.", { status: 404 });
     
-    // Generate snapshot and trigger rebuild in background
-    import("@/lib/blog-snapshot").then(({ generateBlogSnapshot, triggerNetlifyBuild }) => 
-      generateBlogSnapshot().then(() => triggerNetlifyBuild()).catch((e) => 
-        console.error("[blog-snapshot] Auto-snapshot error:", e)
-      )
-    ).catch(() => {});
-    
     return new Response(JSON.stringify(rows[0]), { status: 200, headers: { "Content-Type": "application/json" } });
   } catch (err) {
     const message = (err as Error).message;
@@ -89,13 +82,6 @@ export const DELETE: APIRoute = async ({ params, cookies }) => {
   if (!Number.isInteger(id)) return new Response("Invalid id", { status: 400 });
 
   await sql`DELETE FROM posts WHERE id = ${id}`;
-  
-  // Generate snapshot and trigger rebuild in background
-  import("@/lib/blog-snapshot").then(({ generateBlogSnapshot, triggerNetlifyBuild }) => 
-    generateBlogSnapshot().then(() => triggerNetlifyBuild()).catch((e) => 
-      console.error("[blog-snapshot] Auto-snapshot error:", e)
-    )
-  ).catch(() => {});
   
   return new Response(null, { status: 204 });
 };
