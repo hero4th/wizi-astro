@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Propuesta - Blog Estático</title>
+<style>
+  body { font-family: Arial, sans-serif; line-height: 1.6; margin: 40px; color: #333; }
+  h1 { text-align: center; font-size: 18px; margin-bottom: 30px; }
+  h2 { font-size: 16px; margin-top: 30px; margin-bottom: 15px; }
+  h3 { font-size: 14px; margin-top: 20px; margin-bottom: 10px; }
+  table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+  th, td { border: 1px solid #ddd; padding: 8px; text-align: left; font-size: 12px; }
+  th { background-color: #f5f5f5; font-weight: bold; }
+  p { font-size: 12px; margin: 10px 0; }
+  ul { font-size: 12px; }
+</style>
+</head>
+<body>
+<h1>PROPUESTA: Volver a sitio 100% estático manteniendo el panel de administración</h1>
+
+<h2>1. Antecedentes</h2>
+<p>Tras la migración del sitio de Vercel a Netlify, el blog quedó funcionando de forma completamente dinámica, consultando la base de datos de Netlify en cada visita que recibe un usuario.</p>
+<p>Esto está generando un consumo innecesario de dicha base de datos, cuando realmente solo necesitamos acceder a ella al momento de gestionar el contenido, no para mostrarlo al público general.</p>
+
+<h2>2. Objetivo</h2>
+<p>Reducir drásticamente el consumo de la base de datos de Netlify, manteniendo la misma agilidad para agregar, editar y publicar entradas desde el panel de administración /admin, pero regresando el sitio web a un modelo 100% estático para todos los visitantes.</p>
+
+<h2>3. Propuesta: "Estático con gestor aislado"</h2>
+<p>La solución consiste en separar la gestión del contenido de su visualización pública. El panel de administración será el único lugar que acceda a la base de datos. El sitio público nunca la consultará.</p>
+
+<h3>¿Cómo funcionaría?</h3>
+<ol>
+<li><strong>Gestión aislada</strong> – El administrador seguirá creando, editando, publicando o eliminando entradas desde /admin. Únicamente estas acciones utilizarán la base de datos de Netlify.</li>
+<li><strong>Generación de snapshot</strong> – Al guardar o publicar una entrada, el sistema exportará automáticamente TODAS las entradas publicadas a un archivo blog.json.</li>
+<li><strong>Reconstrucción automática</strong> – Ese guardado disparará un Build Hook de Netlify, el cual iniciará un nuevo build del sitio.</li>
+<li><strong>Generación estática</strong> – Durante ese build, Astro leerá el archivo blog.json y generará todas las páginas del blog (/blog/, /blog/[slug]) de forma estática.</li>
+<li><strong>Sitio 100% estático para el público</strong> – Los visitantes verán las páginas pre-generadas, sin realizar ninguna consulta a la base de datos.</li>
+</ol>
+
+<h2>4. Ventajas de esta propuesta</h2>
+<table>
+<tr><th>Ventaja</th><th>Explicación</th></tr>
+<tr><td>Menor consumo</td><td>Solo se consulta la base de datos de Netlify cuando se entra al panel /admin para gestionar contenido.</td></tr>
+<tr><td>Mayor rendimiento</td><td>Las páginas del blog se cargarán mucho más rápido al ser 100% estáticas.</td></tr>
+<tr><td>Menor costo</td><td>Se reduce el uso de consultas y consumo asociado a la base de datos.</td></tr>
+<tr><td>Mayor seguridad</td><td>La base de datos queda completamente aislada del público. Solo es accesible desde las rutas protegidas del panel.</td></tr>
+<tr><td>Sin perder agilidad</td><td>Seguiremos pudiendo publicar, actualizar o eliminar blogs desde el mismo panel con el que ya trabajamos hoy.</td></tr>
+<tr><td>Escalable</td><td>El sitio podrá recibir mucho más tráfico sin aumentar el consumo de la base de datos.</td></tr>
+<tr><td>Fácil de mantener</td><td>Es una solución limpia, probada y fácil de entender para este proyecto.</td></tr>
+</table>
+
+<h2>5. Plan de Implementación</h2>
+<table>
+<tr><th>Fase</th><th>Actividad</th><th>Tiempo estimado</th></tr>
+<tr><td>Fase 1</td><td>Crear el generador de snapshot (blog.json) con todas las entradas publicadas.</td><td>1 - 2 días</td></tr>
+<tr><td>Fase 2</td><td>Integrar la generación del JSON + Build Hook al guardar/publicar/eliminar desde el panel /admin.</td><td>1 día</td></tr>
+<tr><td>Fase 3</td><td>Migrar las páginas /blog y /blog/[slug] para que lean desde el JSON con getStaticPaths().</td><td>1 - 2 días</td></tr>
+<tr><td>Fase 4</td><td>Pruebas en entorno local y validación del build en Netlify.</td><td>1 día</td></tr>
+<tr><td>Fase 5</td><td>Despliegue a producción.</td><td>Mismo día</td></tr>
+</table>
+<p><strong>Tiempo total estimado: 3 - 4 días.</strong></p>
+
+<h2>6. Recomendación</h2>
+<p><strong>Recomiendo aprobar esta implementación.</strong></p>
+<p>Esta propuesta nos permite volver al modelo 100% estático, resolver el problema de consumo de la base de datos de Netlify y conservar la comodidad del panel administrativo actual. Con esto logramos eficiencia, ahorro y una mejor experiencia tanto para quien administra el contenido, como para nuestros visitantes.</p>
+<p><strong>Solicitud:</strong> Autorización para dar inicio a la <strong>Fase 1</strong> de esta propuesta.</p>
+</body>
+</html>
