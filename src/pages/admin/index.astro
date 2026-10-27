@@ -19,8 +19,55 @@ const formatter = new Intl.DateTimeFormat("es-MX", { day: "numeric", month: "sho
 <AdminLayout title="Posts">
   <div class="list-header">
     <h1>Posts del blog <span style="color:var(--ink-400);font-weight:500">({posts.length})</span></h1>
-    <a href="/admin/posts/new" class="btn btn-primary">+ Nuevo post</a>
+    <div style="display:flex;gap:0.75rem;flex-wrap:wrap;align-items:center">
+      <button id="publish-deploy-btn" class="btn" type="button" style="background:#0f766e;color:white;border:none">🚀 Publicar cambios al sitio</button>
+      <a href="/admin/posts/new" class="btn btn-primary">+ Nuevo post</a>
+    </div>
   </div>
+  
+  <div id="deploy-message" style="display:none;margin-top:1rem;padding:0.875rem 1rem;border-radius:10px;font-size:0.9rem"></div>
+  
+  <script>
+    const btn = document.getElementById('publish-deploy-btn');
+    const msg = document.getElementById('deploy-message');
+    
+    btn?.addEventListener('click', async () => {
+      if (btn.disabled) return;
+      btn.disabled = true;
+      btn.textContent = '⏳ Iniciando deploy...';
+      msg.style.display = 'none';
+      
+      try {
+        const res = await fetch('/api/admin/deploy', { method: 'POST' });
+        const data = await res.json();
+        
+        if (res.ok) {
+          msg.style.display = 'block';
+          msg.style.background = '#dcfce7';
+          msg.style.color = '#166534';
+          msg.style.border = '1px solid #86efac';
+          msg.textContent = '✅ ' + (data.message || 'Deploy iniciado correctamente. Tardará unos minutos en publicarse.');
+          btn.textContent = '🚀 Publicar cambios al sitio';
+        } else {
+          msg.style.display = 'block';
+          msg.style.background = '#fef2f2';
+          msg.style.color = '#991b1b';
+          msg.style.border = '1px solid #fecaca';
+          msg.textContent = '❌ ' + (data.error || 'Error al iniciar deploy');
+          btn.disabled = false;
+          btn.textContent = '🚀 Publicar cambios al sitio';
+        }
+      } catch (err) {
+        msg.style.display = 'block';
+        msg.style.background = '#fef2f2';
+        msg.style.color = '#991b1b';
+        msg.style.border = '1px solid #fecaca';
+        msg.textContent = '❌ Error de conexión';
+        btn.disabled = false;
+        btn.textContent = '🚀 Publicar cambios al sitio';
+      }
+    });
+  </script>
 
   {posts.length === 0 ? (
     <div class="empty-state">
