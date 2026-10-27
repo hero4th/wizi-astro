@@ -8,15 +8,17 @@ const SMTP_PASS = process.env.SMTP_PASS ?? import.meta.env.SMTP_PASS;
 const CONTACT_TO = process.env.CONTACT_TO ?? "contacto@proacademymx.com";
 
 const transporter =
-  SMTP_USER && SMTP_PASS
+  process.env.SMTP_USER && process.env.SMTP_PASS
     ? nodemailer.createTransport({
-        host: "mail.oqumail.com", // Servidor SMTP de OquMail (envío)
-        port: 587,
-        secure: false, // STARTTLS en el puerto 587 (no SSL directo)
-        requireTLS: true,
+        host: "mail.proacademymx.com",
+        port: 465,
+        secure: true,
         auth: {
-          user: SMTP_USER,
-          pass: SMTP_PASS,
+          user: process.env.SMTP_USER,
+          pass: process.env.SMTP_PASS,
+        },
+        tls: {
+          rejectUnauthorized: false,
         },
       })
     : null;
@@ -33,7 +35,7 @@ const json = (body: unknown, status = 200) =>
 export const POST: APIRoute = async ({ request }) => {
   if (!transporter) {
     console.error(
-      "[contact] SMTP no configurado: faltan SMTP_USER y/o SMTP_PASS en el entorno de Netlify.",
+      "[contact] SMTP no configurado: faltan SMTP_USER y/o SMTP_PASS en el entorno.",
     );
     return json(
       {
@@ -47,6 +49,8 @@ export const POST: APIRoute = async ({ request }) => {
   try {
     const data = await request.json();
     const { nombre, correo, telefono, curso, notas, fromUrl } = data;
+
+    console.log("[contact] intento", { nombre, correo, curso });
 
     if (!nombre || !correo) {
       return json({ error: "Faltan campos obligatorios" }, 400);
@@ -152,8 +156,6 @@ export const POST: APIRoute = async ({ request }) => {
 
     return json({ success: true });
   } catch (error: any) {
-    // Log the real SMTP error for Netlify's function logs, but never leak it to
-    // the visitor: the form shows a friendly message and offers WhatsApp.
     console.error("[contact] Error enviando correo:", error?.message || error);
     return json(
       {
