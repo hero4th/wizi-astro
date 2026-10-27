@@ -2,6 +2,7 @@ import { sql } from "./db";
 import { categoryDescription } from "./wordpress";
 import { publicBlogLinks } from "./blog-links";
 import { stripFeaturedImageDuplicates } from "./blog-images";
+import generatedBlogData from "@/data/blog-generated.json";
 
 export interface BlogCategoryRef {
   name: string;
@@ -113,8 +114,49 @@ function rowToPost(row: any): Post {
   };
 }
 
+function getGeneratedPosts(): Post[] {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return ((generatedBlogData as any[]) || []).map((item) => ({
+    id: item.slug,
+    data: {
+      title: item.title,
+      description: item.description,
+      category: item.category,
+      categorySlug: item.categorySlug,
+      categories: item.categories ?? [],
+      pubDate: new Date(item.pubDate),
+      updatedDate: item.updatedDate ? new Date(item.updatedDate) : undefined,
+      image: item.image ?? undefined,
+      imageAlt: item.imageAlt ?? "",
+      imageWidth: item.imageWidth ?? undefined,
+      imageHeight: item.imageHeight ?? undefined,
+      author: item.author,
+      readingTime: item.readingTime,
+      draft: item.draft,
+      html: stripFeaturedImageDuplicates(publicBlogLinks(item.html), item.image),
+      body: stripFeaturedImageDuplicates(item.body, item.image),
+      seoTitle: item.seoTitle ?? undefined,
+      seoDescription: item.seoDescription ?? undefined,
+      canonicalUrl: item.canonicalUrl ?? undefined,
+      noindex: item.noindex ?? false,
+      ogImage: item.ogImage ?? undefined,
+      keywords: item.keywords ?? undefined,
+    },
+  }));
+}
+
 /** All published posts, newest first. */
 export async function getPublishedPosts(): Promise<Post[]> {
+  // Prefer static snapshot to avoid DB queries in production
+  try {
+    const generated = getGeneratedPosts();
+    if (generated && generated.length > 0) {
+      return generated;
+    }
+  } catch (err) {
+    console.error("[blog] Error loading generated snapshot:", err);
+  }
+  
   try {
     const rows = await sql`
       SELECT * FROM posts WHERE draft = false ORDER BY pub_date DESC
@@ -130,16 +172,28 @@ export async function getPublishedPosts(): Promise<Post[]> {
 
 /** A single post by slug — published only, unless includeDrafts is set (admin preview). */
 export async function getPostBySlug(slug: string, includeDrafts = false): Promise<Post | null> {
+  // Try static snapshot first
   try {
-    const rows = includeDrafts
-      ? await sql`SELECT * FROM posts WHERE slug = ${slug}`
-      : await sql`SELECT * FROM posts WHERE slug = ${slug} AND draft = false`;
-    if (rows && rows.length > 0) {
-      return rowToPost(rows[0]);
+    const generated = getGeneratedPosts().find((p) => p.id === slug);
+    if (generated) {
+      return generated;
     }
   } catch (err) {
-    console.error(`[blog] Error al consultar post '${slug}' en base de datos, usando respaldo local:`, err);
+    console.error("[blog] Error loading from snapshot:", err);
   }
+  
+  // For admin preview with drafts, still use DB
+  if (includeDrafts) {
+    try {
+      const rows = await sql`SELECT * FROM posts WHERE slug = ${slug}`;
+      if (rows && rows.length > 0) {
+        return rowToPost(rows[0]);
+      }
+    } catch (err) {
+      console.error(`[blog] Error al consultar post '${slug}' en base de datos:`, err);
+    }
+  }
+  
   const fallback = getFallbackPosts().find((p) => p.id === slug);
   return fallback ?? null;
 }

@@ -61,6 +61,11 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       )
       RETURNING id, slug
     `;
+    // Generate snapshot and trigger rebuild in background
+    generateBlogSnapshot().then(() => triggerNetlifyBuild()).catch((e) => 
+      console.error("[blog-snapshot] Auto-snapshot error:", e)
+    );
+    
     return new Response(JSON.stringify(rows[0]), { status: 201, headers: { "Content-Type": "application/json" } });
   } catch (err) {
     const message = (err as Error).message;
@@ -71,3 +76,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     return new Response("Error al crear el post.", { status: 500 });
   }
 };
+
+import { generateBlogSnapshot, triggerNetlifyBuild } from "@/lib/blog-snapshot";
+
+// Auto-generate snapshot after post creation
