@@ -3,9 +3,14 @@ export const prerender = false;
 
 import AdminLayout from "@/layouts/AdminLayout.astro";
 import PostEditor from "@/components/admin/PostEditor";
-import { requireSession } from "@/lib/auth";
+import { getSessionUser, hasPermission } from "@/lib/auth";
+import { PERMISSIONS } from "@/lib/permissions";
 
-if (!(await requireSession(Astro.cookies))) return Astro.redirect("/admin/login", 303);
+const user = await getSessionUser(Astro.cookies);
+if (!user) return Astro.redirect("/admin/login", 303);
+if (!hasPermission(user, PERMISSIONS.POSTS_CREATE)) {
+  return Astro.redirect("/admin/sin-acceso", 303);
+}
 
 const today = new Date().toISOString().slice(0, 10);
 

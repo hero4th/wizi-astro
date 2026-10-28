@@ -1,8 +1,8 @@
-import { sql } from "./db";
 import { categoryDescription } from "./wordpress";
 import { publicBlogLinks } from "./blog-links";
 import { stripFeaturedImageDuplicates } from "./blog-images";
 import generatedBlogData from "@/data/blog-generated.json";
+import fallbackPostsData from "@/data/blog-fallback.json";
 
 export interface BlogCategoryRef {
   name: string;
@@ -49,12 +49,9 @@ export interface CategoryWithCount {
   description: string;
 }
 
-import fallbackPostsData from "@/data/blog-fallback.json";
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function getFallbackPosts(): Post[] {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (fallbackPostsData as any[]).map((item) => ({
+function snapshotToPost(item: any): Post {
+  return {
     id: item.slug,
     data: {
       title: item.title,
@@ -79,123 +76,36 @@ function getFallbackPosts(): Post[] {
       noindex: item.noindex ?? false,
       ogImage: item.ogImage ?? undefined,
       keywords: item.keywords ?? undefined,
-    },
-  }));
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function rowToPost(row: any): Post {
-  return {
-    id: row.slug,
-    data: {
-      title: row.title,
-      description: row.description,
-      category: row.category,
-      categorySlug: row.category_slug,
-      categories: row.categories ?? [],
-      pubDate: new Date(row.pub_date),
-      updatedDate: row.updated_date ? new Date(row.updated_date) : undefined,
-      image: row.image ?? undefined,
-      imageAlt: row.image_alt ?? "",
-      imageWidth: row.image_width ?? undefined,
-      imageHeight: row.image_height ?? undefined,
-      author: row.author,
-      readingTime: row.reading_time,
-      draft: row.draft,
-      html: stripFeaturedImageDuplicates(publicBlogLinks(row.html), row.image),
-      body: stripFeaturedImageDuplicates(row.body, row.image),
-      seoTitle: row.seo_title ?? undefined,
-      seoDescription: row.seo_description ?? undefined,
-      canonicalUrl: row.canonical_url ?? undefined,
-      noindex: row.noindex ?? false,
-      ogImage: row.og_image ?? undefined,
-      keywords: row.keywords ?? undefined,
     },
   };
 }
 
 function getGeneratedPosts(): Post[] {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return ((generatedBlogData as any[]) || []).map((item) => ({
-    id: item.slug,
-    data: {
-      title: item.title,
-      description: item.description,
-      category: item.category,
-      categorySlug: item.categorySlug,
-      categories: item.categories ?? [],
-      pubDate: new Date(item.pubDate),
-      updatedDate: item.updatedDate ? new Date(item.updatedDate) : undefined,
-      image: item.image ?? undefined,
-      imageAlt: item.imageAlt ?? "",
-      imageWidth: item.imageWidth ?? undefined,
-      imageHeight: item.imageHeight ?? undefined,
-      author: item.author,
-      readingTime: item.readingTime,
-      draft: item.draft,
-      html: stripFeaturedImageDuplicates(publicBlogLinks(item.html), item.image),
-      body: stripFeaturedImageDuplicates(item.body, item.image),
-      seoTitle: item.seoTitle ?? undefined,
-      seoDescription: item.seoDescription ?? undefined,
-      canonicalUrl: item.canonicalUrl ?? undefined,
-      noindex: item.noindex ?? false,
-      ogImage: item.ogImage ?? undefined,
-      keywords: item.keywords ?? undefined,
-    },
-  }));
+  return ((generatedBlogData as any[]) || []).map(snapshotToPost);
 }
 
-/** All published posts, newest first. */
+function getFallbackPosts(): Post[] {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return ((fallbackPostsData as any[]) || []).map(snapshotToPost);
+}
+
+/**
+ * All published posts, newest first.
+ *
+ * This module is intentionally database-free. Public pages are rendered from
+ * the JSON snapshot that the build generates, so visitors never wake the
+ * database. Only /admin (and the prebuild script) may query Postgres.
+ */
 export async function getPublishedPosts(): Promise<Post[]> {
-  // Prefer static snapshot to avoid DB queries in production
-  try {
-    const generated = getGeneratedPosts();
-    if (generated && generated.length > 0) {
-      return generated;
-    }
-  } catch (err) {
-    console.error("[blog] Error loading generated snapshot:", err);
-  }
-  
-  try {
-    const rows = await sql`
-      SELECT * FROM posts WHERE draft = false ORDER BY pub_date DESC
-    `;
-    if (rows && rows.length > 0) {
-      return rows.map(rowToPost);
-    }
-  } catch (err) {
-    console.error("[blog] Error al consultar posts en base de datos, usando respaldo local:", err);
-  }
-  return getFallbackPosts();
+  const generated = getGeneratedPosts();
+  return generated.length > 0 ? generated : getFallbackPosts();
 }
 
-/** A single post by slug — published only, unless includeDrafts is set (admin preview). */
-export async function getPostBySlug(slug: string, includeDrafts = false): Promise<Post | null> {
-  // Try static snapshot first
-  try {
-    const generated = getGeneratedPosts().find((p) => p.id === slug);
-    if (generated) {
-      return generated;
-    }
-  } catch (err) {
-    console.error("[blog] Error loading from snapshot:", err);
-  }
-  
-  // For admin preview with drafts, still use DB
-  if (includeDrafts) {
-    try {
-      const rows = await sql`SELECT * FROM posts WHERE slug = ${slug}`;
-      if (rows && rows.length > 0) {
-        return rowToPost(rows[0]);
-      }
-    } catch (err) {
-      console.error(`[blog] Error al consultar post '${slug}' en base de datos:`, err);
-    }
-  }
-  
-  const fallback = getFallbackPosts().find((p) => p.id === slug);
-  return fallback ?? null;
+/** A single published post by slug. */
+export async function getPostBySlug(slug: string): Promise<Post | null> {
+  const posts = await getPublishedPosts();
+  return posts.find((p) => p.id === slug) ?? null;
 }
 
 /** Every category that has at least one published post, most-used first. */

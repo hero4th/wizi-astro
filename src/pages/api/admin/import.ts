@@ -1,7 +1,8 @@
 export const prerender = false;
 
 import type { APIRoute } from "astro";
-import { requireSession, clientIp, isActionRateLimited, recordActionAttempt } from "@/lib/auth";
+import { getSessionUser, hasPermission, clientIp, isActionRateLimited, recordActionAttempt } from "@/lib/auth";
+import { PERMISSIONS } from "@/lib/permissions";
 import { sql } from "@/lib/db";
 import { processContentHtml, readingTimeFromHtml } from "@/lib/content";
 import { stripFeaturedImageDuplicates } from "@/lib/blog-images";
@@ -38,7 +39,9 @@ interface ImportPost {
 }
 
 export const POST: APIRoute = async ({ request, cookies }) => {
-  if (!(await requireSession(cookies))) return json({ error: "No autorizado." }, 401);
+  const user = await getSessionUser(cookies);
+  if (!user) return json({ error: "No autorizado." }, 401);
+  if (!hasPermission(user, PERMISSIONS.BACKUP_IMPORT)) return json({ error: "Sin permiso." }, 403);
 
   const ip = clientIp(request);
   if (await isActionRateLimited(ip, "data-import")) {
@@ -89,7 +92,8 @@ export const POST: APIRoute = async ({ request, cookies }) => {
           slug, title, description, category, category_slug, categories,
           pub_date, updated_date, image, image_alt, image_width, image_height,
           author, reading_time, draft, body, html,
-          seo_title, seo_description, canonical_url, noindex, og_image, keywords
+          seo_title, seo_description, canonical_url, noindex, og_image, keywords,
+          created_by_user_id, updated_by_user_id
         ) VALUES (
           ${slug}, ${title}, ${String(raw.description ?? "")}, ${String(raw.category ?? cat?.name ?? "General")},
           ${String(raw.category_slug ?? cat?.slug ?? "general")},
@@ -98,7 +102,8 @@ export const POST: APIRoute = async ({ request, cookies }) => {
           ${raw.image ?? null}, ${String(raw.image_alt ?? "")}, ${raw.image_width ?? null}, ${raw.image_height ?? null},
           ${String(raw.author ?? "Professional Academy")}, ${readingTime}, ${raw.draft === false ? false : true},
           ${html}, ${html},
-          ${seo.seoTitle}, ${seo.seoDescription}, ${seo.canonicalUrl}, ${seo.noindex}, ${seo.ogImage}, ${seo.keywords}
+          ${seo.seoTitle}, ${seo.seoDescription}, ${seo.canonicalUrl}, ${seo.noindex}, ${seo.ogImage}, ${seo.keywords},
+          ${user.id}, ${user.id}
         )
         ON CONFLICT (slug) DO UPDATE SET
           title = EXCLUDED.title,
@@ -123,6 +128,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
           noindex = EXCLUDED.noindex,
           og_image = EXCLUDED.og_image,
           keywords = EXCLUDED.keywords,
+          updated_by_user_id = EXCLUDED.updated_by_user_id,
           updated_at = now()
       `;
       postsImported++;
@@ -143,7 +149,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       }
     }
 
-    await recordActionAttempt(ip, "data-import", true);
+    await recordActionAttempt(ip, "data-import", true, user.id);
 
     return json({ posts: postsImported, postsSkipped, snippets: snippetsImported });
   } catch (err) {

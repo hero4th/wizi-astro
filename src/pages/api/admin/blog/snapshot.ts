@@ -1,12 +1,20 @@
 export const prerender = false;
 
 import type { APIRoute } from "astro";
-import { requireSession } from "@/lib/auth";
+import { getSessionUser, hasPermission } from "@/lib/auth";
+import { PERMISSIONS } from "@/lib/permissions";
 import { generateBlogSnapshot } from "@/lib/blog-snapshot";
 
 export const POST: APIRoute = async ({ cookies }) => {
-  if (!(await requireSession(cookies))) {
+  const user = await getSessionUser(cookies);
+  if (!user) {
     return new Response("Unauthorized", { status: 401 });
+  }
+  if (!hasPermission(user, PERMISSIONS.POSTS_PUBLISH)) {
+    return new Response(JSON.stringify({ error: "No tienes permiso para generar el snapshot." }), {
+      status: 403,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 
   try {

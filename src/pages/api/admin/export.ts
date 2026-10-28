@@ -2,7 +2,8 @@ export const prerender = false;
 
 import type { APIRoute } from "astro";
 import JSZip from "jszip";
-import { requireSession, clientIp, isActionRateLimited, recordActionAttempt } from "@/lib/auth";
+import { getSessionUser, hasPermission, clientIp, isActionRateLimited, recordActionAttempt } from "@/lib/auth";
+import { PERMISSIONS } from "@/lib/permissions";
 import { sql } from "@/lib/db";
 import { getUpload } from "@/lib/storage";
 
@@ -131,7 +132,9 @@ async function downloadImage(url: string): Promise<{ data: ArrayBuffer; contentT
 }
 
 export const GET: APIRoute = async ({ cookies, request }) => {
-  if (!(await requireSession(cookies))) return json({ error: "No autorizado." }, 401);
+  const user = await getSessionUser(cookies);
+  if (!user) return json({ error: "No autorizado." }, 401);
+  if (!hasPermission(user, PERMISSIONS.BACKUP_EXPORT)) return json({ error: "Sin permiso." }, 403);
 
   const ip = clientIp(request);
   if (await isActionRateLimited(ip, "data-export")) {
@@ -214,7 +217,7 @@ export const GET: APIRoute = async ({ cookies, request }) => {
     const store = getStore({ name: "uploads", consistency: "strong" });
     await store.set(key, buffer);
 
-    await recordActionAttempt(ip, "data-export", true);
+    await recordActionAttempt(ip, "data-export", true, user.id);
 
     return json({
       url: `/uploads/${key}`,

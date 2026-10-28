@@ -16,7 +16,13 @@ function mimeFor(name: string): string {
   return MIME_BY_EXT[extFor(name)] ?? "application/octet-stream";
 }
 
-export default function BackupPanel() {
+export default function BackupPanel({
+  canExport = true,
+  canImport = true,
+}: {
+  canExport?: boolean;
+  canImport?: boolean;
+}) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [phase, setPhase] = useState<Phase>("idle");
   const [status, setStatus] = useState("");
@@ -166,6 +172,7 @@ export default function BackupPanel() {
   return (
     <div className="space-y-6">
       {/* Export */}
+      {canExport && (
       <div className="panel">
         <h2 className="sec-title">Exportar backup</h2>
         <p className="sec-sub">
@@ -178,8 +185,10 @@ export default function BackupPanel() {
           </button>
         </div>
       </div>
+      )}
 
       {/* Import */}
+      {canImport && (
       <div className="panel">
         <h2 className="sec-title">Importar backup</h2>
         <p className="sec-sub">
@@ -204,6 +213,7 @@ export default function BackupPanel() {
           </button>
         </div>
       </div>
+      )}
 
       {/* Status / progress */}
       {busy && (

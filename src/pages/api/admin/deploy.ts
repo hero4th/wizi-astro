@@ -1,11 +1,19 @@
 export const prerender = false;
 
 import type { APIRoute } from "astro";
-import { requireSession } from "@/lib/auth";
+import { getSessionUser, hasPermission } from "@/lib/auth";
+import { PERMISSIONS } from "@/lib/permissions";
 
 export const POST: APIRoute = async ({ cookies }) => {
-  if (!(await requireSession(cookies))) {
+  const user = await getSessionUser(cookies);
+  if (!user) {
     return new Response("Unauthorized", { status: 401 });
+  }
+  if (!hasPermission(user, PERMISSIONS.DEPLOY_TRIGGER)) {
+    return new Response(JSON.stringify({ error: "No tienes permiso para publicar cambios." }), {
+      status: 403,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 
   const hookUrl = process.env.NETLIFY_BUILD_HOOK_URL || process.env.BUILD_HOOK_URL;

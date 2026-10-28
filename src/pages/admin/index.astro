@@ -2,10 +2,17 @@
 export const prerender = false;
 
 import AdminLayout from "@/layouts/AdminLayout.astro";
-import { requireSession } from "@/lib/auth";
+import { getSessionUser, hasPermission } from "@/lib/auth";
+import { PERMISSIONS } from "@/lib/permissions";
 import { sql } from "@/lib/db";
 
-if (!(await requireSession(Astro.cookies))) return Astro.redirect("/admin/login", 303);
+const user = await getSessionUser(Astro.cookies);
+if (!user) return Astro.redirect("/admin/login", 303);
+if (!hasPermission(user, PERMISSIONS.POSTS_READ)) return Astro.redirect("/admin/sin-acceso", 303);
+
+const canDeploy = hasPermission(user, PERMISSIONS.DEPLOY_TRIGGER);
+const canCreate = hasPermission(user, PERMISSIONS.POSTS_CREATE);
+const canEdit = hasPermission(user, PERMISSIONS.POSTS_UPDATE);
 
 const posts = await sql`
   SELECT id, slug, title, category, pub_date, draft
@@ -20,19 +27,22 @@ const formatter = new Intl.DateTimeFormat("es-MX", { day: "numeric", month: "sho
   <div class="list-header">
     <h1>Posts del blog <span style="color:var(--ink-400);font-weight:500">({posts.length})</span></h1>
     <div style="display:flex;gap:0.75rem;flex-wrap:wrap;align-items:center">
-      <button id="publish-deploy-btn" class="btn" type="button" style="background:#0f766e;color:white;border:none">🚀 Publicar cambios al sitio</button>
-      <a href="/admin/posts/new" class="btn btn-primary">+ Nuevo post</a>
+      {canDeploy && (
+        <button id="publish-deploy-btn" class="btn" type="button" style="background:#0f766e;color:white;border:none">🚀 Publicar cambios al sitio</button>
+      )}
+      {canCreate && <a href="/admin/posts/new" class="btn btn-primary">+ Nuevo post</a>}
     </div>
   </div>
   
   <div id="deploy-message" style="display:none;margin-top:1rem;padding:0.875rem 1rem;border-radius:10px;font-size:0.9rem"></div>
   
+  {canDeploy && (
   <script>
-    const btn = document.getElementById('publish-deploy-btn');
-    const msg = document.getElementById('deploy-message');
+    const btn = document.getElementById('publish-deploy-btn') as HTMLButtonElement | null;
+    const msg = document.getElementById('deploy-message') as HTMLDivElement | null;
     
     btn?.addEventListener('click', async () => {
-      if (btn.disabled) return;
+      if (!btn || !msg || btn.disabled) return;
       btn.disabled = true;
       btn.textContent = '⏳ Iniciando deploy...';
       msg.style.display = 'none';
@@ -68,15 +78,17 @@ const formatter = new Intl.DateTimeFormat("es-MX", { day: "numeric", month: "sho
       }
     });
   </script>
+  )}
 
   {posts.length === 0 ? (
     <div class="empty-state">
       <p style="margin:0 0 1rem">Todavía no hay posts.</p>
-      <a href="/admin/posts/new" class="btn btn-primary">Crear el primero</a>
+      {canCreate && <a href="/admin/posts/new" class="btn btn-primary">Crear el primero</a>}
     </div>
   ) : (
     <div class="post-cards">
       {posts.map((post) => (
+        canEdit ? (
         <a href={`/admin/posts/edit/${post.id}`} class="post-card">
           <div class="post-card__main">
             <p class="post-card__title">{post.title}</p>
@@ -90,6 +102,21 @@ const formatter = new Intl.DateTimeFormat("es-MX", { day: "numeric", month: "sho
             ? <span class="badge badge-draft">Borrador</span>
             : <span class="badge badge-published">Publicado</span>}
         </a>
+        ) : (
+        <div class="post-card">
+          <div class="post-card__main">
+            <p class="post-card__title">{post.title}</p>
+            <div class="post-card__meta">
+              <span class="post-card__slug">/blog/{post.slug}</span>
+              <span>{post.category}</span>
+              <span>{formatter.format(new Date(post.pub_date))}</span>
+            </div>
+          </div>
+          {post.draft
+            ? <span class="badge badge-draft">Borrador</span>
+            : <span class="badge badge-published">Publicado</span>}
+        </div>
+        )
       ))}
     </div>
   )}

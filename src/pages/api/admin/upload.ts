@@ -1,7 +1,8 @@
 export const prerender = false;
 
 import type { APIRoute } from "astro";
-import { requireSession } from "@/lib/auth";
+import { getSessionUser, hasPermission } from "@/lib/auth";
+import { PERMISSIONS } from "@/lib/permissions";
 import { saveUpload } from "@/lib/storage";
 
 const MAX_BYTES = 8 * 1024 * 1024; // 8 MB
@@ -9,7 +10,11 @@ const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/g
 
 export const POST: APIRoute = async ({ request, cookies }) => {
   // See posts.ts for why there's no separate Origin check here.
-  if (!(await requireSession(cookies))) return new Response("Unauthorized", { status: 401 });
+  const user = await getSessionUser(cookies);
+  if (!user) return new Response("Unauthorized", { status: 401 });
+  if (!hasPermission(user, PERMISSIONS.MEDIA_UPLOAD)) {
+    return new Response("Forbidden", { status: 403 });
+  }
 
   // The upload is sent as a raw binary body (not multipart/form-data via
   // FormData) specifically so Astro's built-in CSRF guard doesn't see it:

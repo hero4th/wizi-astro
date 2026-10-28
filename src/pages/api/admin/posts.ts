@@ -1,7 +1,8 @@
 export const prerender = false;
 
 import type { APIRoute } from "astro";
-import { requireSession } from "@/lib/auth";
+import { getSessionUser, hasPermission } from "@/lib/auth";
+import { PERMISSIONS } from "@/lib/permissions";
 import { sql } from "@/lib/db";
 import { processContentHtml, readingTimeFromHtml } from "@/lib/content";
 import { stripFeaturedImageDuplicates } from "@/lib/blog-images";
@@ -9,7 +10,12 @@ import { slugify } from "@/lib/slug";
 import { seoFields } from "@/lib/post-meta";
 
 export const GET: APIRoute = async ({ cookies }) => {
-  if (!(await requireSession(cookies))) return new Response("Unauthorized", { status: 401 });
+  const user = await getSessionUser(cookies);
+  if (!user) return new Response("Unauthorized", { status: 401 });
+  if (!hasPermission(user, PERMISSIONS.POSTS_READ)) {
+    return new Response("Forbidden", { status: 403 });
+  }
+
   const rows = await sql`
     SELECT id, slug, title, category, category_slug, pub_date, draft
     FROM posts ORDER BY pub_date DESC
@@ -28,13 +34,21 @@ export const POST: APIRoute = async ({ request, cookies }) => {
   // the public origin behind Vercel's proxy, so it rejected legitimate
   // requests in production while never having caught anything sameSite
   // wasn't already blocking.
-  if (!(await requireSession(cookies))) return new Response("Unauthorized", { status: 401 });
+  const user = await getSessionUser(cookies);
+  if (!user) return new Response("Unauthorized", { status: 401 });
+  if (!hasPermission(user, PERMISSIONS.POSTS_CREATE)) {
+    return new Response("Forbidden", { status: 403 });
+  }
 
   const data = await request.json();
   const title: string = String(data.title ?? "").trim();
   const rawBody: string = String(data.body ?? "");
   if (!title || !rawBody || rawBody === "<p></p>") {
     return new Response("Título y contenido son obligatorios.", { status: 400 });
+  }
+
+  if (data.draft === false && !hasPermission(user, PERMISSIONS.POSTS_PUBLISH)) {
+    return new Response("No tienes permiso para publicar artículos.", { status: 403 });
   }
 
   let slug: string = data.slug?.trim() ? slugify(data.slug) : slugify(title);
@@ -51,13 +65,15 @@ export const POST: APIRoute = async ({ request, cookies }) => {
         slug, title, description, category, category_slug, categories,
         pub_date, updated_date, image, image_alt, image_width, image_height,
         author, reading_time, draft, body, html,
-        seo_title, seo_description, canonical_url, noindex, og_image, keywords
+        seo_title, seo_description, canonical_url, noindex, og_image, keywords,
+        created_by_user_id, updated_by_user_id
       ) VALUES (
         ${slug}, ${title}, ${data.description ?? ""}, ${data.category ?? "General"}, ${data.categorySlug ?? "general"},
         ${JSON.stringify(categories)}, ${data.pubDate ?? new Date().toISOString().slice(0, 10)}, ${data.updatedDate ?? null},
         ${data.image ?? null}, ${data.imageAlt ?? ""}, ${data.imageWidth ?? null}, ${data.imageHeight ?? null},
         ${data.author ?? "Professional Academy"}, ${readingTime}, ${data.draft ?? true}, ${html}, ${html},
-        ${seo.seoTitle}, ${seo.seoDescription}, ${seo.canonicalUrl}, ${seo.noindex}, ${seo.ogImage}, ${seo.keywords}
+        ${seo.seoTitle}, ${seo.seoDescription}, ${seo.canonicalUrl}, ${seo.noindex}, ${seo.ogImage}, ${seo.keywords},
+        ${user.id}, ${user.id}
       )
       RETURNING id, slug
     `;
@@ -71,7 +87,3 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     return new Response("Error al crear el post.", { status: 500 });
   }
 };
-
-import { generateBlogSnapshot, triggerNetlifyBuild } from "@/lib/blog-snapshot";
-
-// Auto-generate snapshot after post creation

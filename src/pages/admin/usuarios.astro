@@ -1,0 +1,21 @@
+---
+export const prerender = false;
+
+import AdminLayout from "@/layouts/AdminLayout.astro";
+import UserManager from "@/components/admin/UserManager";
+import { getSessionUser, hasPermission } from "@/lib/auth";
+import { PERMISSIONS } from "@/lib/permissions";
+
+const user = await getSessionUser(Astro.cookies);
+if (!user) return Astro.redirect("/admin/login", 303);
+if (!hasPermission(user, PERMISSIONS.USERS_READ)) {
+  return Astro.redirect("/admin/sin-acceso", 303);
+}
+---
+
+<AdminLayout title="Usuarios">
+  <div class="list-header">
+    <h1>Usuarios del panel</h1>
+  </div>
+  <UserManager client:load />
+</AdminLayout>

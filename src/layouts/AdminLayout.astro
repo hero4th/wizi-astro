@@ -4,6 +4,8 @@ import "@fontsource-variable/bricolage-grotesque";
 import "@fontsource-variable/hanken-grotesk";
 import "@fontsource/ibm-plex-mono/400.css";
 import "@fontsource/ibm-plex-mono/500.css";
+import { getSessionUser, hasPermission } from "@/lib/auth";
+import { PERMISSIONS } from "@/lib/permissions";
 
 export interface Props {
   title: string;
@@ -12,6 +14,8 @@ export interface Props {
   fullBleed?: boolean;
 }
 const { title, fullBleed = false } = Astro.props;
+const user = await getSessionUser(Astro.cookies);
+const can = (permission: string) => hasPermission(user, permission);
 ---
 
 <!doctype html>
@@ -78,6 +82,12 @@ const { title, fullBleed = false } = Astro.props;
         cursor: pointer; padding: 0; font-weight: 500; font-family: var(--font-body);
       }
       .logout-btn:hover { color: #fca5a5; }
+      .nav-user { display: flex; flex-direction: column; line-height: 1.15; }
+      .nav-user-name { color: #fff; font-weight: 600; font-size: 0.8rem; }
+      .nav-user-role {
+        color: var(--color-teal-300); font-size: 0.68rem; font-weight: 600;
+        text-transform: uppercase; letter-spacing: 0.06em;
+      }
 
       @media (max-width: 780px) {
         nav.main-nav {
@@ -190,7 +200,7 @@ const { title, fullBleed = false } = Astro.props;
         display: block; margin-bottom: 0.4rem; font-family: var(--font-mono);
         text-transform: uppercase; letter-spacing: 0.03em;
       }
-      input[type="text"], input[type="date"], input[type="password"], input[type="number"], textarea, select {
+      input[type="text"], input[type="date"], input[type="password"], input[type="number"], input[type="email"], textarea, select {
         width: 100%; padding: 0.65rem 0.8rem; border: 1px solid var(--color-ink-100);
         border-radius: 9px; font-size: 0.92rem; font-family: var(--font-body);
         background: #fff; color: var(--color-ink-950);
@@ -222,6 +232,30 @@ const { title, fullBleed = false } = Astro.props;
       .hint-bad { color: #dc2626; font-weight: 600; }
       .meter { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin-top: 0.55rem; }
       .meter-seg { height: 4px; border-radius: 999px; transition: background-color 0.2s; }
+
+      /* -- Users page --------------------------------------------------------- */
+      .user-list { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1.25rem; }
+      .user-card {
+        border: 1px solid var(--color-ink-100); border-radius: 12px;
+        padding: 1rem 1.1rem; background: var(--color-pearl);
+      }
+      .user-card__main { min-width: 0; }
+      .user-card__name { margin: 0; font-weight: 600; font-size: 0.92rem; color: var(--color-ink-950); }
+      .user-card__meta {
+        margin: 0.2rem 0 0; font-size: 0.78rem; color: var(--color-ink-500);
+        overflow-wrap: anywhere;
+      }
+      .user-card__actions { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.75rem; }
+      .user-tag {
+        display: inline-block; margin-left: 0.35rem; padding: 0.05rem 0.4rem;
+        border-radius: 999px; background: var(--color-teal-600); color: #fff;
+        font-size: 0.62rem; font-weight: 700; text-transform: uppercase;
+        letter-spacing: 0.04em; vertical-align: middle;
+      }
+      .user-edit { display: flex; flex-direction: column; gap: 0.9rem; }
+      .user-edit__grid { display: grid; gap: 0.85rem; }
+      @media (min-width: 720px) { .user-edit__grid { grid-template-columns: 1fr 1fr; } }
+      .user-edit__actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
 
       /* ======================================================================
          Post editor — the all-in-one Tiptap experience
@@ -544,11 +578,20 @@ const { title, fullBleed = false } = Astro.props;
       <input type="checkbox" id="menu-toggle" hidden />
       <label for="menu-toggle" class="menu-btn" aria-label="Abrir menú">☰</label>
       <nav class="main-nav">
-        <a href="/admin">Posts</a>
-        <a href="/admin/backup">Backup</a>
-        <a href="/admin/seguridad">Seguridad</a>
+        {can(PERMISSIONS.POSTS_READ) && <a href="/admin">Posts</a>}
+        {can(PERMISSIONS.USERS_READ) && <a href="/admin/usuarios">Usuarios</a>}
+        {can(PERMISSIONS.BACKUP_EXPORT) && <a href="/admin/backup">Backup</a>}
+        {can(PERMISSIONS.SECURITY_MANAGE) && <a href="/admin/seguridad">Seguridad</a>}
         <a href="/blog" target="_blank">Ver blog ↗</a>
-        <a href="/admin/posts/new" class="nav-cta">+ Nuevo post</a>
+        {can(PERMISSIONS.POSTS_CREATE) && (
+          <a href="/admin/posts/new" class="nav-cta">+ Nuevo post</a>
+        )}
+        {user && (
+          <div class="nav-user">
+            <span class="nav-user-name">{user.name}</span>
+            <span class="nav-user-role">{user.role.name}</span>
+          </div>
+        )}
         <form method="POST" action="/api/admin/logout" style="margin:0">
           <button type="submit" class="logout-btn">Cerrar sesión</button>
         </form>
