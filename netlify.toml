@@ -3,10 +3,11 @@
   publish = "dist"
 
 [build.environment]
-  # SMTP_USER is the public contact address (contacto@proacademymx.com) and
-  # UPLOAD_DIR is only documented as an example path; both are false positives
-  # for Netlify's secrets scanner. Tell it not to fail the build on them.
-  SECRETS_SCAN_OMIT_KEYS = "SMTP_USER,UPLOAD_DIR"
+  # SMTP_USER is the public contact address (contacto@proacademymx.com),
+  # CONTACT_TO/CONTACT_FROM_NAME are also public contact data, and UPLOAD_DIR
+  # is only documented as an example path; all are false positives for
+  # Netlify's secrets scanner. Tell it not to fail the build on them.
+  SECRETS_SCAN_OMIT_KEYS = "SMTP_USER,UPLOAD_DIR,CONTACT_TO,CONTACT_FROM_NAME"
 
 # Security headers applied to every response (previously in vercel.json /
 # server.mjs; the Netlify adapter has no server to wrap).
