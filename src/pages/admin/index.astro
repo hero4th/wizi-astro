@@ -34,47 +34,88 @@ const formatter = new Intl.DateTimeFormat("es-MX", { day: "numeric", month: "sho
     </div>
   </div>
   
-  <div id="deploy-message" style="display:none;margin-top:1rem;padding:0.875rem 1rem;border-radius:10px;font-size:0.9rem"></div>
-  
+  <div id="deploy-message" role="status" aria-live="polite" style="display:none;margin-top:1rem;padding:0.875rem 1rem;border-radius:10px;font-size:0.9rem"></div>
+
   {canDeploy && (
+  <dialog
+    id="deploy-dialog"
+    class="deploy-dialog"
+    aria-labelledby="deploy-dialog-title"
+    aria-describedby="deploy-dialog-desc"
+  >
+    <div class="deploy-dialog__body">
+      <h2 id="deploy-dialog-title">¿Publicar cambios al sitio?</h2>
+      <p id="deploy-dialog-desc">
+        Se iniciará un deploy en Netlify con el contenido actual del blog. Tardará unos minutos y
+        <strong>consume créditos de build</strong>.
+      </p>
+      <p class="deploy-dialog__note">Publica solo cuando ya terminaste de editar.</p>
+      <div class="deploy-dialog__actions">
+        <button id="deploy-cancel-btn" class="btn btn-secondary" type="button" autofocus>Cancelar</button>
+        <button id="deploy-confirm-btn" class="btn btn-primary" type="button">Sí, publicar</button>
+      </div>
+    </div>
+  </dialog>
+
   <script>
     const btn = document.getElementById('publish-deploy-btn') as HTMLButtonElement | null;
     const msg = document.getElementById('deploy-message') as HTMLDivElement | null;
-    
-    btn?.addEventListener('click', async () => {
-      if (!btn || !msg || btn.disabled) return;
-      btn.disabled = true;
-      btn.textContent = '⏳ Iniciando deploy...';
-      msg.style.display = 'none';
-      
+    const dialog = document.getElementById('deploy-dialog') as HTMLDialogElement | null;
+    const cancelBtn = document.getElementById('deploy-cancel-btn') as HTMLButtonElement | null;
+    const confirmBtn = document.getElementById('deploy-confirm-btn') as HTMLButtonElement | null;
+
+    let deploying = false;
+
+    function showMessage(kind: 'ok' | 'error', text: string) {
+      if (!msg) return;
+      msg.style.display = 'block';
+      msg.style.background = kind === 'ok' ? '#dcfce7' : '#fef2f2';
+      msg.style.color = kind === 'ok' ? '#166534' : '#991b1b';
+      msg.style.border = `1px solid ${kind === 'ok' ? '#86efac' : '#fecaca'}`;
+      msg.textContent = text;
+    }
+
+    btn?.addEventListener('click', () => {
+      if (deploying || !dialog) return;
+      if (msg) msg.style.display = 'none';
+      dialog.showModal();
+    });
+
+    cancelBtn?.addEventListener('click', () => dialog?.close());
+
+    // Cerrar al hacer clic fuera del panel (en el backdrop).
+    dialog?.addEventListener('click', (event) => {
+      if (event.target === dialog) dialog.close();
+    });
+
+    confirmBtn?.addEventListener('click', async () => {
+      if (deploying || !confirmBtn || !msg) return;
+
+      deploying = true;
+      const originalLabel = confirmBtn.textContent;
+      confirmBtn.disabled = true;
+      if (cancelBtn) cancelBtn.disabled = true;
+      confirmBtn.textContent = '⏳ Iniciando deploy...';
+
       try {
         const res = await fetch('/api/admin/deploy', { method: 'POST' });
         const data = await res.json();
-        
+
+        dialog?.close();
+
         if (res.ok) {
-          msg.style.display = 'block';
-          msg.style.background = '#dcfce7';
-          msg.style.color = '#166534';
-          msg.style.border = '1px solid #86efac';
-          msg.textContent = '✅ ' + (data.message || 'Deploy iniciado correctamente. Tardará unos minutos en publicarse.');
-          btn.textContent = '🚀 Publicar cambios al sitio';
+          showMessage('ok', '✅ ' + (data.message || 'Deploy iniciado correctamente. Tardará unos minutos en publicarse.'));
         } else {
-          msg.style.display = 'block';
-          msg.style.background = '#fef2f2';
-          msg.style.color = '#991b1b';
-          msg.style.border = '1px solid #fecaca';
-          msg.textContent = '❌ ' + (data.error || 'Error al iniciar deploy');
-          btn.disabled = false;
-          btn.textContent = '🚀 Publicar cambios al sitio';
+          showMessage('error', '❌ ' + (data.error || 'Error al iniciar deploy'));
         }
       } catch (err) {
-        msg.style.display = 'block';
-        msg.style.background = '#fef2f2';
-        msg.style.color = '#991b1b';
-        msg.style.border = '1px solid #fecaca';
-        msg.textContent = '❌ Error de conexión';
-        btn.disabled = false;
-        btn.textContent = '🚀 Publicar cambios al sitio';
+        dialog?.close();
+        showMessage('error', '❌ Error de conexión');
+      } finally {
+        deploying = false;
+        confirmBtn.disabled = false;
+        if (cancelBtn) cancelBtn.disabled = false;
+        confirmBtn.textContent = originalLabel ?? 'Sí, publicar';
       }
     });
   </script>
@@ -121,3 +162,56 @@ const formatter = new Intl.DateTimeFormat("es-MX", { day: "numeric", month: "sho
     </div>
   )}
 </AdminLayout>
+
+<style>
+  .deploy-dialog {
+    margin: auto;
+    width: min(440px, calc(100vw - 2rem));
+    padding: 0;
+    border: 0;
+    border-radius: 14px;
+    background: #fff;
+    color: var(--color-ink-950);
+    box-shadow: 0 24px 60px -12px rgb(6 10 10 / 45%);
+  }
+
+  .deploy-dialog::backdrop {
+    background: rgb(6 10 10 / 55%);
+    backdrop-filter: blur(2px);
+  }
+
+  .deploy-dialog__body {
+    padding: 1.5rem;
+  }
+
+  .deploy-dialog h2 {
+    margin: 0 0 0.5rem;
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    letter-spacing: -0.01em;
+  }
+
+  .deploy-dialog p {
+    margin: 0 0 0.75rem;
+    font-size: 0.9rem;
+    line-height: 1.55;
+    color: var(--color-ink-500);
+  }
+
+  .deploy-dialog .deploy-dialog__note {
+    padding: 0.5rem 0.75rem;
+    border-left: 3px solid var(--color-teal-600);
+    border-radius: 6px;
+    background: var(--color-ink-50);
+    color: var(--color-ink-700);
+    font-size: 0.85rem;
+  }
+
+  .deploy-dialog__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-top: 1.25rem;
+  }
+</style>

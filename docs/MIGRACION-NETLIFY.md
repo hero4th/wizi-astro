@@ -146,7 +146,7 @@ completo. Plan **Free** probablemente suficiente para el tráfico actual
 | 4 | `netlify.toml` + `public/_headers` | Traducir CSP/HSTS/X-Frame-Options/Referrer-Policy/Permissions-Policy y el `Cache-Control` de `/_astro/*`. |
 | 5 | `src/lib/auth.ts` | `clientIp()` → leer `x-nf-client-connection-ip` (fallback a `x-forwarded-for`). |
 | 6 | WordPress (mu-plugin) | Sustituir el Deploy Hook de Vercel por un **Build Hook** de Netlify. |
-| 7 | Env vars | `DATABASE_URL`, `SESSION_SECRET`, `ADMIN_PASSWORD_HASH`, `SMTP_USER`, `SMTP_PASS`, `PUBLIC_*`. |
+| 7 | Env vars | `DATABASE_URL`, `DATABASE_URL_UNPOOLED`, `SESSION_SECRET`, `SMTP_USER`, `SMTP_PASS`, `CONTACT_TO`, `NETLIFY_BUILD_HOOK_URL`, `PUBLIC_*`. |
 | 8 | Datos | Migrar las imágenes ya subidas a Vercel Blob hacia Netlify Blobs (o dejarlas accesibles durante la transición). |
 
 > No hace falta `src/middleware.ts`: las cabeceras se resuelven en la config de
