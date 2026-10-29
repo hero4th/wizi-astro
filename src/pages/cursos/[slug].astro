@@ -612,12 +612,18 @@ const schema = [
           const el = form.querySelector(`[name="${name}"]`);
           el?.setAttribute("aria-invalid", "true");
           el?.focus();
-          if (status) status.textContent = msg;
+          if (status) {
+            status.style.color = "";
+            status.textContent = msg;
+          }
         };
         if (nombre.length < 2) return setError("nombre", "Escribe tu nombre para continuar.");
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) return setError("correo", "Escribe un correo válido.");
         form.querySelectorAll("[aria-invalid]").forEach((el) => el.removeAttribute("aria-invalid"));
-        if (status) status.textContent = "Enviando mensaje…";
+        if (status) {
+          status.style.color = "";
+          status.textContent = "Enviando mensaje…";
+        }
         if (isSat) {
           if (form.dataset.submitting === "true") return;
           form.dataset.submitting = "true";
@@ -652,28 +658,63 @@ const schema = [
           });
           return;
         }
-        
+
+        if (form.dataset.submitting === "true") return;
+        form.dataset.submitting = "true";
+        const submitBtn = form.querySelector('button[type="submit"]');
+        if (submitBtn) submitBtn.disabled = true;
+
+        const msg = [
+          `Hola, me llamo ${nombre}.`,
+          `Quiero informes del curso ${exam}.`,
+          correo ? `Mi correo: ${correo}` : null,
+          telefono ? `Mi teléfono: ${telefono}` : null,
+        ].filter(Boolean).join("\n");
+
+        const openWhatsApp = () => {
+          window.open(`https://wa.me/${whatsapp}?text=${encodeURIComponent(msg)}`, "_blank", "noopener,noreferrer");
+        };
+
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 15000);
+
         fetch("/api/contact", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
+          signal: controller.signal,
           body: JSON.stringify({ nombre, correo, telefono, curso: exam, fromUrl: window.location.href }),
-        }).finally(() => {
-          if (status) {
-            status.innerHTML = `¡Mensaje enviado perfectamente! <br/><span class="text-xs text-teal-400/80 mt-1 block">Abriendo WhatsApp en 5 segundos...</span>`;
-          }
-          const msg = [
-            `Hola, me llamo ${nombre}.`,
-            `Quiero informes del curso ${exam}.`,
-            correo ? `Mi correo: ${correo}` : null,
-            telefono ? `Mi teléfono: ${telefono}` : null,
-          ].filter(Boolean).join("\n");
-          window.dataLayer?.push({ event: "generate_lead", lead_exam: exam });
-          
-          setTimeout(() => {
-            if (status) status.innerHTML = "¡Mensaje enviado perfectamente!";
-            window.open(`https://wa.me/${whatsapp}?text=${encodeURIComponent(msg)}`, "_blank", "noopener,noreferrer");
-          }, 5000);
-        });
+        })
+          .then(async (response) => {
+            if (!response.ok) {
+              const payload = await response.json().catch(() => ({}));
+              throw new Error(payload.error || "No se pudo enviar el mensaje.");
+            }
+
+            if (status) {
+              status.style.color = "";
+              status.innerHTML = `¡Mensaje enviado perfectamente! <br/><span class="text-xs text-teal-400/80 mt-1 block">Abriendo WhatsApp en 5 segundos...</span>`;
+            }
+            window.dataLayer?.push({ event: "generate_lead", lead_exam: exam });
+
+            setTimeout(() => {
+              if (status) status.innerHTML = "¡Mensaje enviado perfectamente!";
+              openWhatsApp();
+            }, 5000);
+          })
+          .catch((error) => {
+            // Nunca mostrar un éxito falso: si el correo falla, seguimos por WhatsApp.
+            console.error("[contact] No se pudo enviar el formulario:", error);
+            if (status) {
+              status.style.color = "#fca5a5";
+              status.innerHTML = `No pudimos enviar el correo. <br/><span class="text-xs opacity-80 mt-1 block">Te abrimos WhatsApp para no perder tu mensaje.</span>`;
+            }
+            setTimeout(openWhatsApp, 1500);
+          })
+          .finally(() => {
+            clearTimeout(timeout);
+            form.dataset.submitting = "false";
+            if (submitBtn) submitBtn.disabled = false;
+          });
       });
     }
   }
