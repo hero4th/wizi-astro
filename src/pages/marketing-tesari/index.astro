@@ -1,0 +1,100 @@
+---
+import Base from "@/layouts/Base.astro";
+import { SITE } from "@/data/site";
+import { breadcrumbSchema } from "@/lib/schema";
+---
+
+<Base
+  title="Tesari Marketing | Herramienta interna de planeación publicitaria"
+  description="Tesari Marketing es una herramienta interna para planear campañas publicitarias. Conoce su alcance, su funcionamiento previsto y su política de privacidad."
+  schema={[breadcrumbSchema([
+    { name: "Inicio", url: SITE.url },
+    { name: "Tesari Marketing", url: `${SITE.url}/marketing-tesari` },
+  ])]}
+  stickyCta={false}
+>
+  <article class="pt-36 pb-24">
+    <div class="container-edge">
+      <header class="mx-auto max-w-2xl">
+        <p class="font-mono text-[11px] tracking-[0.22em] uppercase text-teal-700">Herramienta interna</p>
+        <h1 class="mt-4 font-display text-3xl leading-tight font-semibold tracking-tight text-balance sm:text-5xl">
+          Tesari Marketing
+        </h1>
+        <p class="mt-5 text-lg leading-relaxed text-ink-500">
+          Una herramienta interna para planear campañas propias.
+        </p>
+      </header>
+
+      <div class="mx-auto mt-14 max-w-2xl space-y-12">
+        <section>
+          <h2 class="border-l-2 border-teal-500 pl-4 font-display text-xl font-semibold tracking-tight sm:text-2xl">
+            Herramienta interna de Tesari Marketing
+          </h2>
+          <p class="mt-4 text-[15px] leading-relaxed text-ink-500">
+            Tesari Marketing es una herramienta interna para planear publicidad.
+            El acceso está limitado al propietario autorizado, sin registro
+            público ni acceso para clientes.
+          </p>
+          <p class="mt-4 text-[15px] leading-relaxed text-ink-500">
+            La herramienta se utiliza en un entorno local. Las consultas de
+            Google Analytics 4 y Google Search Console están disponibles; la
+            ampliación con Google Ads, Keyword Planner y Claude descrita a
+            continuación está prevista y no se presenta como un servicio online
+            ya activo.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="border-l-2 border-teal-500 pl-4 font-display text-xl font-semibold tracking-tight sm:text-2xl">
+            Cómo se prevé que funcione
+          </h2>
+          <p class="mt-4 text-[15px] leading-relaxed text-ink-500">
+            Además de consultar métricas de Google Analytics 4 y Google Search
+            Console, al solicitar un análisis de una dirección pública, Tesari
+            Marketing podrá examinar el contenido de la página y consultar ideas
+            de palabras clave de Google Keyword Planner para los países
+            configurados. Claude de Anthropic podrá ayudar a organizar el
+            contexto y las oportunidades a partir de fechas, métricas agregadas
+            y variaciones autorizadas, sin recibir las direcciones ni el
+            contenido público extraído. Las fuentes y fechas se mostrarán para
+            revisión; la información incompleta y las hipótesis se identificarán
+            como tales. Analizar una sola página no garantiza cubrir todo el
+            catálogo de un sitio.
+          </p>
+          <p class="mt-4 text-[15px] leading-relaxed text-ink-500">
+            La autorización de Google Ads permite consultar y gestionar anuncios
+            según el rol de la cuenta. Tesari Marketing prevé utilizar consultas
+            para planificación y no crea, activa, pausa ni modifica campañas o
+            presupuestos.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="border-l-2 border-teal-500 pl-4 font-display text-xl font-semibold tracking-tight sm:text-2xl">
+            Privacidad y contacto
+          </h2>
+          <p class="mt-4 text-[15px] leading-relaxed text-ink-500">
+            Consulta la{" "}
+            <a
+              href="/marketing-tesari/privacidad/"
+              class="text-teal-700 underline underline-offset-2"
+            >política de privacidad específica de Tesari Marketing</a>. Para preguntas sobre la herramienta y el tratamiento de datos:{" "}
+            <a
+              href={`mailto:${SITE.email}`}
+              class="text-teal-700 underline underline-offset-2"
+            >{SITE.email}</a>.
+          </p>
+        </section>
+
+        <p class="hairline-t pt-8">
+          <a
+            href="/marketing-tesari/privacidad/"
+            class="text-[15px] font-medium text-teal-700 underline underline-offset-2"
+          >
+            Política de privacidad de Tesari Marketing
+          </a>
+        </p>
+      </div>
+    </div>
+  </article>
+</Base>
