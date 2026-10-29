@@ -9,11 +9,23 @@ import tailwindcss from "@tailwindcss/vite";
 import legacyBlogSlugs from "./src/data/legacy-redirects.mjs";
 import recoveredBlogRedirects from "./src/data/recovered-blog-redirects.mjs";
 
-// 301 redirects: old WordPress permalinks (/slug) → new Astro blog URLs (/blog/slug).
+// 301 redirects: old WordPress permalinks (/slug) → new Astro blog URLs (/blog/slug/).
 // Preserves SEO for the posts already indexed at the root of proacademymx.com.
-const legacyRedirects = { ...recoveredBlogRedirects, ...Object.fromEntries(
-  legacyBlogSlugs.map((slug) => [`/${slug}`, `/blog/${slug}`])
-)};
+// Targets use the trailing slash that Netlify serves with 200, so old URLs
+// resolve in a single hop instead of chaining two 301s.
+const finalUrl = (target) =>
+  target.startsWith("/") && !target.endsWith("/") && !/\.[a-z0-9]+$/i.test(target)
+    ? `${target}/`
+    : target;
+
+const legacyRedirects = {
+  ...Object.fromEntries(
+    Object.entries(recoveredBlogRedirects).map(([from, to]) => [from, finalUrl(to)])
+  ),
+  ...Object.fromEntries(
+    legacyBlogSlugs.map((slug) => [`/${slug}`, `/blog/${slug}/`])
+  ),
+};
 
 // https://astro.build/config
 export default defineConfig({
@@ -49,11 +61,14 @@ export default defineConfig({
       },
       changefreq: "weekly",
       priority: 0.7,
-      // Canonicals are slash-free; keep the sitemap pointing at the same URLs
-      // instead of at 301 redirects.
+      // Netlify's pretty URLs serve each page as `/ruta/` (200) and redirect
+      // `/ruta` to it with a 301. The sitemap and canonicals must list the URL
+      // that returns 200, not the redirect.
       serialize(item) {
         const { pathname } = new URL(item.url);
-        if (pathname !== "/") item.url = item.url.replace(/\/$/, "");
+        if (pathname !== "/") {
+          item.url = `${item.url.replace(/\/+$/, "")}/`;
+        }
         return item;
       },
     }),

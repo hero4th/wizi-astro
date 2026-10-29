@@ -36,5 +36,40 @@
   force = true
 
 # Do not add trailing-slash redirects for the static blog: Netlify's pretty
-# URLs already normalize /blog to /blog/, and a rule for "/blog/" also matches
-# "/blog" (causing a self-redirect loop). Canonical tags stay slash-free.
+# URLs already normalize /blog to /blog/ and serve the slash version as 200.
+# Canonicals and the sitemap point to that slash version (the real 200 URL).
+
+# Legacy sitemap URLs left over from the old WordPress site. They currently
+# return 404, which is why Google Search Console kept the old entries in red
+# ("No se ha podido obtener") with a last-read date from July. Redirect them to
+# the current Astro sitemap so any old entry (and any external reference) can
+# be reprocessed instead of failing.
+[[redirects]]
+  from = "/sitemap_index.xml"
+  to = "/sitemap-index.xml"
+  status = 301
+
+[[redirects]]
+  from = "/wp-sitemap.xml"
+  to = "/sitemap-index.xml"
+  status = 301
+
+[[redirects]]
+  from = "/sitemap.xml"
+  to = "/sitemap-index.xml"
+  status = 301
+
+[[redirects]]
+  from = "/page-sitemap.xml"
+  to = "/sitemap-index.xml"
+  status = 301
+
+[[redirects]]
+  from = "/post-sitemap.xml"
+  to = "/sitemap-index.xml"
+  status = 301
+
+[[redirects]]
+  from = "/category-sitemap.xml"
+  to = "/sitemap-index.xml"
+  status = 301

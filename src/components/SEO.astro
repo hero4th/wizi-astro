@@ -30,15 +30,24 @@ const canonical = normalizeCanonical(canonicalUrl ?? Astro.url.pathname);
 const ogImageAbs = new URL(ogImage, Astro.site).href;
 const graph = jsonLd(organizationSchema(), websiteSchema(), ...schema);
 
-/** Canonicals must be unique: apex host, no query/hash and no trailing slash. */
+/**
+ * Canonicals must be unique: apex host, no query/hash and exactly one trailing
+ * slash on every non-root path. Netlify serves the directory index as
+ * `/ruta/` (200) and 301s `/ruta` to it, so the canonical must match the URL
+ * that actually returns 200.
+ */
 function normalizeCanonical(value: string): string {
+  const site = new URL(SITE.url);
   const url = new URL(value, Astro.site);
   if (/(^|\.)proacademymx\.com$/i.test(url.hostname)) {
-    const site = new URL(SITE.url);
     url.protocol = site.protocol;
     url.host = site.host;
   }
-  if (url.pathname !== "/") url.pathname = url.pathname.replace(/\/+$/, "");
+  // Only same-site canonicals follow Netlify's pretty-URL form. External
+  // canonicals (content republished elsewhere) are left as provided.
+  if (url.host === site.host && url.pathname !== "/") {
+    url.pathname = `${url.pathname.replace(/\/+$/, "")}/`;
+  }
   url.search = "";
   url.hash = "";
   return url.href;
