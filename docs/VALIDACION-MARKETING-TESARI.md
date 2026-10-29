@@ -2,8 +2,8 @@
 
 **Fecha:** 2026-10-29
 **Rutas:** `/marketing-tesari/` y `/marketing-tesari/privacidad/`
-**Entorno validado:** build local (Astro) y servidor de desarrollo
-**Estado:** contenido y SEO validados en local. **Pendiente de publicación en producción y solicitud de indexación en Google Search Console.**
+**Entorno validado:** build local (Astro), servidor de desarrollo y producción (Netlify)
+**Estado:** publicadas y validadas en producción. Único pendiente: solicitud de indexación en Google Search Console (manual).
 
 ---
 
@@ -45,12 +45,26 @@
 | Sitemap XML | ✅ `sitemap-0.xml` incluye la URL con `/` final | ✅ incluida |
 | Acceso sin autenticación | ✅ página estática | ✅ página estática |
 
-## 4. Build
+## 4. Build y producción
 
 - `npm run build`: correcto; genera `dist/marketing-tesari/index.html` y `dist/marketing-tesari/privacidad/index.html`.
 - `npm run check`: 0 errores, 0 warnings.
 - Ambas rutas responden **HTTP 200** en el servidor local.
 - Consola del navegador: solo errores de red de Google Analytics por el túnel local; sin errores de renderizado.
+
+Producción (Netlify, tras el deploy de `main`):
+
+| Comprobación | Resultado |
+| --- | --- |
+| `https://proacademymx.com/marketing-tesari/` | **200** |
+| `https://proacademymx.com/marketing-tesari/privacidad/` | **200** |
+| `/marketing-tesari` (sin `/`) | **301** → `/marketing-tesari/` |
+| Canonical en HTML servido | Correcto y con `/` final en ambas |
+| `meta robots` / `X-Robots-Tag` | Ausentes: indexables |
+| `sitemap-0.xml` | Incluye ambas URLs (124 URLs en total) |
+| `robots.txt` | `Allow: /`, sin bloqueo para estas rutas |
+| Enlaces entre páginas | Presentes en el HTML servido |
+| Blog tras el deploy | 73 artículos con 73 `og:image` únicas |
 
 ## 5. Accesibilidad (Lighthouse)
 
@@ -63,14 +77,24 @@ Corrección aplicada: los enlaces y el *eyebrow* usaban `teal-400` sobre fondo c
 
 Único hallazgo restante: el texto legal del footer compartido (`text-ink-400` sobre `#060a0a`, contraste 3.57:1) no alcanza 4.5:1. Es un problema previo del componente `Footer.astro` que afecta a todo el sitio, no a estas páginas.
 
-## 6. Pendientes para cerrar los criterios de aceptación
+## 6. Estado de los criterios de aceptación
 
-| Pendiente | Motivo |
+| Criterio | Estado |
 | --- | --- |
-| **Publicar en producción** | Hoy `https://proacademymx.com/marketing-tesari/` y `/marketing-tesari/privacidad/` responden **404**: los cambios no se han commiteado ni desplegado. |
-| **Solicitar indexación en Google Search Console** | Requiere acceso a la propiedad y acción manual; no se puede automatizar desde el repositorio. |
-| **Enlazar las páginas desde el sitio** | Actualmente solo se enlazan entre sí; no hay enlaces desde otras páginas (son huérfanas y dependen del sitemap para su descubrimiento). |
-| **Validar en producción** | Repetir las comprobaciones de canonical, sitemap y HTTP 200 una vez desplegado. |
+| Página principal creada y publicada | ✅ Publicada en `https://proacademymx.com/marketing-tesari/` |
+| Página de privacidad creada y publicada | ✅ Publicada en `https://proacademymx.com/marketing-tesari/privacidad/` |
+| Contenido y distinción disponible/previsto | ✅ |
+| Enlaces funcionales entre páginas y externos | ✅ |
+| Accesibles públicamente con URL propia | ✅ |
+| Metadatos, canonical y ausencia de bloqueos | ✅ |
+| Inclusión en sitemap XML | ✅ |
+| Solicitud de indexación en Search Console | ⏳ Manual, pendiente de acceso a la propiedad |
+
+### Opcionales no incluidos
+
+- Enlazar las páginas desde otras rutas del sitio (p. ej. `/mapa-del-sitio`); hoy solo se enlazan entre sí y el sitemap es su vía de descubrimiento.
+- Corregir el contraste del footer compartido, que afecta a todo el sitio.
+- Imagen social específica y `lastmod` en el sitemap.
 
 ## 7. Limitaciones
 
