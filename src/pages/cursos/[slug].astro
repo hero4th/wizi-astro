@@ -2,8 +2,11 @@
 import { Icon } from "astro-icon/components";
 import Base from "@/layouts/Base.astro";
 import FAQList from "@/components/FAQList.astro";
+import HourPricePicker from "@/components/HourPricePicker.astro";
+import { PAA_HOUR_PACKAGES, PAA_ESSENTIAL_PRICE_MXN } from "@/data/hour-packages";
 import { PROGRAMS } from "@/data/programs";
 import { SITE } from "@/data/site";
+import { TESTIMONIALS } from "@/data/testimonials";
 import { breadcrumbSchema, courseSchema, faqSchema } from "@/lib/schema";
 
 export function getStaticPaths() {
@@ -15,6 +18,8 @@ export function getStaticPaths() {
 
 const { program } = Astro.props;
 const isSat = program.slug === "sat";
+const isPaa = program.slug === "paa";
+const isDecoupled = isSat || isPaa;
 
 const priceFormatted = new Intl.NumberFormat("es-MX", {
   style: "currency",
@@ -22,12 +27,19 @@ const priceFormatted = new Intl.NumberFormat("es-MX", {
   maximumFractionDigits: 0,
 }).format(program.priceMXN);
 
-const stats = [
-  { value: program.sessions, label: "sesiones de clase" },
-  { value: program.exercises, label: "ejercicios prácticos", prefix: "+" },
-  { value: program.evaluations, label: "evaluaciones completas" },
-  { value: program.hours, label: "horas grabadas en HD", prefix: "+" },
-];
+const stats = isPaa
+  ? [
+      { text: "Clase 1 a 1", label: "Lecciones personalizadas" },
+      { value: 5000, prefix: "+", label: "Ejercicios prácticos" },
+      { value: 20, label: "Evaluaciones completas" },
+      { value: 150, prefix: "+", label: "Puntos garantizados" },
+    ]
+  : [
+      { value: program.sessions, label: "sesiones de clase" },
+      { value: program.exercises, label: "ejercicios prácticos", prefix: "+" },
+      { value: program.evaluations, label: "evaluaciones completas" },
+      { value: program.hours, label: "horas grabadas en HD", prefix: "+" },
+    ];
 
 const featureIcons = ["ph:book-open", "ph:clipboard-text", "ph:graduation-cap", "ph:seal-check"];
 const examIcons = isSat
@@ -54,6 +66,16 @@ const benefits = program.benefits ?? [
   "Obtén el puntaje que necesitas… ¡garantizado!",
 ];
 
+// Beneficios laterales en sección de precios PAA (Figma)
+const paaPriceBenefits = [
+  "Recibe retroalimentación en clases 1 a 1",
+  "Estudia con materiales y simuladores actuales",
+  "Planes flexibles, cuando y donde quieras",
+  "Obtén el puntaje que necesitas... ¡garantizado!",
+];
+
+const paaTestimonials = TESTIMONIALS.filter((t) => t.program.toUpperCase() === "PAA");
+
 const schema = [
   courseSchema(program),
   faqSchema(program.faqs),
@@ -71,8 +93,8 @@ const schema = [
   <section class="course-hero relative overflow-hidden hairline-b-dim" style="background-color: rgb(6 10 10)">
     <div class="pointer-events-none absolute -right-32 top-0 h-[34rem] w-[34rem] rounded-full bg-teal-600/12 blur-[130px]" aria-hidden="true"></div>
 
-    <div class="container-edge relative pt-36 pb-16 lg:min-h-[44rem] lg:pb-0">
-      <div class="relative z-10 max-w-xl lg:max-w-[49%] lg:pt-12">
+    <div class:list={["container-edge relative pb-16", isPaa ? "pt-36 lg:pt-40 lg:min-h-[45rem] lg:pb-14" : "pt-36 lg:min-h-[42rem] lg:pb-0"]}>
+      <div class:list={["relative z-10", isPaa ? "max-w-2xl lg:max-w-[55%] xl:max-w-[58%] lg:pt-4" : "max-w-xl lg:max-w-[49%] lg:pt-12"]}>
         <nav aria-label="Ruta de navegación" class="font-mono text-[11px] tracking-[0.18em] text-ink-400 uppercase">
           <a href="/" class="transition-colors hover:text-teal-300">Inicio</a>
           <span aria-hidden="true"> / </span>
@@ -81,165 +103,174 @@ const schema = [
           <span class="text-teal-400">{program.exam}</span>
         </nav>
 
-        <h1 class="mt-6 font-display text-[clamp(2.75rem,5.6vw,4.5rem)] leading-[1.02] font-semibold tracking-[-0.03em] text-pearl" data-reveal-line>
-          <span class="line-mask"><span class="line-inner">Curso {program.exam}</span></span>
-          {program.slug === "paa" && (
-            <span class="line-mask"><span class="line-inner">College Board</span></span>
-          )}
-          <span class="line-mask"><span class="line-inner"><em class="font-display italic font-medium text-teal-400">¡garantizado!</em></span></span>
-        </h1>
-
-        <p class="mt-6 max-w-lg text-lg leading-relaxed text-ink-300" data-reveal>
-          {program.subheadline}
-        </p>
+        {isPaa ? (
+          <div class="mt-5">
+            <h1 class="font-display text-[clamp(2.5rem,5.2vw,4.25rem)] leading-[1.08] font-semibold tracking-[-0.03em] text-pearl">
+              Curso PAA<br />
+              College Board<br />
+              <span class="text-[#00cfab]">¡garantizado!</span>
+            </h1>
+            <p class="mt-6 max-w-lg text-[17px] leading-relaxed text-ink-300">
+              Clases en vivo 1 a 1, simuladores reales y profesores expertos para asegurar tu lugar en la UDG, El Tec de Monterrey y la UDEM.
+            </p>
+          </div>
+        ) : (
+          <div>
+            <h1 class="mt-6 font-display text-[clamp(2.75rem,5.6vw,4.5rem)] leading-[1.02] font-semibold tracking-[-0.03em] text-pearl" data-reveal-line>
+              <span class="line-mask"><span class="line-inner">Curso {program.exam}</span></span>
+              <span class="line-mask"><span class="line-inner"><em class="font-display italic font-medium text-teal-400">¡garantizado!</em></span></span>
+            </h1>
+            <p class="mt-6 max-w-lg text-lg leading-relaxed text-ink-300" data-reveal>
+              {program.subheadline}
+            </p>
+          </div>
+        )}
 
         <div class="mt-9 flex flex-wrap items-center gap-4" data-reveal>
-          <a href="/contacto" class="btn-primary !font-display !text-sm !font-bold !tracking-widest" data-magnetic data-event={`program_cta_${program.slug}`}>
-            Inscríbete ahora
+          <a href={isPaa ? "#precios" : "/contacto"} class="inline-flex items-center justify-center rounded-full bg-[#00cfab] px-8 py-3.5 font-display text-[13px] font-bold tracking-widest text-[#061713] transition-transform hover:scale-[1.02] shadow-md uppercase" data-magnetic data-event={`program_cta_${program.slug}`}>
+            {isPaa ? "VER PAQUETES" : "Inscríbete ahora"}
           </a>
-          <a href={program.slug === "toefl-ibt" ? "/Diagn%C3%B3stico%20TOEFL%20IBT%20de%20Proacademy.pdf" : "/contacto"} target={program.slug === "toefl-ibt" ? "_blank" : undefined} rel={program.slug === "toefl-ibt" ? "noopener noreferrer" : undefined} class="btn-ghost-dark !font-display !text-sm !font-bold !tracking-widest" data-magnetic>
-            Diagnóstico gratis
+          <a href={isPaa ? "#contacto" : program.slug === "toefl-ibt" ? "/Diagn%C3%B3stico%20TOEFL%20IBT%20de%20Proacademy.pdf" : "/contacto"} target={program.slug === "toefl-ibt" ? "_blank" : undefined} rel={program.slug === "toefl-ibt" ? "noopener noreferrer" : undefined} class="inline-flex items-center justify-center rounded-full bg-[#121c19] border border-white/10 px-8 py-3.5 font-display text-[13px] font-bold tracking-widest text-pearl transition-colors hover:bg-white/10 uppercase" data-magnetic>
+            {isPaa ? "HAZ TU DIAGNÓSTICO GRATIS" : "Diagnóstico gratis"}
           </a>
         </div>
       </div>
 
       {program.heroImage && (
-        <img
-          src={program.heroImage.src}
-          alt={`Plataforma de práctica ${program.exam}`}
-          width={program.heroImage.width}
-          height={program.heroImage.height}
-          loading="eager"
-          fetchpriority="high"
-          decoding="sync"
-          class:list={[
-            "course-hero-image pointer-events-none mx-auto mt-12 w-full drop-shadow-2xl lg:absolute lg:bottom-0 lg:mx-0 lg:mt-0",
-            program.slug === 'sat' || program.slug === 'gmat'
-              ? "max-w-4xl lg:right-[calc(50%-53vw)] lg:w-[78%] lg:max-w-[1350px]"
-              : "max-w-2xl lg:right-[calc(50%-50vw)] lg:w-[65%] lg:max-w-[1100px]"
-          ]}
-        />
+        <div class:list={[
+          "course-hero-image-wrapper pointer-events-none mx-auto mt-12 w-full lg:absolute lg:mx-0 lg:mt-0",
+          isPaa
+            ? "max-w-xl sm:max-w-2xl lg:right-0 xl:right-4 lg:bottom-0 lg:w-[54%] lg:max-w-[720px] xl:max-w-[760px]"
+            : program.slug === 'sat' || program.slug === 'gmat'
+              ? "course-hero-image max-w-4xl lg:right-[calc(50%-53vw)] lg:bottom-0 lg:w-[78%] lg:max-w-[1350px]"
+              : "course-hero-image max-w-2xl lg:right-[calc(50%-50vw)] lg:bottom-0 lg:w-[65%] lg:max-w-[1100px]"
+        ]}>
+          {isPaa && (
+            <div class="absolute -top-7 -left-7 sm:-top-9 sm:-left-9 lg:-top-11 lg:-left-11 z-20 size-40 sm:size-48 lg:size-52 select-none -rotate-6 filter drop-shadow-[0_14px_26px_rgba(0,0,0,0.55)]">
+              <svg viewBox="0 0 200 200" class="size-full font-display" aria-hidden="true">
+                <defs>
+                  <linearGradient id="paaSealGrad" x1="15%" y1="10%" x2="85%" y2="90%">
+                    <stop offset="0%" stop-color="#09695b" />
+                    <stop offset="55%" stop-color="#0b7f6e" />
+                    <stop offset="100%" stop-color="#0f8d79" />
+                  </linearGradient>
+                  <path id="paaSealWave" d="M 182.00 100.00 Q 199.10 126.55 171.01 141.00 Q 172.55 172.55 141.00 171.01 Q 126.55 199.10 100.00 182.00 Q 73.45 199.10 59.00 171.01 Q 27.45 172.55 28.99 141.00 Q 0.90 126.55 18.00 100.00 Q 0.90 73.45 28.99 59.00 Q 27.45 27.45 59.00 28.99 Q 73.45 0.90 100.00 18.00 Q 126.55 0.90 141.00 28.99 Q 172.55 27.45 171.01 59.00 Q 199.10 73.45 182.00 100.00 Z" />
+                </defs>
+                <use href="#paaSealWave" fill="url(#paaSealGrad)" />
+                <use href="#paaSealWave" fill="none" stroke="#2dd4bf" stroke-width="1.35" opacity="0.85" transform="translate(100,100) scale(0.87) translate(-100,-100)" />
+                <text x="100" y="65" text-anchor="middle" fill="#a7f3d0" font-size="13.5" font-weight="600" letter-spacing="3">GARANTÍA</text>
+                <text x="100" y="109" text-anchor="middle" fill="#ffffff" font-size="38" font-weight="800" letter-spacing="-1">+150 <tspan font-size="13.5" font-weight="700" letter-spacing="0" dy="-2">pts</tspan></text>
+                <text x="100" y="135" text-anchor="middle" fill="#e6fffb" font-size="9" font-weight="500" opacity="0.95">sobre tu diagnóstico inicial</text>
+              </svg>
+            </div>
+          )}
+          <img
+            src={program.heroImage.src}
+            alt={isPaa ? "Garantía +150 pts sobre tu diagnóstico inicial - Prueba de práctica PAA College Board" : `Plataforma de práctica ${program.exam}`}
+            width={program.heroImage.width}
+            height={program.heroImage.height}
+            loading="eager"
+            fetchpriority="high"
+            decoding="sync"
+            class:list={[
+              "w-full drop-shadow-2xl rounded-2xl sm:rounded-3xl",
+              !isPaa && "course-hero-image"
+            ]}
+          />
+        </div>
       )}
     </div>
   </section>
 
   <!-- MÉTRICAS -->
-  <section class="hairline-b" aria-label="El programa en números">
+  <section class:list={["hairline-b", isPaa ? "course-metrics-paa" : ""]} aria-label="El programa en números">
     <div class="container-edge grid grid-cols-2 lg:grid-cols-4">
       {stats.map((s, i) => (
-        <div class:list={["px-6 py-9", i > 0 && "border-l border-ink-950/8", i >= 2 && "max-lg:border-t max-lg:border-ink-950/8", i === 2 && "max-lg:border-l-0"]} data-reveal>
+        <div class:list={["px-6 py-9", !isPaa && i > 0 && "border-l border-ink-950/8", !isPaa && i >= 2 && "max-lg:border-t max-lg:border-ink-950/8", !isPaa && i === 2 && "max-lg:border-l-0"]} data-reveal>
           <p class="font-display text-4xl font-semibold tracking-tight text-ink-950 sm:text-5xl">
-            {s.prefix && <span class="text-teal-600">{s.prefix}</span>}<span data-counter={isSat ? undefined : String(s.value)}>{s.value.toLocaleString("es-MX")}</span>
+            {s.prefix && <span class={isPaa ? "text-[#00cfab]" : "text-teal-600"}>{s.prefix}</span>}
+            {s.text ? (
+              <span>{s.text}</span>
+            ) : (
+              <span data-counter={isDecoupled ? undefined : String(s.value)}>{s.value?.toLocaleString("es-MX")}</span>
+            )}
           </p>
-          <p class="mt-2 font-mono text-[10px] tracking-[0.18em] text-ink-500 uppercase">{s.label}</p>
+          <p class:list={["mt-2 font-mono text-[10px] tracking-[0.18em] uppercase", isPaa ? "text-teal-200/60" : "text-ink-500"]}>{s.label}</p>
         </div>
       ))}
     </div>
   </section>
 
-  <!-- PREPARACIÓN ACADÉMICA -->
-  <section class="course-preparation py-24">
-    <div class="container-edge">
-      <h2 class="text-3xl sm:text-5xl" data-reveal>
-        Preparación académica <em class="accent-em">a tu medida.</em>
-      </h2>
-      <p class="mt-5 max-w-2xl text-base leading-relaxed text-ink-600" data-reveal>{academicIntro}</p>
+  {isPaa ? (
+    <!-- ======================================================== -->
+    <!-- SECUENCIA OFICIAL FIGMA PARA PAA                          -->
+    <!-- 1. DOMINA TU EXAMEN PAA (la chica + tabs)                -->
+    <!-- 2. PREPARACIÓN ACADÉMICA A TU MEDIDA (4 tarjetas)        -->
+    <!-- 3. ENTRENA COMO SI YA FUERA EL DÍA DEL EXAMEN (mockup)   -->
+    <!-- 4. LA MEJOR OPCIÓN PARA APROBAR (Precios 3 tarjetas)     -->
+    <!-- 5. ELLOS YA LOGRARON SU META (Testimonios PAA)           -->
+    <!-- 6. RESOLVEMOS TUS DUDAS (Laptop + FAQs)                  -->
+    <!-- ======================================================== -->
 
-      <div class="mt-12 grid gap-5 lg:grid-cols-12">
-        {program.features.map((f, i) => {
-          const isWide = i === 0 || i === program.features.length - 1;
-          const img = i === 0 ? program.guideImage : i === program.features.length - 1 ? program.guaranteeImage : undefined;
-          return (
-            <div class:list={["relative flex flex-col justify-center overflow-hidden rounded-3xl border border-ink-950/[0.06] bg-ink-50 p-6 sm:p-8", isWide ? "lg:col-span-7" : "lg:col-span-5"]} data-reveal>
-              <div class="relative z-10 max-w-sm lg:max-w-[17rem] xl:max-w-xs">
-                <div class="flex items-center gap-4">
-                  <span class="grid size-12 shrink-0 place-items-center rounded-full bg-teal-600 text-white">
-                    <Icon name={featureIcons[i] ?? "ph:check"} class="size-6" aria-hidden="true" />
-                  </span>
-                  <h3 class="font-display text-xl font-semibold tracking-tight text-ink-950">{f.title}</h3>
-                </div>
-                <p class="mt-4 text-[15px] leading-relaxed text-ink-600">{f.detail}</p>
-              </div>
-              {img && (
-                <img
-                  src={img}
-                  alt=""
-                  width="360"
-                  height="280"
-                  loading="lazy"
-                  decoding="async"
-                  class:list={[
-                    "pointer-events-none absolute object-contain opacity-30 transition-opacity sm:opacity-100",
-                    i === 0
-                      ? program.slug === 'paa'
-                        ? "-bottom-2 -right-2 w-28 sm:bottom-auto sm:right-6 sm:top-1/2 sm:w-32 sm:-translate-y-1/2 lg:right-8 lg:w-36"
-                        : "-bottom-6 -right-4 w-48 sm:bottom-auto sm:right-0 sm:top-1/2 sm:w-56 sm:-translate-y-1/2 lg:w-60"
-                      : "bottom-0 -right-4 w-64 sm:-right-2 sm:w-80 lg:w-96"
-                  ]}
-                  aria-hidden="true"
-                />
-              )}
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  </section>
+    <!-- 1. DOMINA TU EXAMEN PAA, TODAS LAS SECCIONES (oscuro) -->
+    <section class="course-sections relative overflow-hidden pt-12 pb-16 hairline-t-dim" style="background-color: rgb(8 13 13)" aria-label="Secciones del examen PAA">
+      <div class="pointer-events-none absolute -left-40 top-0 h-[40rem] w-[40rem] rounded-full bg-[#0a1f1c] blur-[60px]" aria-hidden="true"></div>
 
-  <!-- DOMINA TU EXAMEN (oscuro) -->
-  <section class="course-sections relative overflow-hidden pt-12 pb-8 hairline-t-dim" style="background-color: rgb(8 13 13)" aria-label={`Secciones del examen ${program.exam}`}>
-    <!-- Fondo abstracto -->
-    <div class="pointer-events-none absolute -left-40 top-0 h-[40rem] w-[40rem] rounded-full bg-[#0a1f1c] blur-[60px]" aria-hidden="true"></div>
+      <div class="container-edge grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-12 items-end">
+        <!-- Columna izquierda: Figura verde orgánica + Chica + Check (Figma) -->
+        <div class="relative flex items-end justify-center self-end min-h-[380px] sm:min-h-[460px] lg:min-h-[540px]" data-reveal>
+          <!-- Figura orgánica en verde esmeralda oscuro detrás de la chica -->
+          <div class="pointer-events-none absolute inset-x-0 bottom-0 top-10 sm:top-14 overflow-hidden rounded-t-[3.5rem] sm:rounded-t-[4.5rem] bg-gradient-to-b from-[#0c2f27] via-[#08201a] to-[#061411] border-t border-l border-teal-400/20 shadow-2xl">
+            <svg viewBox="0 0 460 480" class="absolute inset-0 size-full opacity-60" fill="none" preserveAspectRatio="none">
+              <path d="M 0 160 C 40 80, 120 10, 240 6 C 360 2, 430 40, 460 70 L 460 480 L 0 480 Z" fill="url(#paaGirlBackdropGrad)" />
+              <defs>
+                <linearGradient id="paaGirlBackdropGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#144d3f" stop-opacity="0.8" />
+                  <stop offset="60%" stop-color="#0a2620" stop-opacity="0.5" />
+                  <stop offset="100%" stop-color="#061613" stop-opacity="0.2" />
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
 
-    {isSat && <div class="sat-study-art" aria-hidden="true"><span><Icon name="ph:check" /></span></div>}
-    <!-- Imagen Desktop (pegada a pantalla) -->
-    {program.skillsImage && (
-      <img
-        src={program.skillsImage}
-        alt={`Estudiantes preparándose para el ${program.exam}`}
-        width="1100"
-        height="1093"
-        loading="lazy"
-        decoding="async"
-        class:list={[
-          "pointer-events-none absolute left-0 z-10 hidden object-contain object-bottom lg:block",
-          program.slug === 'paa' ? "h-[92%] w-auto left-[-50px] bottom-[-12px]" : "bottom-0 w-[50vw] max-w-[950px] 2xl:w-[45vw]"
-        ]}
-        style="mask-image: linear-gradient(to right, black 75%, transparent 100%), linear-gradient(to top, black 80%, transparent 100%); mask-composite: intersect; -webkit-mask-image: linear-gradient(to right, black 75%, transparent 100%), linear-gradient(to top, black 80%, transparent 100%); -webkit-mask-composite: source-in;"
-        data-reveal
-      />
-    )}
+          <!-- Badge flotante check circular verde como en Figma -->
+          <div class="absolute left-4 sm:left-8 top-[36%] z-20 size-11 sm:size-12 rounded-full bg-[#00cfab] flex items-center justify-center shadow-[0_0_25px_rgba(0,207,171,0.5)] border border-teal-300/40">
+            <Icon name="ph:check" class="size-6 text-white stroke-[3]" />
+          </div>
 
-    <div class="container-edge grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
-      <div class="self-end lg:-ml-12 xl:-ml-24" data-reveal>
-        {program.skillsImage ? (
-          <img src={program.skillsImage} alt={`Estudiantes preparándose para el ${program.exam}`} width="1100" height="1093" loading="lazy" decoding="async" class="relative z-10 mx-auto w-full max-w-md object-contain object-bottom lg:hidden" style="mask-image: linear-gradient(to top, black 85%, transparent 100%); -webkit-mask-image: linear-gradient(to top, black 85%, transparent 100%);" />
-        ) : (
-          <div class="pointer-events-none aspect-square rounded-3xl bg-gradient-to-br from-teal-500/15 to-transparent lg:hidden" aria-hidden="true"></div>
-        )}
-      </div>
+          <!-- Estudiante sentada con tablet -->
+          <img
+            src={program.skillsImage}
+            alt="Estudiante preparándose para la PAA"
+            width="812"
+            height="745"
+            loading="lazy"
+            decoding="async"
+            class="relative z-10 w-full max-w-[420px] sm:max-w-[480px] lg:max-w-[520px] object-contain object-bottom drop-shadow-xl"
+          />
+        </div>
 
-      <div class="course-exam-details relative z-10 lg:pt-10 lg:pb-6" data-reveal>
-        <h2 class="font-display text-4xl font-semibold leading-[1.05] tracking-tight text-pearl sm:text-5xl">
-          {isSat ? "Domina tu examen" : "Domina tu examen."}<br />
-          <em class="font-display italic font-medium text-teal-400">Todas las secciones.</em>
-        </h2>
-        <p class="mt-5 max-w-lg text-base leading-relaxed text-ink-300">
-          {isSat ? "Cada sección de la prueba evalúa tu razonamiento y habilidades académicas esenciales. Nuestro plan ataca las áreas clave con una estrategia enfocada en mejorar tu puntaje." : "Cada sección del examen es una habilidad distinta. Tu plan ataca las cuatro con un enfoque y ejercicios específicos."}
-        </p>
+        <!-- Columna de Tabs a la derecha -->
+        <div class="course-exam-details relative z-10 lg:pt-8 lg:pb-6" data-reveal>
+          <h2 class="font-display text-4xl font-semibold leading-[1.05] tracking-tight text-pearl sm:text-5xl">
+            Domina tu examen PAA,<br />
+            <span class="text-[#00cfab]">todas las secciones.</span>
+          </h2>
+          <p class="mt-5 max-w-lg text-base leading-relaxed text-ink-300">
+            Trabaja las habilidades exactas que evalúa el temario de la PAA, utilizando estrategias prácticas para resolver con precisión y velocidad cada reactivo.
+          </p>
 
-        {program.examSections ? (
           <div class="mt-8" data-exam-tabs>
-            <div class="flex gap-1.5 rounded-[2rem] border border-white/5 bg-[#0b1613]/50 p-2" role="tablist" aria-label="Secciones del examen">
-              {program.examSections.map((s, i) => (
+            <div class="flex gap-1.5 rounded-[2rem] border border-white/5 bg-[#0b1613]/50 p-2" role="tablist" aria-label="Secciones del examen PAA">
+              {program.examSections?.map((s, i) => (
                 <button
                   type="button"
                   role="tab"
                   class="exam-tab flex flex-1 items-center justify-center gap-2 rounded-full px-2 py-2.5 font-display text-sm font-semibold text-ink-400 transition-all border border-transparent"
                   data-exam-tab
                   data-index={i}
-                  id={`exam-tab-${program.slug}-${i}`}
-                  aria-controls={`exam-panel-${program.slug}-${i}`}
+                  id={`exam-tab-paa-${i}`}
+                  aria-controls={`exam-panel-paa-${i}`}
                   tabindex={i === 0 ? 0 : -1}
                   aria-selected={i === 0 ? "true" : "false"}
                 >
@@ -249,13 +280,13 @@ const schema = [
               ))}
             </div>
 
-            {program.examSections.map((s, i) => (
-              <div class="exam-panel mt-4 flex min-h-[35rem] flex-col justify-between overflow-hidden rounded-[1.5rem] border border-white/[0.04] bg-transparent backdrop-blur-xl shadow-2xl shadow-black/20 sm:min-h-[32rem]" data-exam-panel data-index={i} id={`exam-panel-${program.slug}-${i}`} role="tabpanel" aria-labelledby={`exam-tab-${program.slug}-${i}`} tabindex="0" hidden={i !== 0}>
+            {program.examSections?.map((s, i) => (
+              <div class="exam-panel mt-4 flex min-h-[35rem] flex-col justify-between overflow-hidden rounded-[1.5rem] border border-white/[0.04] bg-transparent backdrop-blur-xl shadow-2xl shadow-black/20 sm:min-h-[32rem]" data-exam-panel data-index={i} id={`exam-panel-paa-${i}`} role="tabpanel" aria-labelledby={`exam-tab-paa-${i}`} tabindex="0" hidden={i !== 0}>
                 <!-- Mitad superior azul/turquesa -->
                 <div class="flex flex-1 flex-col justify-between bg-[#172c26]/75 p-7 sm:p-8">
                   <div>
                     <h3 class="font-display text-2xl font-semibold tracking-tight text-pearl sm:text-[1.7rem]">
-                      {s.name} {s.label && <span class="font-body text-[1.125rem] font-normal text-pearl/80">— {s.label}</span>}
+                      {s.name}
                     </h3>
                     <p class="mt-3.5 max-w-2xl text-[15px] leading-relaxed text-pearl/70">{s.description}</p>
                   </div>
@@ -267,9 +298,9 @@ const schema = [
                     </div>
                     <div>
                       <p class="font-mono text-[9px] font-bold tracking-[0.2em] text-pearl/40 uppercase">Puntaje de sección</p>
-                      <p class="mt-1 font-display text-[17px] font-semibold text-teal-400">
+                      <p class="mt-1 font-display text-[17px] font-semibold text-[#00cfab]">
                         {s.scoreRange} 
-                        <span class="text-[13px] font-normal text-pearl/40 ml-1">{isSat ? "puntos" : `(escala ${program.scoreScale})`}</span>
+                        <span class="text-[13px] font-normal text-pearl/40 ml-1">puntos</span>
                       </p>
                     </div>
                   </div>
@@ -282,7 +313,7 @@ const schema = [
                     <ul class="mt-5 space-y-6">
                       {s.activities.map((a, j) => (
                         <li class="flex gap-4">
-                          <span class="grid size-8 shrink-0 place-items-center rounded-full bg-[#1e3c33] font-mono text-[13px] font-semibold text-teal-400">{j + 1}</span>
+                          <span class="grid size-8 shrink-0 place-items-center rounded-full bg-[#1e3c33] font-mono text-[13px] font-semibold text-[#00cfab]">{j + 1}</span>
                           <div class="pt-0.5">
                             <p class="font-display text-[15px] font-semibold tracking-wide text-pearl">{a.title}</p>
                             <p class="mt-1 text-[14px] leading-relaxed text-pearl/60">{a.detail}</p>
@@ -295,172 +326,704 @@ const schema = [
               </div>
             ))}
           </div>
-        ) : (
-          <ul class="mt-8 space-y-4">
-            {program.skills.map((skill) => (
-              <li class="rounded-2xl glass-dark p-6">
-                <h3 class="font-display text-lg font-semibold tracking-tight text-pearl">{skill.name}</h3>
-                <p class="mt-2 text-sm leading-relaxed text-ink-300">{skill.detail}</p>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-    </div>
-  </section>
-
-  <!-- LA MEJOR OPCIÓN / COMPARATIVA -->
-  <section class="course-comparison bg-[#F8FAFC] py-24 sm:py-28 overflow-hidden">
-    <div class="container-edge grid items-center gap-16 lg:grid-cols-[0.75fr_1.25fr] lg:gap-12">
-      <!-- Left side info -->
-      <div data-reveal class="space-y-6">
-        <h2 class="font-display text-[clamp(2.5rem,5vw,3.5rem)] font-semibold leading-[1.05] tracking-tight text-ink-950">
-          La mejor opción <br />
-          <span class="text-teal-600 italic">para aprobar</span>
-        </h2>
-        <p class="text-base leading-relaxed text-ink-600 max-w-lg">
-          En nuestro curso {program.exam} diseñamos una metodología flexible con la que aseguras que cada hora de estudio se traduzca en un puntaje real y medible.
-        </p>
-        <ul class="space-y-4 pt-2">
-          {benefits.map((b) => (
-            <li class="flex items-center gap-3.5 text-[15px] font-display font-medium text-ink-800">
-              <span class="grid size-6 shrink-0 place-items-center rounded-full bg-teal-600 text-pearl" aria-hidden="true">
-                <Icon name="ph:check" class="size-3.5" />
-              </span>
-              {b}
-            </li>
-          ))}
-        </ul>
-        <div class="pt-4">
-          <a href="/contacto" class="btn-primary mt-9 !font-display !text-sm !font-bold !tracking-widest uppercase" data-magnetic>
-            Inscríbete ahora
-          </a>
         </div>
       </div>
+    </section>
 
-      <!-- Right side: Custom Comparison Card Table -->
-      <div class="relative max-w-xl lg:max-w-none mx-auto w-full overflow-x-auto pt-16 pb-12 scrollbar-none" data-reveal>
-        <div class="course-comparison-table relative min-w-[580px] lg:min-w-0 bg-white rounded-[2.5rem] border border-slate-100/80 px-6 py-6 shadow-[0_20px_50px_rgba(0,0,0,0.02)] grid grid-cols-[1fr_1.6fr_1fr] items-stretch">
-          
-          <!-- Background Card Overlay for Column 2 -->
-          <div class="col-start-2 col-span-1 row-start-1 bg-[#07211E] rounded-[2.25rem] border border-teal-500/20 shadow-[0_20px_40px_rgba(0,0,0,0.3)] -my-10 z-0 pointer-events-none relative" style={`grid-row: 1 / span ${comparison.length + 2}`}>
-            <!-- Badge -->
-            <span class="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-[#008077] px-4 py-1.5 font-display text-[10px] font-bold tracking-widest text-white uppercase shadow-[0_4px_12px_rgba(0,0,0,0.15)] border border-teal-400/20">
-              MEJOR OFERTA
-            </span>
-          </div>
+    <!-- 2. PREPARACIÓN ACADÉMICA A TU MEDIDA (blanco) -->
+    <section class="course-preparation py-24 bg-white">
+      <div class="container-edge">
+        <h2 class="text-3xl sm:text-5xl font-display font-semibold tracking-tight text-ink-950" data-reveal>
+          Preparación académica <span class="text-[#008f7a]">a tu medida.</span>
+        </h2>
+        <p class="mt-5 max-w-2xl text-base leading-relaxed text-ink-600" data-reveal>{academicIntro}</p>
 
-          <!-- Row 1: Headers -->
-          <!-- Col 1 -->
-          <div class="flex flex-col justify-end pb-3 border-b border-slate-100/60">
-            <span class="text-[10px] font-mono tracking-wider uppercase text-ink-400 font-bold">Comparativa</span>
-          </div>
-          <!-- Col 2 -->
-          <div class="relative z-10 text-left pt-7 pb-3 px-6 sm:px-8 flex flex-col justify-center items-start text-white col-start-2 row-start-1">
-            <h3 class="font-display text-[16px] sm:text-[18px] font-bold text-pearl leading-tight">Professional Academy</h3>
-            <p class="text-[11px] sm:text-[12px] text-teal-400/90 font-medium mt-1">{program.slug === 'paa' ? 'El curso PAA más completo' : 'Curso a tu medida'}</p>
-          </div>
-          <!-- Col 3 -->
-          <div class="text-left pt-7 pb-3 px-6 sm:px-8 border-b border-slate-100/60 flex flex-col justify-center items-start col-start-3 row-start-1">
-            <h3 class="font-display text-[16px] sm:text-[18px] font-semibold text-slate-800 leading-tight">Preparación tradicional</h3>
-            <p class="text-[11px] sm:text-[12px] text-slate-400/90 font-medium mt-1">Cursos presenciales</p>
-          </div>
-
-          <!-- Dynamic Comparison Rows -->
-          {comparison.map((row, i) => {
-            const icons = ["ph:calendar-blank", "ph:toolbox", "ph:clipboard-text", "ph:graduation-cap", "ph:book-open", "ph:robot"];
-            const icon = icons[i] ?? "ph:check-circle";
-            const isLast = i === comparison.length - 1;
+        <div class="mt-12 grid gap-5 lg:grid-cols-12">
+          {program.features.map((f, i) => {
+            const isWide = i === 0 || i === program.features.length - 1;
+            const img = i === 0 ? program.guideImage : i === program.features.length - 1 ? program.guaranteeImage : undefined;
             return (
-              <Fragment>
-                <!-- Col 1 -->
-                <div class:list={["flex items-center gap-3 py-2.5 text-ink-700 font-display text-[13px] sm:text-[14px] font-semibold", !isLast && "border-b border-slate-100/60"]} style={`grid-row-start: ${i + 2}; grid-column-start: 1`}>
-                  <span class="text-slate-500 shrink-0"><Icon name={icon} class="size-5" /></span>
-                  <span>{row.label}</span>
-                </div>
-                <!-- Col 2 -->
-                <div class:list={["relative z-10 px-6 sm:px-8 py-2.5 flex items-center justify-start text-left font-display text-[13px] sm:text-[14px] font-medium border-t border-white/10 text-white gap-3"]} style={`grid-row-start: ${i + 2}; grid-column-start: 2`}>
-                  <div class="size-5 rounded-full bg-white/[0.18] flex items-center justify-center shrink-0">
-                    <Icon name="ph:check" class="size-3 text-white stroke-[2.5]" />
+              <div class:list={[
+                "relative flex flex-col justify-center overflow-hidden rounded-3xl border border-ink-950/[0.04] p-7 sm:p-8 min-h-[190px]",
+                isPaa ? "bg-[#ebedec]" : "bg-ink-50 border-ink-950/[0.06]",
+                isWide ? "lg:col-span-8" : "lg:col-span-4"
+              ]} data-reveal>
+                <div class:list={["relative z-10", isWide ? "max-w-xs sm:max-w-sm lg:max-w-[19rem] xl:max-w-[21rem]" : "max-w-full"]}>
+                  <div class="flex items-center gap-4">
+                    <span class="grid size-12 shrink-0 place-items-center rounded-full bg-[#008f7a] text-white shadow-sm">
+                      <Icon name={featureIcons[i] ?? "ph:check"} class="size-6 text-white" aria-hidden="true" />
+                    </span>
+                    <h3 class="font-display text-xl sm:text-[1.28rem] font-semibold tracking-tight text-ink-950">{f.title}</h3>
                   </div>
-                  <span>{row.pa}</span>
+                  <p class="mt-3.5 text-[14px] sm:text-[15px] leading-relaxed text-ink-600">{f.detail}</p>
                 </div>
-                <!-- Col 3 -->
-                <div class:list={["py-2.5 px-6 sm:px-8 text-left font-display text-[13px] sm:text-[14px] text-ink-400/80 flex items-center justify-start gap-3", !isLast && "border-b border-slate-100/60"]} style={`grid-row-start: ${i + 2}; grid-column-start: 3`}>
-                  <Icon name="ph:x-circle" class="size-5 text-teal-600/40 shrink-0" />
-                  <span>{row.trad}</span>
-                </div>
-              </Fragment>
+                {img && (
+                  <img
+                    src={img}
+                    alt={f.title}
+                    width={i === 0 ? "800" : "944"}
+                    height={i === 0 ? "977" : "740"}
+                    loading="lazy"
+                    decoding="async"
+                    class:list={[
+                      "pointer-events-none absolute object-contain transition-opacity drop-shadow-md",
+                      i === 0
+                        ? "right-4 sm:right-10 -bottom-10 sm:-bottom-12 w-40 sm:w-48 lg:w-[220px]"
+                        : "right-3 sm:right-6 bottom-0 w-44 sm:w-52 lg:w-[250px]"
+                    ]}
+                    aria-hidden="true"
+                  />
+                )}
+              </div>
             );
           })}
+        </div>
+      </div>
+    </section>
 
-          <!-- Bottom Guarantee Card / Spacers -->
-          <!-- Col 1 -->
-          <div style={`grid-row-start: ${comparison.length + 2}; grid-column-start: 1`}></div>
-          <!-- Col 2 -->
-          <div class="relative z-10 pb-6 pt-4 px-6 sm:px-8 border-t border-white/10" style={`grid-row-start: ${comparison.length + 2}; grid-column-start: 2`}>
-            <div class="bg-white/5 border border-white/10 rounded-2xl p-4 text-left">
-              <div class="flex items-start gap-3">
-                <Icon name="ph:seal-check-fill" class="size-5.5 text-teal-400 shrink-0 mt-0.5" />
-                <div>
-                  <h4 class="font-display text-[13px] sm:text-[14px] font-bold text-pearl leading-none">Garantía de puntaje</h4>
-                  <p class="text-[11px] sm:text-[12px] text-pearl/70 mt-1.5 leading-snug">Si no alcanzas tu objetivo, te reembolsamos al 100%.</p>
-                  <p class="text-[11px] sm:text-[12px] text-teal-400 font-semibold mt-1.5">+1,500 Estudiantes</p>
+    <!-- 3. ENTRENA COMO SI YA FUERA EL DÍA DEL EXAMEN (oscuro) -->
+    <section class="relative overflow-hidden py-24 hairline-t-dim hairline-b-dim" style="background-color: rgb(8 16 14)" aria-label="Plataforma de simulación PAA">
+      <div class="pointer-events-none absolute -left-24 top-1/2 -translate-y-1/2 h-[42rem] w-[62rem] rounded-[50%] bg-[#0c2b24]/45 blur-[2px] -rotate-12" aria-hidden="true"></div>
+      <div class="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 h-[38rem] w-[38rem] rounded-full bg-teal-600/10 blur-[130px]" aria-hidden="true"></div>
+
+      <div class="container-edge relative grid items-center gap-12 lg:grid-cols-[1.02fr_0.98fr] lg:gap-16">
+        <div data-reveal>
+          <h2 class="font-display text-[clamp(2.15rem,4vw,3.25rem)] font-semibold leading-[1.08] tracking-tight text-pearl">
+            Entrena como si ya<br />
+            fuera <span class="text-[#00cfab]">el día del examen.</span>
+          </h2>
+
+          <p class="mt-5 max-w-xl text-[16px] sm:text-[17px] leading-relaxed text-ink-300">
+            Nuestra plataforma replica el nivel, formato y presión de tiempo de la PAA para convertir cada práctica en una ventaja real.
+          </p>
+
+          <ul class="mt-8 divide-y divide-white/10 border-t border-white/10">
+            <li class="flex items-start gap-4 py-5">
+              <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-teal-950/90 border border-teal-500/30 text-[#00cfab] mt-0.5">
+                <Icon name="ph:pencil-simple-line" class="size-5" />
+              </span>
+              <div>
+                <h3 class="font-display text-[16px] font-semibold text-pearl">Más de 5,000 ejercicios calibrados</h3>
+                <p class="mt-1 text-[14px] leading-relaxed text-ink-300">Reactivos actualizados al nivel y formato oficial del College Board.</p>
+              </div>
+            </li>
+            <li class="flex items-start gap-4 py-5">
+              <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-teal-950/90 border border-teal-500/30 text-[#00cfab] mt-0.5">
+                <Icon name="ph:list-checks" class="size-5" />
+              </span>
+              <div>
+                <h3 class="font-display text-[16px] font-semibold text-pearl">Simulacros bajo condiciones reales</h3>
+                <p class="mt-1 text-[14px] leading-relaxed text-ink-300">Evaluaciones cronometradas para dominar el tiempo por pregunta.</p>
+              </div>
+            </li>
+            <li class="flex items-start gap-4 py-5">
+              <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-teal-950/90 border border-teal-500/30 text-[#00cfab] mt-0.5">
+                <Icon name="ph:magnifying-glass" class="size-5" />
+              </span>
+              <div>
+                <h3 class="font-display text-[16px] font-semibold text-pearl">Diagnóstico continuo y preciso</h3>
+                <p class="mt-1 text-[14px] leading-relaxed text-ink-300">Reportes que detectan áreas de oportunidad para tus sesiones 1 a 1.</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Tarjeta de progreso de plataforma (Asset de Figma) -->
+        <div class="relative mx-auto w-full max-w-lg lg:max-w-none flex justify-center" data-reveal>
+          <div class="relative w-full max-w-[540px]">
+            <img
+              src="/images/paa-entrena-card.webp"
+              alt="Panel de progreso y métricas de plataforma PAA"
+              width="974"
+              height="836"
+              loading="lazy"
+              decoding="async"
+              class="w-full drop-shadow-[0_25px_50px_rgba(0,0,0,0.45)]"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. LA MEJOR OPCIÓN PARA APROBAR - PRECIOS (Diseño exacto de Figma) -->
+    <section id="precios" class="bg-[#eff2f1] py-24 hairline-b" aria-label="Planes y precios del curso PAA">
+      <div class="container-edge !max-w-[90rem]">
+        <div class="grid items-center gap-12 lg:grid-cols-[0.68fr_1.48fr] lg:gap-12 xl:gap-14">
+          <!-- Columna izquierda: Título, intro y lista vertical de 4 beneficios -->
+          <div data-reveal class="space-y-5">
+            <h2 class="font-display text-[clamp(2.35rem,4.4vw,3.5rem)] font-semibold leading-[1.06] tracking-tight text-ink-950">
+              La mejor opción <br />
+              <span class="text-[#008f7a]">para aprobar.</span>
+            </h2>
+            <p class="text-[15px] leading-relaxed text-ink-600 max-w-md">
+              En nuestro curso diseñamos una metodología flexible con la que aseguras que cada hora de estudio se traduzca en un puntaje real y medible.
+            </p>
+
+            <ul class="divide-y divide-ink-950/[0.08] pt-2">
+              {paaPriceBenefits.map((b) => (
+                <li class="flex items-center gap-3.5 py-3.5 text-[14.5px] font-display font-medium text-ink-800">
+                  <span class="grid size-6 shrink-0 place-items-center rounded-full bg-[#007a68] text-white" aria-hidden="true">
+                    <Icon name="ph:check" class="size-3.5 text-white stroke-[3]" />
+                  </span>
+                  <span>{b}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <!-- Columna derecha: Bloque unificado (Pro Esencial + Pro Avanzado) + Pro Élite elevada -->
+          <div class="grid gap-6 lg:gap-0 lg:grid-cols-[1fr_1.12fr_1fr] items-stretch" data-reveal>
+            <!-- Card 1: Pro Esencial (Blanca, mitad izquierda unificada) -->
+            <div class="bg-white rounded-[1.75rem] lg:rounded-r-none p-6 xl:p-7 flex flex-col justify-between shadow-[0_20px_50px_-20px_rgba(0,0,0,0.08)] border border-black/[0.04] lg:border-r-0">
+              <div>
+                <div class="min-h-[6.25rem]">
+                  <h3 class="font-display text-[1.6rem] xl:text-[1.75rem] font-extrabold tracking-tight text-[#1b2a38] leading-none">Pro Esencial</h3>
+                  <p class="mt-2.5 text-[12.5px] leading-relaxed text-slate-500">Para estudiantes disciplinados que buscan material de alta calidad.</p>
                 </div>
+
+                <div class="mt-3 min-h-[5.25rem] flex flex-col justify-end">
+                  <p class="text-[11px] font-semibold text-slate-600">Pago único, acceso por 6 meses</p>
+                  <div class="mt-1 flex items-baseline gap-1 text-[#1b2a38]">
+                    <span class="font-display text-[1.85rem] xl:text-[2.15rem] font-extrabold tracking-tight leading-none">$2,490</span>
+                    <span class="text-[11px] font-bold text-slate-500 uppercase">MXN</span>
+                  </div>
+                </div>
+
+                <a
+                  href={`https://wa.me/${SITE.whatsapp}?text=${encodeURIComponent("Hola, me interesa el plan Pro Esencial del curso PAA. ¿Me pueden dar más información?")}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="mt-5 inline-flex w-full items-center justify-center rounded-full bg-[#00cfab] py-3 px-4 font-display text-[12px] font-bold tracking-wider text-[#061713] transition-colors hover:bg-[#00bda0] uppercase"
+                  data-magnetic
+                >
+                  CONTÁCTANOS
+                </a>
+
+                <div class="my-5 h-px w-full bg-slate-200/70" aria-hidden="true"></div>
+
+                <p class="font-mono text-[9.5px] font-bold tracking-wider text-[#008f7a] uppercase">¿QUÉ INCLUYE ESTE PLAN?</p>
+                <ul class="mt-3.5 space-y-3">
+                  <li class="flex items-start gap-2.5 text-[13px] text-slate-600 font-medium">
+                    <Icon name="ph:check-circle" class="size-4 shrink-0 text-[#008f7a] mt-0.5" />
+                    <span>Acceso a la plataforma digital</span>
+                  </li>
+                  <li class="flex items-start gap-2.5 text-[13px] text-slate-600 font-medium">
+                    <Icon name="ph:check-circle" class="size-4 shrink-0 text-[#008f7a] mt-0.5" />
+                    <span>+20 exámenes de simulación</span>
+                  </li>
+                  <li class="flex items-start gap-2.5 text-[13px] text-slate-600 font-medium">
+                    <Icon name="ph:check-circle" class="size-4 shrink-0 text-[#008f7a] mt-0.5" />
+                    <span>Tutor de IA Integrado</span>
+                  </li>
+                  <li class="flex items-start gap-2.5 text-[13px] text-slate-600 font-medium">
+                    <Icon name="ph:check-circle" class="size-4 shrink-0 text-[#008f7a] mt-0.5" />
+                    <span>+5,000 preguntas de práctica</span>
+                  </li>
+                  <li class="flex items-start gap-2.5 text-[13px] text-slate-600 font-medium">
+                    <Icon name="ph:check-circle" class="size-4 shrink-0 text-[#008f7a] mt-0.5" />
+                    <span>Lecciones en video</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- Card 2: Pro Avanzado (Blanca, mitad derecha unificada con badge RECOMENDADO y selector compacto) -->
+            <div class="relative bg-white rounded-[1.75rem] lg:rounded-none p-6 xl:p-7 flex flex-col justify-between shadow-[0_20px_50px_-20px_rgba(0,0,0,0.08)] border border-black/[0.04] lg:border-l lg:border-slate-200/80">
+              <span class="absolute -top-3 right-6 whitespace-nowrap rounded-full bg-[#007a68] px-3.5 py-1 font-mono text-[9.5px] font-bold tracking-[0.14em] text-white shadow-md uppercase">
+                RECOMENDADO
+              </span>
+
+              <div>
+                <div class="min-h-[6.25rem]">
+                  <h3 class="font-display text-[1.6rem] xl:text-[1.75rem] font-extrabold tracking-tight text-[#1b2a38] leading-none">Pro Avanzado</h3>
+                  <p class="mt-2.5 text-[12.5px] leading-relaxed text-slate-500">Evalúa tu nivel y trabaja en tus debilidades con la ayuda de nuestros expertos.</p>
+                </div>
+
+                <div class="mt-3 min-h-[5.25rem] flex flex-col justify-end">
+                  <HourPricePicker packages={PAA_HOUR_PACKAGES} exam="PAA" note="Elige tus clases en vivo:" compact />
+                </div>
+
+                <a
+                  href={`https://wa.me/${SITE.whatsapp}?text=${encodeURIComponent("Hola, me interesa el plan Pro Avanzado del curso PAA. ¿Me pueden dar más información?")}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="mt-5 inline-flex w-full items-center justify-center rounded-full bg-[#00cfab] py-3 px-4 font-display text-[12px] font-bold tracking-wider text-[#061713] transition-colors hover:bg-[#00bda0] uppercase"
+                  data-magnetic
+                >
+                  CONTÁCTANOS
+                </a>
+
+                <div class="my-5 h-px w-full bg-slate-200/70" aria-hidden="true"></div>
+
+                <p class="font-mono text-[9.5px] font-bold tracking-wider text-[#008f7a] uppercase">INCLUYE TODO DEL PLAN ESENCIAL, MÁS:</p>
+                <ul class="mt-3.5 space-y-3">
+                  <li class="flex items-start gap-2.5 text-[13px] text-slate-600 font-medium">
+                    <Icon name="ph:check-circle" class="size-4 shrink-0 text-[#008f7a] mt-0.5" />
+                    <span>Diagnóstico de tu nivel</span>
+                  </li>
+                  <li class="flex items-start gap-2.5 text-[13px] text-slate-600 font-medium">
+                    <Icon name="ph:check-circle" class="size-4 shrink-0 text-[#008f7a] mt-0.5" />
+                    <span>Plan de estudio personalizado</span>
+                  </li>
+                  <li class="flex items-start gap-2.5 text-[13px] text-slate-600 font-medium">
+                    <Icon name="ph:check-circle" class="size-4 shrink-0 text-[#008f7a] mt-0.5" />
+                    <div>
+                      <span>Clases 1:1 en vivo</span>
+                      <span class="block text-[11px] text-slate-400">10 a 20 h (ajustable según diagnóstico)</span>
+                    </div>
+                  </li>
+                  <li class="flex items-start gap-2.5 text-[13px] text-slate-600 font-medium">
+                    <Icon name="ph:check-circle" class="size-4 shrink-0 text-[#008f7a] mt-0.5" />
+                    <span>Horarios flexibles adaptables</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- Card 3: Pro Élite (Oscura Verde Pino elevada como en Figma) -->
+            <div
+              class="relative z-10 rounded-[1.75rem] border border-teal-500/20 p-6 xl:px-7 lg:-my-5 lg:pt-11 lg:pb-11 xl:pt-12 xl:pb-12 flex flex-col justify-between shadow-[0_24px_60px_-15px_rgba(4,22,18,0.45)] text-white"
+              style="background-image: linear-gradient(160deg, #102b26 0%, #0a201c 55%, #071714 100%)"
+            >
+              <div>
+                <div class="min-h-[6.25rem]">
+                  <h3 class="font-display text-[1.6rem] xl:text-[1.75rem] font-extrabold tracking-tight text-pearl leading-none">Pro Élite</h3>
+                  <p class="mt-2.5 text-[12.5px] leading-relaxed text-slate-300/90">Programa intensivo con acompañamiento constante para resultados garantizados.</p>
+                </div>
+
+                <div class="mt-3 min-h-[5.25rem] flex flex-col justify-end">
+                  <div class="flex items-end justify-between gap-2">
+                    <p class="text-[11px] font-semibold text-slate-300">A partir de:</p>
+                    <span
+                      class="inline-flex flex-col items-center justify-center text-center bg-[#00cfab] pl-3.5 pr-2.5 py-1 text-[#061713] rounded-r-lg shrink-0"
+                      style="clip-path: polygon(9px 0%, 100% 0%, 100% 100%, 9px 100%, 0% 50%);"
+                    >
+                      <span class="font-display text-[7.5px] font-extrabold tracking-[0.04em] uppercase leading-none">PAGA DE CONTADO</span>
+                      <span class="font-display text-[10.5px] font-black uppercase leading-none mt-0.5">AHORRA 15%</span>
+                    </span>
+                  </div>
+                  <div class="mt-1 flex items-baseline gap-1 text-pearl">
+                    <span class="font-display text-[1.85rem] xl:text-[2.15rem] font-extrabold tracking-tight leading-none">$29,000</span>
+                    <span class="text-[11px] font-bold text-slate-300 uppercase">/MXN</span>
+                  </div>
+                </div>
+
+                <a
+                  href={`https://wa.me/${SITE.whatsapp}?text=${encodeURIComponent("Hola, me interesa el plan Pro Élite del curso PAA. ¿Me pueden dar más información?")}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="mt-5 inline-flex w-full items-center justify-center rounded-full bg-[#00cfab] py-3 px-4 font-display text-[12px] font-bold tracking-wider text-[#061713] transition-colors hover:bg-[#00bda0] uppercase"
+                  data-magnetic
+                >
+                  CONTÁCTANOS
+                </a>
+
+                <div class="my-5 h-px w-full bg-white/10" aria-hidden="true"></div>
+
+                <p class="font-mono text-[9.5px] font-bold tracking-wider text-[#00cfab] uppercase">INCLUYE TODO DEL PLAN AVANZADO, MÁS:</p>
+                <ul class="mt-3.5 space-y-3">
+                  <li class="flex items-start gap-2.5 text-[13px] text-pearl/85 font-medium">
+                    <Icon name="ph:check-circle" class="size-4 shrink-0 text-[#00cfab] mt-0.5" />
+                    <span>40 horas de clase en vivo 1:1</span>
+                  </li>
+                  <li class="flex items-start gap-2.5 text-[13px] text-pearl/85 font-medium">
+                    <Icon name="ph:check-circle" class="size-4 shrink-0 text-[#00cfab] mt-0.5" />
+                    <span>Maestros certificados</span>
+                  </li>
+                  <li class="flex items-start gap-2.5 text-[13px] text-pearl/85 font-medium">
+                    <Icon name="ph:check-circle" class="size-4 shrink-0 text-[#00cfab] mt-0.5" />
+                    <span>Retroalimentación detallada</span>
+                  </li>
+                  <li class="flex items-start gap-2.5 text-[13px] text-pearl/85 font-medium">
+                    <Icon name="ph:check-circle" class="size-4 shrink-0 text-[#00cfab] mt-0.5" />
+                    <span>Kit de estrategia para el examen</span>
+                  </li>
+                </ul>
               </div>
             </div>
           </div>
-          <!-- Col 3 -->
-          <div style={`grid-row-start: ${comparison.length + 2}; grid-column-start: 3`}></div>
-
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- RESOLVEMOS TUS DUDAS -->
-  <section class="course-faq py-24 hairline-t" aria-label={`Preguntas frecuentes sobre el curso ${program.exam}`}>
-    <div class="container-edge grid items-start gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
-      <div class="lg:sticky lg:top-28" data-reveal>
-        {program.faqImage ? (
-          <div class="relative">
-            <!-- Animación GIF (Sin fondo, detrás a la izquierda) -->
-            <img src={isSat ? "/images/sat/checklist.webp" : "/images/animation-faq-trans.gif"} alt="" width="300" height="300" class="absolute -left-0 top-[10%] z-0 w-[35%] max-w-[220px] sm:-left-4 lg:-left-6" aria-hidden="true" />
-            
-            <!-- Imagen de la laptop -->
-            <img src={program.faqImage} alt="" width="980" height="785" loading="lazy" decoding="async" class="relative z-10 w-full drop-shadow-2xl" aria-hidden="true" />
+    <!-- 5. ELLOS YA LOGRARON SU META - TESTIMONIOS PAA (claro) -->
+    <section id="testimonios" class="bg-white py-24 hairline-b" aria-label="Testimonios y casos de éxito PAA">
+      <div class="container-edge">
+        <div class="max-w-3xl" data-reveal>
+          <h2 class="font-display text-[clamp(2.5rem,5.5vw,4rem)] font-semibold leading-[1.05] tracking-tight text-ink-950">
+            Ellos ya lograron su meta.<br />
+            <span class="text-[#008f7a]">Testimonios PAA.</span>
+          </h2>
+          <p class="mt-5 max-w-xl text-[16px] sm:text-[17px] leading-relaxed text-ink-600">
+            Más de 10,000 alumnos han alcanzado su puntaje objetivo con nosotros. Conoce sus resultados académicos en el curso PAA.
+          </p>
+
+          <div class="mt-8 flex flex-wrap gap-3">
+            <span class="inline-flex items-center gap-1.5 rounded-full border border-ink-200 bg-white px-4 py-2 text-sm font-medium text-ink-700 shadow-sm">
+              <Icon name="ph:seal-check" class="size-4 text-teal-600" />
+              Garantía por Contrato
+            </span>
+            <span class="inline-flex items-center gap-1.5 rounded-full border border-ink-200 bg-white px-4 py-2 text-sm font-medium text-ink-700 shadow-sm">
+              <Icon name="ph:users" class="size-4 text-teal-600" />
+              10,000+ Alumnos
+            </span>
+            <span class="inline-flex items-center gap-1.5 rounded-full border border-ink-200 bg-white px-4 py-2 text-sm font-medium text-ink-700 shadow-sm">
+              <Icon name="ph:trophy" class="size-4 text-teal-600" />
+              Top Scores PAA
+            </span>
           </div>
-        ) : (
-          <h2 class="text-3xl sm:text-4xl">Resolvemos<br /><em class="accent-em">tus dudas.</em></h2>
-        )}
+        </div>
+
+        <div class="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {paaTestimonials.map((t) => (
+            <div class="flex flex-col justify-between rounded-3xl border border-ink-950/[0.06] bg-ink-50/60 p-7 text-left shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-teal-500/30 hover:bg-white hover:shadow-md" data-reveal>
+              <div>
+                <div class="flex items-center justify-between gap-3">
+                  <div class="flex items-center gap-3">
+                    <img src={t.image} alt={t.name} width="48" height="48" loading="lazy" decoding="async" class="size-12 rounded-full object-cover border border-ink-950/10" />
+                    <div>
+                      <h3 class="font-display text-[16px] font-bold text-ink-950">{t.name}</h3>
+                      <p class="font-mono text-[11px] font-semibold text-teal-600 uppercase tracking-wider">Curso PAA</p>
+                    </div>
+                  </div>
+                  <span class="grid size-8 place-items-center rounded-full bg-teal-50 text-teal-600">
+                    <Icon name="ph:arrow-up-right" class="size-4" />
+                  </span>
+                </div>
+                <blockquote class="mt-5 text-[14.5px] leading-relaxed text-ink-700">
+                  &ldquo;{t.quote}&rdquo;
+                </blockquote>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
-      <div data-reveal>
-        {program.faqImage && (
-          <h2 class="mb-8 text-3xl sm:text-4xl">Resolvemos <em class="accent-em">tus dudas.</em></h2>
-        )}
-        <FAQList faqs={program.faqs} name={`faq-${program.slug}`} />
+    </section>
+
+    <!-- 6. RESOLVEMOS TUS DUDAS (blanco) -->
+    <section class="course-faq py-24 bg-white" aria-label="Preguntas frecuentes sobre el curso PAA">
+      <div class="container-edge grid items-center gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
+        <div class="flex items-center justify-center" data-reveal>
+          <div class="relative mx-auto w-full max-w-[460px]">
+            <!-- Animación GIF detrás -->
+            <img src="/images/animation-faq-trans.gif" alt="" width="300" height="300" class="absolute left-0 top-[10%] z-0 w-[35%] max-w-[220px] sm:-left-4 lg:-left-6" aria-hidden="true" />
+            <!-- Laptop PAA -->
+            <img src={program.faqImage} alt="Simulador PAA en Laptop" width="1004" height="814" loading="lazy" decoding="async" class="relative z-10 w-full drop-shadow-2xl" aria-hidden="true" />
+          </div>
+        </div>
+        <div data-reveal>
+          <h2 class="mb-8 font-display text-3xl sm:text-4xl font-semibold tracking-tight text-ink-950">
+            Resolvemos <span class="text-[#008f7a]">tus dudas.</span>
+          </h2>
+          <FAQList faqs={program.faqs} name="faq-paa" defaultOpenFirst={false} />
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
+  ) : (
+    <!-- ======================================================== -->
+    <!-- SECUENCIA GENERAL PARA SAT, TOEFL, GRE, GMAT, ETC.        -->
+    <!-- ======================================================== -->
+
+    <!-- PREPARACIÓN ACADÉMICA -->
+    <section class="course-preparation py-24">
+      <div class="container-edge">
+        <h2 class="text-3xl sm:text-5xl" data-reveal>
+          Preparación académica <em class="accent-em">a tu medida.</em>
+        </h2>
+        <p class="mt-5 max-w-2xl text-base leading-relaxed text-ink-600" data-reveal>{academicIntro}</p>
+
+        <div class="mt-12 grid gap-5 lg:grid-cols-12">
+          {program.features.map((f, i) => {
+            const isWide = i === 0 || i === program.features.length - 1;
+            const img = i === 0 ? program.guideImage : i === program.features.length - 1 ? program.guaranteeImage : undefined;
+            return (
+              <div class:list={["relative flex flex-col justify-center overflow-hidden rounded-3xl border border-ink-950/[0.06] bg-ink-50 p-6 sm:p-8", isWide ? "lg:col-span-7" : "lg:col-span-5"]} data-reveal>
+                <div class="relative z-10 max-w-sm lg:max-w-[17rem] xl:max-w-xs">
+                  <div class="flex items-center gap-4">
+                    <span class="grid size-12 shrink-0 place-items-center rounded-full bg-teal-600 text-white">
+                      <Icon name={featureIcons[i] ?? "ph:check"} class="size-6" aria-hidden="true" />
+                    </span>
+                    <h3 class="font-display text-xl font-semibold tracking-tight text-ink-950">{f.title}</h3>
+                  </div>
+                  <p class="mt-4 text-[15px] leading-relaxed text-ink-600">{f.detail}</p>
+                </div>
+                {img && (
+                  <img
+                    src={img}
+                    alt=""
+                    width="360"
+                    height="280"
+                    loading="lazy"
+                    decoding="async"
+                    class:list={[
+                      "pointer-events-none absolute object-contain opacity-30 transition-opacity sm:opacity-100",
+                      i === 0
+                        ? "-bottom-6 -right-4 w-48 sm:bottom-auto sm:right-0 sm:top-1/2 sm:w-56 sm:-translate-y-1/2 lg:w-60"
+                        : "bottom-0 -right-4 w-64 sm:-right-2 sm:w-80 lg:w-96"
+                    ]}
+                    aria-hidden="true"
+                  />
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+
+    <!-- DOMINA TU EXAMEN (oscuro) -->
+    <section class="course-sections relative overflow-hidden pt-12 pb-8 hairline-t-dim" style="background-color: rgb(8 13 13)" aria-label={`Secciones del examen ${program.exam}`}>
+      <div class="pointer-events-none absolute -left-40 top-0 h-[40rem] w-[40rem] rounded-full bg-[#0a1f1c] blur-[60px]" aria-hidden="true"></div>
+
+      {isSat && <div class="sat-study-art" aria-hidden="true"><span><Icon name="ph:check" /></span></div>}
+      {program.skillsImage && (
+        <img
+          src={program.skillsImage}
+          alt={`Estudiantes preparándose para el ${program.exam}`}
+          width="1100"
+          height="1093"
+          loading="lazy"
+          decoding="async"
+          class:list={[
+            "pointer-events-none absolute left-0 z-10 hidden object-contain object-bottom lg:block",
+            "bottom-0 w-[50vw] max-w-[950px] 2xl:w-[45vw]"
+          ]}
+          style="mask-image: linear-gradient(to right, black 75%, transparent 100%), linear-gradient(to top, black 80%, transparent 100%); mask-composite: intersect; -webkit-mask-image: linear-gradient(to right, black 75%, transparent 100%), linear-gradient(to top, black 80%, transparent 100%); -webkit-mask-composite: source-in;"
+          data-reveal
+        />
+      )}
+
+      <div class="container-edge grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
+        <div class="self-end lg:-ml-12 xl:-ml-24" data-reveal>
+          {program.skillsImage ? (
+            <img src={program.skillsImage} alt={`Estudiantes preparándose para el ${program.exam}`} width="1100" height="1093" loading="lazy" decoding="async" class="relative z-10 mx-auto w-full max-w-md object-contain object-bottom lg:hidden" style="mask-image: linear-gradient(to top, black 85%, transparent 100%); -webkit-mask-image: linear-gradient(to top, black 85%, transparent 100%);" />
+          ) : (
+            <div class="pointer-events-none aspect-square rounded-3xl bg-gradient-to-br from-teal-500/15 to-transparent lg:hidden" aria-hidden="true"></div>
+          )}
+        </div>
+
+        <div class="course-exam-details relative z-10 lg:pt-10 lg:pb-6" data-reveal>
+          <h2 class="font-display text-4xl font-semibold leading-[1.05] tracking-tight text-pearl sm:text-5xl">
+            {isDecoupled ? "Domina tu examen" : "Domina tu examen."}<br />
+            <em class="font-display italic font-medium text-teal-400">Todas las secciones.</em>
+          </h2>
+          <p class="mt-5 max-w-lg text-base leading-relaxed text-ink-300">
+            {isDecoupled ? "Cada sección de la prueba evalúa tu razonamiento y habilidades académicas esenciales. Nuestro plan ataca las áreas clave con una estrategia enfocada en mejorar tu puntaje." : "Cada sección del examen es una habilidad distinta. Tu plan ataca las cuatro con un enfoque y ejercicios específicos."}
+          </p>
+
+          {program.examSections ? (
+            <div class="mt-8" data-exam-tabs>
+              <div class="flex gap-1.5 rounded-[2rem] border border-white/5 bg-[#0b1613]/50 p-2" role="tablist" aria-label="Secciones del examen">
+                {program.examSections.map((s, i) => (
+                  <button
+                    type="button"
+                    role="tab"
+                    class="exam-tab flex flex-1 items-center justify-center gap-2 rounded-full px-2 py-2.5 font-display text-sm font-semibold text-ink-400 transition-all border border-transparent"
+                    data-exam-tab
+                    data-index={i}
+                    id={`exam-tab-${program.slug}-${i}`}
+                    aria-controls={`exam-panel-${program.slug}-${i}`}
+                    tabindex={i === 0 ? 0 : -1}
+                    aria-selected={i === 0 ? "true" : "false"}
+                  >
+                    <Icon name={examIcons[i] ?? "ph:circle"} class="size-[1.125rem] shrink-0 opacity-70 transition-opacity" aria-hidden="true" />
+                    <span>{s.name}</span>
+                  </button>
+                ))}
+              </div>
+
+              {program.examSections.map((s, i) => (
+                <div class="exam-panel mt-4 flex min-h-[35rem] flex-col justify-between overflow-hidden rounded-[1.5rem] border border-white/[0.04] bg-transparent backdrop-blur-xl shadow-2xl shadow-black/20 sm:min-h-[32rem]" data-exam-panel data-index={i} id={`exam-panel-${program.slug}-${i}`} role="tabpanel" aria-labelledby={`exam-tab-${program.slug}-${i}`} tabindex="0" hidden={i !== 0}>
+                  <div class="flex flex-1 flex-col justify-between bg-[#172c26]/75 p-7 sm:p-8">
+                    <div>
+                      <h3 class="font-display text-2xl font-semibold tracking-tight text-pearl sm:text-[1.7rem]">
+                        {s.name} {s.label && <span class="font-body text-[1.125rem] font-normal text-pearl/80">— {s.label}</span>}
+                      </h3>
+                      <p class="mt-3.5 max-w-2xl text-[15px] leading-relaxed text-pearl/70">{s.description}</p>
+                    </div>
+
+                    <div class="mt-8 flex flex-wrap gap-x-12 gap-y-4">
+                      <div>
+                        <p class="font-mono text-[9px] font-bold tracking-[0.2em] text-pearl/40 uppercase">Tiempo total</p>
+                        <p class="mt-1 font-display text-[17px] font-semibold text-pearl">{s.time}</p>
+                      </div>
+                      <div>
+                        <p class="font-mono text-[9px] font-bold tracking-[0.2em] text-pearl/40 uppercase">Puntaje de sección</p>
+                        <p class="mt-1 font-display text-[17px] font-semibold text-teal-400">
+                          {s.scoreRange} 
+                          <span class="text-[13px] font-normal text-pearl/40 ml-1">{isDecoupled ? "puntos" : `(escala ${program.scoreScale})`}</span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="flex flex-1 flex-col justify-center bg-[#121413]/75 p-7 pt-6 sm:px-8 sm:pb-8 sm:pt-7">
+                    <div>
+                      <p class="font-mono text-[9px] font-bold tracking-[0.2em] text-pearl/40 uppercase">Actividades de la sección</p>
+                      <ul class="mt-5 space-y-6">
+                        {s.activities.map((a, j) => (
+                          <li class="flex gap-4">
+                            <span class="grid size-8 shrink-0 place-items-center rounded-full bg-[#1e3c33] font-mono text-[13px] font-semibold text-teal-400">{j + 1}</span>
+                            <div class="pt-0.5">
+                              <p class="font-display text-[15px] font-semibold tracking-wide text-pearl">{a.title}</p>
+                              <p class="mt-1 text-[14px] leading-relaxed text-pearl/60">{a.detail}</p>
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <ul class="mt-8 space-y-4">
+              {program.skills.map((skill) => (
+                <li class="rounded-2xl glass-dark p-6">
+                  <h3 class="font-display text-lg font-semibold tracking-tight text-pearl">{skill.name}</h3>
+                  <p class="mt-2 text-sm leading-relaxed text-ink-300">{skill.detail}</p>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+    </section>
+
+    <!-- LA MEJOR OPCIÓN / COMPARATIVA (general) -->
+    <section class="course-comparison bg-[#F8FAFC] py-24 sm:py-28 overflow-hidden">
+      <div class="container-edge grid items-center gap-16 lg:grid-cols-[0.75fr_1.25fr] lg:gap-12">
+        <div data-reveal class="space-y-6">
+          <h2 class="font-display text-[clamp(2.5rem,5vw,3.5rem)] font-semibold leading-[1.05] tracking-tight text-ink-950">
+            La mejor opción <br />
+            <span class="text-teal-600 italic">para aprobar</span>
+          </h2>
+          <p class="text-base leading-relaxed text-ink-600 max-w-lg">
+            En nuestro curso {program.exam} diseñamos una metodología flexible con la que aseguras que cada hora de estudio se traduzca en un puntaje real y medible.
+          </p>
+          <ul class="space-y-4 pt-2">
+            {benefits.map((b) => (
+              <li class="flex items-center gap-3.5 text-[15px] font-display font-medium text-ink-800">
+                <span class="grid size-6 shrink-0 place-items-center rounded-full bg-teal-600 text-pearl" aria-hidden="true">
+                  <Icon name="ph:check" class="size-3.5" />
+                </span>
+                {b}
+              </li>
+            ))}
+          </ul>
+          <div class="pt-4">
+            <a href="/contacto" class="btn-primary mt-9 !font-display !text-sm !font-bold !tracking-widest uppercase" data-magnetic>
+              Inscríbete ahora
+            </a>
+          </div>
+        </div>
+
+        <div class="relative max-w-xl lg:max-w-none mx-auto w-full overflow-x-auto pt-16 pb-12 scrollbar-none" data-reveal>
+          <div class="course-comparison-table relative min-w-[580px] lg:min-w-0 bg-white rounded-[2.5rem] border border-slate-100/80 px-6 py-6 shadow-[0_20px_50px_rgba(0,0,0,0.02)] grid grid-cols-[1fr_1.6fr_1fr] items-stretch">
+            
+            <div class="col-start-2 col-span-1 row-start-1 bg-[#07211E] rounded-[2.25rem] border border-teal-500/20 shadow-[0_20px_40px_rgba(0,0,0,0.3)] -my-10 z-0 pointer-events-none relative" style={`grid-row: 1 / span ${comparison.length + 2}`}>
+              <span class="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-[#008077] px-4 py-1.5 font-display text-[10px] font-bold tracking-widest text-white uppercase shadow-[0_4px_12px_rgba(0,0,0,0.15)] border border-teal-400/20">
+                MEJOR OFERTA
+              </span>
+            </div>
+
+            <div class="flex flex-col justify-end pb-3 border-b border-slate-100/60">
+              <span class="text-[10px] font-mono tracking-wider uppercase text-ink-400 font-bold">Comparativa</span>
+            </div>
+            <div class="relative z-10 text-left pt-7 pb-3 px-6 sm:px-8 flex flex-col justify-center items-start text-white col-start-2 row-start-1">
+              <h3 class="font-display text-[16px] sm:text-[18px] font-bold text-pearl leading-tight">Professional Academy</h3>
+              <p class="text-[11px] sm:text-[12px] text-teal-400/90 font-medium mt-1">Curso a tu medida</p>
+            </div>
+            <div class="text-left pt-7 pb-3 px-6 sm:px-8 border-b border-slate-100/60 flex flex-col justify-center items-start col-start-3 row-start-1">
+              <h3 class="font-display text-[16px] sm:text-[18px] font-semibold text-slate-800 leading-tight">Preparación tradicional</h3>
+              <p class="text-[11px] sm:text-[12px] text-slate-400/90 font-medium mt-1">Cursos presenciales</p>
+            </div>
+
+            {comparison.map((row, i) => {
+              const icons = ["ph:calendar-blank", "ph:toolbox", "ph:clipboard-text", "ph:graduation-cap", "ph:book-open", "ph:robot"];
+              const icon = icons[i] ?? "ph:check-circle";
+              const isLast = i === comparison.length - 1;
+              return (
+                <Fragment>
+                  <div class:list={["flex items-center gap-3 py-2.5 text-ink-700 font-display text-[13px] sm:text-[14px] font-semibold", !isLast && "border-b border-slate-100/60"]} style={`grid-row-start: ${i + 2}; grid-column-start: 1`}>
+                    <span class="text-slate-500 shrink-0"><Icon name={icon} class="size-5" /></span>
+                    <span>{row.label}</span>
+                  </div>
+                  <div class:list={["relative z-10 px-6 sm:px-8 py-2.5 flex items-center justify-start text-left font-display text-[13px] sm:text-[14px] font-medium border-t border-white/10 text-white gap-3"]} style={`grid-row-start: ${i + 2}; grid-column-start: 2`}>
+                    <div class="size-5 rounded-full bg-white/[0.18] flex items-center justify-center shrink-0">
+                      <Icon name="ph:check" class="size-3 text-white stroke-[2.5]" />
+                    </div>
+                    <span>{row.pa}</span>
+                  </div>
+                  <div class:list={["py-2.5 px-6 sm:px-8 text-left font-display text-[13px] sm:text-[14px] text-ink-400/80 flex items-center justify-start gap-3", !isLast && "border-b border-slate-100/60"]} style={`grid-row-start: ${i + 2}; grid-column-start: 3`}>
+                    <Icon name="ph:x-circle" class="size-5 text-teal-600/40 shrink-0" />
+                    <span>{row.trad}</span>
+                  </div>
+                </Fragment>
+              );
+            })}
+
+            <div style={`grid-row-start: ${comparison.length + 2}; grid-column-start: 1`}></div>
+            <div class="relative z-10 pb-6 pt-4 px-6 sm:px-8 border-t border-white/10" style={`grid-row-start: ${comparison.length + 2}; grid-column-start: 2`}>
+              <div class="bg-white/5 border border-white/10 rounded-2xl p-4 text-left">
+                <div class="flex items-start gap-3">
+                  <Icon name="ph:seal-check-fill" class="size-5.5 text-teal-400 shrink-0 mt-0.5" />
+                  <div>
+                    <h4 class="font-display text-[13px] sm:text-[14px] font-bold text-pearl leading-none">Garantía de puntaje</h4>
+                    <p class="text-[11px] sm:text-[12px] text-pearl/70 mt-1.5 leading-snug">Si no alcanzas tu objetivo, te reembolsamos al 100%.</p>
+                    <p class="text-[11px] sm:text-[12px] text-teal-400 font-semibold mt-1.5">+1,500 Estudiantes</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div style={`grid-row-start: ${comparison.length + 2}; grid-column-start: 3`}></div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RESOLVEMOS TUS DUDAS (general) -->
+    <section class="course-faq py-24 hairline-t" aria-label={`Preguntas frecuentes sobre el curso ${program.exam}`}>
+      <div class="container-edge grid items-start gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
+        <div class="lg:sticky lg:top-28" data-reveal>
+          {program.faqImage ? (
+            <div class="relative">
+              <img src={isSat ? "/images/sat/checklist.webp" : "/images/animation-faq-trans.gif"} alt="" width="300" height="300" class="absolute -left-0 top-[10%] z-0 w-[35%] max-w-[220px] sm:-left-4 lg:-left-6" aria-hidden="true" />
+              <img src={program.faqImage} alt="" width="980" height="785" loading="lazy" decoding="async" class="relative z-10 w-full drop-shadow-2xl" aria-hidden="true" />
+            </div>
+          ) : (
+            <h2 class="text-3xl sm:text-4xl">Resolvemos<br /><em class="accent-em">tus dudas.</em></h2>
+          )}
+        </div>
+        <div data-reveal>
+          {program.faqImage && (
+            <h2 class="mb-8 text-3xl sm:text-4xl">Resolvemos <em class="accent-em">tus dudas.</em></h2>
+          )}
+          <FAQList faqs={program.faqs} name={`faq-${program.slug}`} />
+        </div>
+      </div>
+    </section>
+  )}
 
   <!-- MENSAJE CTA (oscuro) -->
-  <section class="relative overflow-hidden py-24 hairline-t-dim" style="background-color: rgb(6 10 10)" aria-label="Comienza con un mensaje">
+  <section id="contacto" class="relative overflow-hidden py-24 hairline-t-dim" style="background-color: rgb(6 10 10)" aria-label="Comienza con un mensaje">
     <div class="pointer-events-none absolute left-1/2 top-0 h-[30rem] w-[30rem] -translate-x-1/2 rounded-full bg-teal-600/10 blur-[130px]" aria-hidden="true"></div>
 
     <div class="container-edge relative text-center">
       <h2 class="mx-auto max-w-2xl font-display text-[clamp(2rem,4vw,3.25rem)] font-semibold leading-[1.05] tracking-tight text-pearl" data-reveal>
         Tu preparación {program.exam} comienza<br />
-        <em class="font-display italic font-medium text-teal-400">con un mensaje.</em>
+        <span class="text-[#00cfab]">con un mensaje.</span>
       </h2>
 
       <form id="course-msg-form" class="mx-auto mt-9 max-w-3xl" novalidate data-reveal>
         <p class="text-[clamp(1.125rem,1.8vw,1.5rem)] leading-[2] font-display font-medium text-ink-100">
           Hola, me llamo <input name="nombre" type="text" required autocomplete="name" aria-label="Tu nombre completo" placeholder="nombre completo" class="cm-field w-[14ch]" />.
-          Quiero informes del <span class="font-semibold text-teal-400">curso {program.exam}{isSat ? " del College Board" : ""}</span>.
+          Quiero informes del <span class="font-semibold text-[#00cfab]">curso {program.exam}{isDecoupled ? " del College Board" : ""}</span>.
           Pueden escribirme a <input name="correo" type="email" required inputmode="email" autocomplete="email" spellcheck="false" aria-label="Tu correo electrónico" placeholder="tu@correo.com" class="cm-field w-[14ch]" />
           o llamarme al <input name="telefono" type="tel" inputmode="tel" autocomplete="tel" aria-label="Tu número de teléfono" placeholder="tu número" class="cm-field w-[10ch]" />.
         </p>
-        <button type="submit" class="btn-primary mt-9 !font-display !text-sm !font-bold !tracking-widest" data-magnetic>
+        <button type="submit" class="inline-flex items-center justify-center rounded-full bg-[#00cfab] px-9 py-3.5 font-display text-[13px] font-bold tracking-widest text-[#061713] transition-transform hover:scale-[1.02] shadow-md uppercase mt-9" data-magnetic>
           Enviar mensaje
         </button>
         <p id="course-msg-status" class="mt-4 text-sm text-teal-300" role="status" aria-live="polite"></p>
@@ -471,70 +1034,91 @@ const schema = [
 </Base>
 
 <style>
-  /* Variantes del frame SAT de María; los demás cursos conservan sus estilos. */
-  [data-course="sat"] { background: #fff; }
-  [data-course="sat"] :is(h1,h2,h3, .font-display) { font-family: var(--font-body); }
+  /* Variantes desacopladas de SAT y PAA; los demás cursos conservan sus estilos heredados. */
+  [data-course="sat"], [data-course="paa"] { background: #fff; }
+  [data-course="sat"] :is(h1,h2,h3, .font-display), [data-course="paa"] :is(h1,h2,h3, .font-display) { font-family: var(--font-body); }
   [data-course="sat"] :is(h1,h2) { font-weight: 400; letter-spacing: -.035em; }
   [data-course="sat"] :is(h1,h2) em { font-style: normal; font-weight: inherit; color: #0d9488; }
   [data-course="sat"] h1 { font-size: clamp(2.75rem, 5.6vw, 4.5rem); line-height: 1.1; }
+  
+  /* Métricas PAA con fondo exacto de Figma: #112321, sin líneas divisorias verticales claras */
+  .course-metrics-paa {
+    background-color: #112321 !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+  }
+  .course-metrics-paa p.font-display {
+    color: var(--color-pearl) !important;
+  }
+  .course-metrics-paa p.font-mono {
+    color: rgba(255, 255, 255, 0.6) !important;
+  }
+  .course-metrics-paa .border-l {
+    border-color: transparent !important;
+  }
+  .course-metrics-paa .max-lg\:border-t {
+    border-color: rgba(255, 255, 255, 0.05) !important;
+  }
+
   [data-course="sat"] .course-hero nav { display: none; }
   [data-course="sat"] .course-hero h1 { margin-top: 0; }
-  [data-course="sat"] .course-preparation h3 { font-size: 1.5rem; font-weight: 500; }
-  [data-course="sat"] .course-preparation .rounded-3xl { border-radius: 1rem; background: #eaedec; min-height: 11.5rem; }
-  [data-course="sat"] .course-preparation img { position: static; align-self: end; width: 11rem; opacity: 1; transform: none; margin-top: 1rem; }
-  [data-course="sat"] .course-sections { background-color: #0d1614 !important; }
-  [data-course="sat"] .course-sections h2 { font-size: clamp(2.25rem,4vw,3rem); }
-  [data-course="sat"] .course-sections .exam-panel { min-height: 0; border-radius: 1.25rem; background: #172420; box-shadow: none; }
-  [data-course="sat"] .exam-panel > div:first-child { background: #1a3d36; padding: 1.5rem 2rem; }
-  [data-course="sat"] .exam-panel > div:last-child { padding: 1rem 2rem; }
-  [data-course="sat"] .exam-panel h3 { font-size: 1.625rem; }
-  [data-course="sat"] .exam-panel ul { margin-top: 1rem; }
-  [data-course="sat"] .exam-panel li + li { margin-top: 1rem; }
-  [data-course="sat"] [role="tablist"] { max-width: 22rem; padding: .25rem; border-radius: 1rem; }
-  [data-course="sat"] .exam-tab { border-radius: .75rem; font-size: .875rem; white-space: nowrap; }
+  [data-course="sat"] .course-preparation h3, [data-course="paa"] .course-preparation h3 { font-size: 1.5rem; font-weight: 500; }
+  [data-course="sat"] .course-preparation .rounded-3xl, [data-course="paa"] .course-preparation .rounded-3xl { border-radius: 1rem; background: #eaedec; min-height: 11.5rem; }
+  [data-course="sat"] .course-preparation img, [data-course="paa"] .course-preparation img { position: static; align-self: end; width: 11rem; opacity: 1; transform: none; margin-top: 1rem; }
+  [data-course="sat"] .course-sections, [data-course="paa"] .course-sections { background-color: #0d1614 !important; }
+  [data-course="sat"] .course-sections h2, [data-course="paa"] .course-sections h2 { font-size: clamp(2.25rem,4vw,3rem); }
+  [data-course="sat"] .course-sections .exam-panel, [data-course="paa"] .course-sections .exam-panel { min-height: 0; border-radius: 1.25rem; background: #172420; box-shadow: none; }
+  [data-course="sat"] .exam-panel > div:first-child, [data-course="paa"] .exam-panel > div:first-child { background: #1a3d36; padding: 1.5rem 2rem; }
+  [data-course="sat"] .exam-panel > div:last-child, [data-course="paa"] .exam-panel > div:last-child { padding: 1rem 2rem; }
+  [data-course="sat"] .exam-panel h3, [data-course="paa"] .exam-panel h3 { font-size: 1.625rem; }
+  [data-course="sat"] .exam-panel ul, [data-course="paa"] .exam-panel ul { margin-top: 1rem; }
+  [data-course="sat"] .exam-panel li + li, [data-course="paa"] .exam-panel li + li { margin-top: 1rem; }
+  [data-course="sat"] [role="tablist"], [data-course="paa"] [role="tablist"] { max-width: 38rem; padding: .25rem; border-radius: 1rem; }
+  [data-course="sat"] .exam-tab, [data-course="paa"] .exam-tab { border-radius: .75rem; font-size: .875rem; white-space: nowrap; }
   [data-course="sat"] .exam-tab:first-child { flex: 1.4; }
-  [data-course="sat"] .exam-tab:focus-visible { outline: 2px solid #2dd4bf; outline-offset: 3px; }
-  [data-course="sat"] .course-comparison { background: #f0f4f3; }
-  [data-course="sat"] .course-comparison h2 span { font-style: normal; }
-  [data-course="sat"] .course-comparison h2 { font-size: clamp(2.5rem,4vw,3rem); }
-  [data-course="sat"] .course-comparison ul li { border-bottom: 1px solid #dce3e1; padding-bottom: 1rem; }
-  [data-course="sat"] .course-faq .hairline-t { border-top: 0; }
-  [data-course="sat"] :global(.faq-item[data-active="true"] .faq-icon) { background: transparent; border-color: #e2e8e6; color: #060a0a; }
-  .sat-study-art { display: none; }
+  [data-course="sat"] .exam-tab:focus-visible, [data-course="paa"] .exam-tab:focus-visible { outline: 2px solid #2dd4bf; outline-offset: 3px; }
+  [data-course="sat"] .course-comparison, [data-course="paa"] .course-comparison { background: #f0f4f3; }
+  [data-course="sat"] .course-comparison h2 span, [data-course="paa"] .course-comparison h2 span { font-style: normal; }
+  [data-course="sat"] .course-comparison h2, [data-course="paa"] .course-comparison h2 { font-size: clamp(2.5rem,4vw,3rem); }
+  [data-course="sat"] .course-comparison ul li, [data-course="paa"] .course-comparison ul li { border-bottom: 1px solid #dce3e1; padding-bottom: 1rem; }
+  [data-course="sat"] .course-faq .hairline-t, [data-course="paa"] .course-faq .hairline-t { border-top: 0; }
+  [data-course="sat"] :global(.faq-item[data-active="true"] .faq-icon), [data-course="paa"] :global(.faq-item[data-active="true"] .faq-icon) { background: transparent; border-color: #e2e8e6; color: #060a0a; }
+  .sat-study-art { display: block; position: absolute; inset: 0 50% 0 0; overflow: hidden; }
+  .sat-study-art::before { content: ""; position: absolute; width: 70rem; height: 70rem; left: -6rem; top: 3rem; border: 8rem solid #12312b; border-radius: 50%; opacity: .5; }
+  .sat-study-art > span { position: absolute; z-index: 11; top: 23%; left: 20%; display: grid; place-items: center; width: 4.5rem; height: 4.5rem; border-radius: 50%; background: #0d9488; color: white; transform: rotate(-15deg); }
+  .sat-study-art svg { width: 2.75rem; height: 2.75rem; }
+
   @media (min-width: 64rem) {
     [data-course="sat"] .course-hero > .container-edge { min-height: 42.5rem; padding-top: 11rem; }
+    [data-course="paa"] .course-hero > .container-edge { min-height: 45rem; padding-top: 10.75rem; padding-bottom: 5rem; }
     [data-course="sat"] .course-hero > .container-edge > div { padding-top: 0; }
     [data-course="sat"] .course-hero-image { left: 49%; right: auto; width: 92%; max-width: none; }
-    [data-course="sat"] .course-preparation .rounded-3xl { padding: 2rem; }
-    [data-course="sat"] .course-preparation .rounded-3xl:first-child { grid-column: span 8; }
-    [data-course="sat"] .course-preparation .rounded-3xl:nth-child(2) { grid-column: span 4; }
-    [data-course="sat"] .course-preparation .rounded-3xl:nth-child(3) { grid-column: span 5; }
-    [data-course="sat"] .course-preparation .rounded-3xl:last-child { grid-column: span 7; }
-    [data-course="sat"] .course-preparation .rounded-3xl:has(img) > div { max-width: 62%; }
-    [data-course="sat"] .course-preparation img { position: absolute; right: 1rem; top: auto; bottom: 0; width: 31%; margin: 0; }
-    [data-course="sat"] .course-preparation .rounded-3xl:last-child img { width: 36%; }
-    [data-course="sat"] .course-sections { min-height: 48rem; padding-block: 5.5rem 4rem; }
-    [data-course="sat"] .course-sections > img { height: 90%; width: 48%; max-width: none; left: 0; bottom: 0; object-fit: contain; object-position: right bottom; mask-image: none !important; -webkit-mask-image: none !important; }
-    [data-course="sat"] .course-sections .course-exam-details { padding-top: .5rem; }
-    [data-course="sat"] .course-comparison .course-comparison-table { grid-template-columns: .9fr 1.35fr 1.35fr; }
-    .sat-study-art { display: block; position: absolute; inset: 0 50% 0 0; overflow: hidden; }
-    .sat-study-art::before { content: ""; position: absolute; width: 70rem; height: 70rem; left: -6rem; top: 3rem; border: 8rem solid #12312b; border-radius: 50%; opacity: .5; }
-    .sat-study-art > span { position: absolute; z-index: 11; top: 23%; left: 20%; display: grid; place-items: center; width: 4.5rem; height: 4.5rem; border-radius: 50%; background: #0d9488; color: white; transform: rotate(-15deg); }
-    .sat-study-art svg { width: 2.75rem; height: 2.75rem; }
+    [data-course="paa"] .course-hero-image-wrapper { left: auto; right: 1.5rem; width: 44%; max-width: 540px; bottom: 3rem; }
+    [data-course="sat"] .course-preparation .rounded-3xl, [data-course="paa"] .course-preparation .rounded-3xl { padding: 2rem; }
+    [data-course="sat"] .course-preparation .rounded-3xl:first-child, [data-course="paa"] .course-preparation .rounded-3xl:first-child { grid-column: span 8; }
+    [data-course="sat"] .course-preparation .rounded-3xl:nth-child(2), [data-course="paa"] .course-preparation .rounded-3xl:nth-child(2) { grid-column: span 4; }
+    [data-course="sat"] .course-preparation .rounded-3xl:nth-child(3), [data-course="paa"] .course-preparation .rounded-3xl:nth-child(3) { grid-column: span 5; }
+    [data-course="sat"] .course-preparation .rounded-3xl:last-child, [data-course="paa"] .course-preparation .rounded-3xl:last-child { grid-column: span 7; }
+    [data-course="sat"] .course-preparation .rounded-3xl:has(img) > div, [data-course="paa"] .course-preparation .rounded-3xl:has(img) > div { max-width: 62%; }
+    [data-course="sat"] .course-preparation img, [data-course="paa"] .course-preparation img { position: absolute; right: 1rem; top: auto; bottom: 0; width: 31%; margin: 0; }
+    [data-course="sat"] .course-preparation .rounded-3xl:last-child img, [data-course="paa"] .course-preparation .rounded-3xl:last-child img { width: 36%; }
+    [data-course="sat"] .course-sections, [data-course="paa"] .course-sections { min-height: 48rem; padding-block: 5.5rem 4rem; }
+    [data-course="sat"] .course-sections > img, [data-course="paa"] .course-sections > img { height: 90%; width: 48%; max-width: none; left: 0; bottom: 0; object-fit: contain; object-position: right bottom; mask-image: none !important; -webkit-mask-image: none !important; }
+    [data-course="sat"] .course-sections .course-exam-details, [data-course="paa"] .course-sections .course-exam-details { padding-top: .5rem; }
+    [data-course="sat"] .course-comparison .course-comparison-table, [data-course="paa"] .course-comparison .course-comparison-table { grid-template-columns: .9fr 1.35fr 1.35fr; }
   }
   @media (max-width: 63.99rem) {
-    [data-course="sat"] .course-sections > .container-edge { display: flex; flex-direction: column-reverse; }
+    [data-course="sat"] .course-sections > .container-edge, [data-course="paa"] .course-sections > .container-edge { display: flex; flex-direction: column-reverse; }
   }
   @media (max-width: 39.99rem) {
-    [data-course="sat"] .exam-panel > div { padding: 1.25rem; }
-    [data-course="sat"] .course-sections img { max-height: 22rem; }
-    [data-course="sat"] .course-comparison .course-comparison-table { min-width: 0; grid-template-columns: .9fr 1.2fr 1fr; padding-inline: .5rem; border-radius: 1rem; }
-    [data-course="sat"] .course-comparison .course-comparison-table > div { padding-inline: .4rem; gap: .25rem; font-size: .8125rem; overflow-wrap: normal; }
-    [data-course="sat"] .course-comparison .course-comparison-table h3 { font-size: .875rem; }
-    [data-course="sat"] .course-comparison .course-comparison-table svg { display: none; }
-    [data-course="sat"] .course-comparison .course-comparison-table .size-5 { display: none; }
-    [data-course="sat"] .course-comparison .course-comparison-table .rounded-2xl { padding: .5rem; }
-    [data-course="sat"] .course-comparison .course-comparison-table .rounded-2xl p { font-size: .65rem; }
+    [data-course="sat"] .exam-panel > div, [data-course="paa"] .exam-panel > div { padding: 1.25rem; }
+    [data-course="sat"] .course-sections img, [data-course="paa"] .course-sections img { max-height: 22rem; }
+    [data-course="sat"] .course-comparison .course-comparison-table, [data-course="paa"] .course-comparison .course-comparison-table { min-width: 0; grid-template-columns: .9fr 1.2fr 1fr; padding-inline: .5rem; border-radius: 1rem; }
+    [data-course="sat"] .course-comparison .course-comparison-table > div, [data-course="paa"] .course-comparison .course-comparison-table > div { padding-inline: .4rem; gap: .25rem; font-size: .8125rem; overflow-wrap: normal; }
+    [data-course="sat"] .course-comparison .course-comparison-table h3, [data-course="paa"] .course-comparison .course-comparison-table h3 { font-size: .875rem; }
+    [data-course="sat"] .course-comparison .course-comparison-table svg, [data-course="paa"] .course-comparison .course-comparison-table svg { display: none; }
+    [data-course="sat"] .course-comparison .course-comparison-table .size-5, [data-course="paa"] .course-comparison .course-comparison-table .size-5 { display: none; }
+    [data-course="sat"] .course-comparison .course-comparison-table .rounded-2xl, [data-course="paa"] .course-comparison .course-comparison-table .rounded-2xl { padding: .5rem; }
+    [data-course="sat"] .course-comparison .course-comparison-table .rounded-2xl p, [data-course="paa"] .course-comparison .course-comparison-table .rounded-2xl p { font-size: .65rem; }
   }
 
   .exam-tab[aria-selected="true"] {
@@ -544,7 +1128,7 @@ const schema = [
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   }
   .exam-tab[aria-selected="true"] svg {
-    color: var(--color-teal-400);
+    color: #00cfab;
     opacity: 1;
   }
   .exam-tab:not([aria-selected="true"]):hover {
@@ -564,11 +1148,11 @@ const schema = [
     font: inherit;
   }
   .cm-field::placeholder { color: rgb(127 231 217 / 0.55); }
-  .cm-field:focus { border-bottom-color: var(--color-teal-400); background: rgb(20 184 166 / 0.06); }
+  .cm-field:focus { border-bottom-color: #00cfab; background: rgb(20 184 166 / 0.06); }
   .cm-field[aria-invalid="true"] { border-bottom-color: #f87171; }
 </style>
 
-<script define:vars={{ whatsapp: SITE.whatsapp, exam: program.exam, isSat }}>
+<script define:vars={{ whatsapp: SITE.whatsapp, exam: program.exam, isModernCourse: isDecoupled, isSat }}>
   function initCoursePage() {
     // Tabs de secciones del examen
     const tabsRoot = document.querySelector("[data-exam-tabs]");
@@ -624,7 +1208,8 @@ const schema = [
           status.style.color = "";
           status.textContent = "Enviando mensaje…";
         }
-        if (isSat) {
+        const isModern = (typeof isModernCourse !== "undefined" && Boolean(isModernCourse)) || (typeof isSat !== "undefined" && Boolean(isSat));
+        if (isModern) {
           if (form.dataset.submitting === "true") return;
           form.dataset.submitting = "true";
           const submit = form.querySelector('button[type="submit"]');

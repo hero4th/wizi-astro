@@ -101,7 +101,7 @@ const tiers: Tier[] = [
 const paaTiers: Tier[] = [
   {
     name: "Pro Esencial",
-    description: "Para estudiantes disciplinados que<br/>buscan material de alta calidad.",
+    description: "Para estudiantes disciplinados que buscan material de alta calidad.",
     priceNote: "Pago único, acceso por 6 meses",
     price: `$${PAA_ESSENTIAL_PRICE_MXN.toLocaleString("en-US")}`,
     priceUnit: "MXN",
@@ -113,13 +113,12 @@ const paaTiers: Tier[] = [
       "+5,000 preguntas de práctica",
       "Lecciones en video",
     ],
-    guarantee: "Si no logras el 80% en tu examen oficial, te devolvemos el 100% del dinero.",
   },
   {
     name: "Pro Avanzado",
     recommended: true,
     isInteractive: true,
-    description: "Evalúa tu nivel y trabaja en tus debilidades<br/>con la ayuda de nuestros expertos.",
+    description: "Evalúa tu nivel y trabaja en tus debilidades con la ayuda de nuestros expertos.",
     priceNote: "Elige tus clases en vivo:",
     price: "$8,900",
     priceUnit: "MXN",
@@ -130,12 +129,11 @@ const paaTiers: Tier[] = [
       { label: "Clases 1:1 en vivo", note: "10 a 20 h (ajustable según diagnóstico)" },
       "Horarios flexibles adaptables",
     ],
-    guarantee: "Si no logras el 85% en tu examen oficial, te devolvemos el 100% del dinero.",
   },
   {
     name: "Pro Élite",
     lightGreen: true,
-    description: "Programa intensivo con acompañamiento<br/>constante para resultados garantizados.",
+    description: "Programa intensivo con acompañamiento constante para resultados garantizados.",
     priceNote: "A partir de:",
     price: "$29,000",
     priceUnit: "/MXN",
@@ -147,7 +145,7 @@ const paaTiers: Tier[] = [
       "Retroalimentación detallada",
       "Kit de estrategia para el día del examen",
     ],
-    guarantee: "Si no logras el 85% en tu examen oficial, te devolvemos el 100% del dinero.",
+    guarantee: "+150 puntos garantizados sobre tu diagnóstico inicial, o te devolvemos el 100% de tu inversión.",
     students: "+1,500",
   },
   {
@@ -174,6 +172,7 @@ const paaTiers: Tier[] = [
 // Herón confirmed SAT uses PAA tariffs and the existing four hour packages.
 // Clone SAT content so its guarantee and wording never mutate PAA.
 const isSat = program.slug === "sat";
+const isPaa = program.slug === "paa";
 const satTiers: Tier[] = paaTiers.map((tier) => ({
   ...tier,
   guarantee: program.guarantee,
@@ -183,7 +182,7 @@ const satTiers: Tier[] = paaTiers.map((tier) => ({
       : feature,
   ),
 }));
-const currentTiers = isSat ? satTiers : program.slug === "paa" ? paaTiers : tiers;
+const currentTiers = (isSat ? satTiers : isPaa ? paaTiers : tiers).filter((t) => !t.hidden);
 
 const waLink = (plan: string) =>
   `https://wa.me/${SITE.whatsapp}?text=${encodeURIComponent(
@@ -209,7 +208,7 @@ const faqs = [
   },
 ];
 
-if (isSat) {
+if (isSat || isPaa) {
   faqs[0].a = "Dependiendo del plan, tendrás acceso a la plataforma digital, más de 5,000 preguntas de práctica, 20 exámenes de simulación y clases en vivo. Consulta los servicios incluidos en cada tarjeta.";
   faqs[2].a = "El plan Pro Esencial incluye 6 meses de acceso. En Pro Avanzado y Pro Élite, el acceso se mantiene durante tu programa de preparación, hasta la fecha de tu examen.";
   faqs[3].a = `${program.guarantee} Aplican nuestros Términos y Condiciones.`;
@@ -228,7 +227,7 @@ const schema = [
 
 <Base
   title={`Precios del curso ${EXAM} | Professional Academy`}
-  description={`Elige tu modalidad de estudio para el ${EXAM}: ${isSat ? "Pro Esencial, Pro Avanzado o Pro Élite" : "Pro Essentials, Pro Advanced o Pro Plus"}. Simuladores oficiales, clases 1 a 1 y Garantía de Puntaje.`}
+  description={`Elige tu modalidad de estudio para el ${EXAM}: ${isSat || isPaa ? "Pro Esencial, Pro Avanzado o Pro Élite" : "Pro Essentials, Pro Advanced o Pro Plus"}. Simuladores oficiales, clases 1 a 1 y Garantía de Puntaje.`}
   schema={schema}
   stickyCta={false}
 >
@@ -242,7 +241,15 @@ const schema = [
         <div>
           <h1 class="font-display text-[clamp(2.75rem,5.6vw,4.6rem)] leading-[1.02] font-semibold tracking-[-0.03em] text-pearl" data-reveal-line>
             <span class="line-mask"><span class="line-inner">La mejor opción</span></span>
-            <span class="line-mask"><span class="line-inner"><em class="font-display italic font-medium text-teal-400 pr-2">para aprobar.</em></span></span>
+            <span class="line-mask">
+              <span class="line-inner">
+                {isPaa ? (
+                  <span class="text-[#00cfab]">para aprobar.</span>
+                ) : (
+                  <em class="font-display italic font-medium text-teal-400 pr-2">para aprobar.</em>
+                )}
+              </span>
+            </span>
           </h1>
           <p class="mt-7 max-w-lg text-[17px] leading-relaxed text-ink-300" data-reveal>
             Selecciona tu modalidad de estudio para {EXAM} y asegura el mejor puntaje. Preparación enfocada, estratégica y garantizada.
@@ -298,13 +305,13 @@ const schema = [
               </span>
             )}
 
-            <div class="min-h-[6.5rem] sm:min-h-[7rem] lg:min-h-[7.5rem] flex flex-col justify-start">
+            <div class="min-h-[6.5rem] sm:min-h-[7rem] lg:min-h-[7.25rem] flex flex-col justify-start">
               <h2 class:list={["font-display text-[2rem] sm:text-[2.25rem] font-extrabold tracking-tight leading-none", t.dark ? "text-pearl" : "text-[#1b2a38]"]}>{t.name}</h2>
-              <p class:list={["mt-3 max-w-[29ch] text-[15px] font-medium leading-relaxed", t.dark ? "text-ink-300" : "text-[#475569]"]} set:html={t.description}></p>
+              <p class:list={["mt-3 max-w-[34ch] text-[14.5px] font-medium leading-relaxed", t.dark ? "text-ink-300" : "text-[#475569]"]} set:html={t.description}></p>
             </div>
 
             <!-- Precio -->
-            <div class:list={["mt-5 min-h-[5.5rem] lg:min-h-[5.75rem] flex flex-row justify-between", t.isInteractive ? "items-end" : "items-start"]}>
+            <div class="mt-5 min-h-[5.5rem] lg:min-h-[5.75rem] flex flex-row justify-between items-end">
               {t.isInteractive ? (
                 <HourPricePicker packages={PAA_HOUR_PACKAGES} exam={EXAM} note={t.priceNote} />
               ) : (
@@ -312,8 +319,8 @@ const schema = [
                 <p class:list={["text-[14px] font-medium", t.dark ? "text-ink-300" : "text-[#475569]"]}>{t.priceNote}</p>
                 <div class="mt-1 flex items-end justify-between gap-2 sm:gap-3 xl:gap-4 w-full">
                   <p class:list={["font-display tracking-tight whitespace-nowrap shrink-0 flex items-baseline", t.dark ? "text-pearl" : "text-[#1b2a38]"]}>
-                    <span id={t.isInteractive ? "interactive-price" : undefined} class="text-[2.6rem] sm:text-[2.85rem] xl:text-[3.1rem] font-extrabold leading-none">{t.price}</span>
-                    <span class:list={["ml-1.5 text-[14px] sm:text-[15px] font-extrabold tracking-wide uppercase", t.dark ? "text-ink-300" : "text-[#5e7182]"]}>{t.priceUnit}</span>
+                    <span id={t.isInteractive ? "interactive-price" : undefined} class="text-[2.25rem] sm:text-[2.5rem] xl:text-[2.75rem] font-extrabold leading-none">{t.price}</span>
+                    <span class:list={["ml-1 text-[13px] sm:text-[14px] font-extrabold tracking-wide uppercase", t.dark ? "text-ink-300" : "text-[#5e7182]"]}>{t.priceUnit}</span>
                   </p>
                   {t.tag && (
                     <span
@@ -333,7 +340,7 @@ const schema = [
               href={waLink(t.name)}
               target="_blank"
               rel="noopener noreferrer"
-              class="mt-6 inline-flex self-start items-center justify-center rounded-full bg-[#00cfab] px-8 sm:px-10 py-3.5 font-display text-[13px] font-bold tracking-widest text-ink-950 shadow-sm transition-colors hover:bg-[#00bda0] uppercase"
+              class="mt-6 inline-flex w-full items-center justify-center rounded-full bg-[#00cfab] px-8 py-3.5 font-display text-[13px] font-bold tracking-widest text-ink-950 shadow-sm transition-colors hover:bg-[#00bda0] uppercase"
               data-magnetic
               data-event={`pricing_contact_${t.name.toLowerCase().replace(/\s+/g, "_")}`}
             >
@@ -367,26 +374,28 @@ const schema = [
             </ul>
 
             <!-- Garantía -->
-            <div class:list={[
-              "mt-auto rounded-3xl p-6 sm:p-7 shadow-sm",
-              t.dark ? "bg-[#13332e] border border-white/10" : t.lightGreen ? "bg-white/40 border border-white/50" : "bg-[#e2f8f3]",
-            ]}>
-              <div class="flex items-center gap-3">
-                <Icon name="ph:seal-check" class:list={["size-7 shrink-0", t.dark ? "text-white" : "text-[#008f7a]"]} aria-hidden="true" />
-                <p class:list={["font-display text-[19px] sm:text-[21px] font-bold tracking-tight leading-none", t.dark ? "text-white" : "text-[#007f6d]"]}>Garantía de puntaje</p>
-              </div>
-              <p class:list={["mt-3 text-[13.5px] sm:text-[14px] leading-relaxed", t.dark ? "text-ink-300" : "text-ink-600"]}>{t.guarantee}</p>
-              <p class:list={["mt-2 text-[11px] sm:text-[12px]", t.dark ? "text-ink-400" : "text-ink-400"]}>
-                *Sujeto a nuestros <span class:list={["font-semibold", t.dark ? "text-ink-200" : "text-ink-700"]}>Términos y Condiciones</span>
-              </p>
-              {t.students && (
-                <div class="mt-4 flex flex-wrap items-center gap-2 sm:gap-2.5 border-t border-white/10 pt-3.5">
-                  <span class="font-mono text-[10px] sm:text-[10.5px] font-bold tracking-[0.14em] text-ink-300 uppercase">Han tomado este curso</span>
-                  <span class="font-display text-lg sm:text-xl font-extrabold text-[#00cfab]">{t.students}</span>
-                  <span class="text-[12px] sm:text-[13px] text-ink-200">Estudiantes</span>
+            {t.guarantee && (
+              <div class:list={[
+                "mt-auto rounded-3xl p-6 sm:p-7 shadow-sm",
+                t.dark ? "bg-[#13332e] border border-white/10" : t.lightGreen ? "bg-white/40 border border-white/50" : "bg-[#e2f8f3]",
+              ]}>
+                <div class="flex items-center gap-3">
+                  <Icon name="ph:seal-check" class:list={["size-7 shrink-0", t.dark ? "text-white" : "text-[#008f7a]"]} aria-hidden="true" />
+                  <p class:list={["font-display text-[19px] sm:text-[21px] font-bold tracking-tight leading-none", t.dark ? "text-white" : "text-[#007f6d]"]}>Garantía de puntaje</p>
                 </div>
-              )}
-            </div>
+                <p class:list={["mt-3 text-[13.5px] sm:text-[14px] leading-relaxed", t.dark ? "text-ink-300" : "text-ink-600"]}>{t.guarantee}</p>
+                <p class:list={["mt-2 text-[11px] sm:text-[12px]", t.dark ? "text-ink-400" : "text-ink-400"]}>
+                  *Sujeto a nuestros <span class:list={["font-semibold", t.dark ? "text-ink-200" : "text-ink-700"]}>Términos y Condiciones</span>
+                </p>
+                {t.students && (
+                  <div class:list={["mt-4 flex flex-wrap sm:flex-nowrap items-baseline gap-1.5 border-t pt-3.5", t.dark ? "border-white/10" : "border-ink-950/10"]}>
+                    <span class:list={["font-mono text-[9.5px] sm:text-[10px] font-bold tracking-[0.08em] uppercase whitespace-nowrap", t.dark ? "text-ink-300" : "text-ink-700"]}>Han tomado este curso</span>
+                    <span class:list={["font-display text-base sm:text-lg font-extrabold whitespace-nowrap", t.dark ? "text-[#00cfab]" : "text-[#008f7a]"]}>{t.students}</span>
+                    <span class:list={["text-[12px] sm:text-[12.5px] font-medium whitespace-nowrap", t.dark ? "text-ink-200" : "text-ink-800"]}>Estudiantes</span>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         ))}
       </div>
@@ -459,9 +468,12 @@ const schema = [
   }
   @media (min-width: 1024px) {
     .pp-cards {
-      grid-template-columns: 1fr 1fr 1.16fr;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.08fr);
       gap: 0;
       align-items: stretch;
+    }
+    .pp-card {
+      min-width: 0;
     }
     .pp-card-0 {
       border-top-right-radius: 0;

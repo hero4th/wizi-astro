@@ -42,12 +42,12 @@ const activeSlug = courseSlugs.find((slug) => pathname.includes(`/cursos/${slug}
                     </svg>
                   </a>
                   <div class="invisible absolute left-1/2 top-full -translate-x-1/2 pt-3 opacity-0 transition-all duration-300 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
-                    <ul class="glass-dark min-w-52 rounded-2xl p-2 shadow-panel">
+                    <ul class="min-w-52 rounded-2xl p-2 bg-[#091412] border border-white/15 shadow-2xl shadow-black/90">
                       {link.children.map((child) => (
                         <li>
                           <a
                             href={child.href}
-                            class="block rounded-xl px-4 py-2.5 text-sm font-medium text-pearl/70 transition-colors hover:bg-teal-400/8 hover:text-teal-300"
+                            class="block rounded-xl px-4 py-2.5 text-sm font-semibold text-pearl transition-colors hover:bg-teal-400/20 hover:text-[#00cfab]"
                           >
                             {child.label}
                           </a>

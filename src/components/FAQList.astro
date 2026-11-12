@@ -9,8 +9,10 @@ interface Props {
   name?: string;
   /** Tono visual: "light" (por defecto) para fondos claros, "dark" para fondos oscuros. */
   variant?: "light" | "dark";
+  /** Abre el primer elemento por defecto (true por defecto). */
+  defaultOpenFirst?: boolean;
 }
-const { faqs, name = "faq", variant = "light" } = Astro.props;
+const { faqs, name = "faq", variant = "light", defaultOpenFirst = true } = Astro.props;
 
 const dark = variant === "dark";
 const styles = {
@@ -26,8 +28,8 @@ const styles = {
 
 <div class={styles.wrap} data-faq-list>
   {faqs.map((faq, i) => (
-    <div class={`faq-item group ${styles.item}`} data-faq-item data-active={i === 0 ? "true" : "false"}>
-      <button class={`faq-toggle w-full flex cursor-pointer list-none items-center justify-between gap-6 py-6 text-left transition-colors ${styles.summary}`} data-faq-toggle aria-expanded={i === 0 ? "true" : "false"}>
+    <div class={`faq-item group ${styles.item}`} data-faq-item data-active={defaultOpenFirst && i === 0 ? "true" : "false"}>
+      <button class={`faq-toggle w-full flex cursor-pointer list-none items-center justify-between gap-6 py-6 text-left transition-colors ${styles.summary}`} data-faq-toggle aria-expanded={defaultOpenFirst && i === 0 ? "true" : "false"}>
         <span class="font-display text-lg font-medium tracking-tight sm:text-xl">{faq.q}</span>
         <span class={`faq-icon grid size-9 shrink-0 place-items-center rounded-full transition-all duration-500 ease-out ${styles.icon}`} aria-hidden="true">
           <svg class="size-3.5" viewBox="0 0 14 14" fill="none">
