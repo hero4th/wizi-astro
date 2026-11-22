@@ -10,7 +10,7 @@ const script = source.match(/<script define:vars=[^>]*>([\s\S]*?)<\/script>/)[1]
 const flush = () => new Promise(resolve => setImmediate(resolve));
 function setup(response = async () => ({ ok: true, json: async () => ({ success: true }) })) {
   const node = (dataset = {}) => ({
-    dataset, attrs: {}, listeners: {}, children: [], textContent: '', disabled: false,
+    dataset, attrs: {}, listeners: {}, children: [], textContent: '', disabled: false, style: {},
     addEventListener(type, callback) { (this.listeners[type] ??= []).push(callback); },
     setAttribute(key, value) { this.attrs[key] = value; },
     removeAttribute(key) { delete this.attrs[key]; },

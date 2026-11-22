@@ -3,24 +3,58 @@ export const prerender = false;
 import nodemailer from "nodemailer";
 import type { APIRoute } from "astro";
 
-const transporter = nodemailer.createTransport({
-  host: "mail.oqumail.com", // Servidor SMTP de OquMail (envío)
-  port: 587,
-  secure: false, // STARTTLS en el puerto 587 (no SSL directo)
-  requireTLS: true,
-  auth: {
-    user: import.meta.env.SMTP_USER,
-    pass: import.meta.env.SMTP_PASS,
-  },
-});
+const SMTP_USER = process.env.SMTP_USER ?? import.meta.env.SMTP_USER;
+const SMTP_PASS = process.env.SMTP_PASS ?? import.meta.env.SMTP_PASS;
+const CONTACT_TO = process.env.CONTACT_TO ?? "contacto@proacademymx.com";
+
+const transporter =
+  process.env.SMTP_USER && process.env.SMTP_PASS
+    ? nodemailer.createTransport({
+        host: "198.59.144.25",
+        port: 465,
+        secure: true,
+        auth: {
+          user: process.env.SMTP_USER,
+          pass: process.env.SMTP_PASS,
+        },
+        tls: {
+          rejectUnauthorized: false,
+          servername: "mail.proacademymx.com",
+        },
+      })
+    : null;
+
+const json = (body: unknown, status = 200) =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: {
+      "Content-Type": "application/json",
+      "Cache-Control": "no-store",
+    },
+  });
 
 export const POST: APIRoute = async ({ request }) => {
+  if (!transporter) {
+    console.error(
+      "[contact] SMTP no configurado: faltan SMTP_USER y/o SMTP_PASS en el entorno.",
+    );
+    return json(
+      {
+        error:
+          "El formulario no está disponible en este momento. Escríbenos por WhatsApp y te atendemos de inmediato.",
+      },
+      503,
+    );
+  }
+
   try {
     const data = await request.json();
     const { nombre, correo, telefono, curso, notas, fromUrl } = data;
 
+    console.log("[contact] intento", { nombre, correo, curso });
+
     if (!nombre || !correo) {
-      return new Response(JSON.stringify({ error: "Faltan campos obligatorios" }), { status: 400 });
+      return json({ error: "Faltan campos obligatorios" }, 400);
     }
 
     const htmlContent = `
@@ -38,7 +72,7 @@ export const POST: APIRoute = async ({ request }) => {
         <!-- Header -->
         <tr>
           <td style="background-color: #060a0a; text-align: center; padding: 40px 20px; border-bottom: 4px solid #0d9488;">
-            <img src="https://www.proacademymx.com/email-logo.png" alt="Professional Academy" width="180" height="46" style="display: block; margin: 0 auto; width: 180px; height: auto; max-width: 100%;" />
+            <img src="https://proacademymx.com/email-logo.png" alt="Professional Academy" width="180" height="46" style="display: block; margin: 0 auto; width: 180px; height: auto; max-width: 100%;" />
             <h1 style="color: #ffffff; margin: 24px 0 0 0; font-size: 20px; font-weight: 600; letter-spacing: 0.5px;">¡Nuevo contacto generado!</h1>
             <p style="color: #5eead4; margin: 8px 0 0 0; font-size: 13px; font-weight: 500; text-transform: uppercase; letter-spacing: 2px;">Sitio Web Oficial</p>
           </td>
@@ -104,7 +138,7 @@ export const POST: APIRoute = async ({ request }) => {
         <tr>
           <td style="background-color: #f8fafc; padding: 30px; border-top: 1px solid #e2e8f0; text-align: center;">
             <p style="margin: 0 0 8px 0; font-size: 12px; color: #64748b;">Este mensaje es confidencial y ha sido generado a través de tu plataforma web.</p>
-            <p style="margin: 0; font-size: 12px; color: #94a3b8;"><a href="${fromUrl || "https://www.proacademymx.com"}" style="color: #0d9488; text-decoration: none;">Ver página de origen</a> • Professional Academy</p>
+            <p style="margin: 0; font-size: 12px; color: #94a3b8;"><a href="${fromUrl || "https://proacademymx.com"}" style="color: #0d9488; text-decoration: none;">Ver página de origen</a> • Professional Academy</p>
           </td>
         </tr>
       </table>
@@ -115,22 +149,21 @@ export const POST: APIRoute = async ({ request }) => {
 
     await transporter.sendMail({
       from: '"Professional Academy Web" <contacto@proacademymx.com>',
-      to: "contacto@proacademymx.com",
+      to: CONTACT_TO,
+      replyTo: correo,
       subject: `Nuevo prospecto: ${nombre} (${curso})`,
       html: htmlContent,
     });
 
-    return new Response(JSON.stringify({ success: true }), {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    return json({ success: true });
   } catch (error: any) {
-    console.error("Error enviando correo:", error);
-    return new Response(JSON.stringify({ error: error.message || "Error al enviar correo" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+    console.error("[contact] Error enviando correo:", error?.message || error);
+    return json(
+      {
+        error:
+          "No pudimos enviar tu mensaje. Intenta de nuevo o escríbenos por WhatsApp.",
+      },
+      500,
+    );
   }
 };

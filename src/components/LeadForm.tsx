@@ -23,7 +23,8 @@ declare global {
  */
 export default function LeadForm() {
   const [errors, setErrors] = useState<Errors>({});
-  const [status, setStatus] = useState<"idle" | "sending" | "done">("idle");
+  const [status, setStatus] = useState<"idle" | "sending" | "done" | "error">("idle");
+  const [errorMessage, setErrorMessage] = useState("");
   const formRef = useRef<HTMLFormElement>(null);
 
   function validate(data: FormData): Errors {
@@ -60,10 +61,6 @@ export default function LeadForm() {
     }
 
     setStatus("sending");
-    window.dataLayer?.push({
-      event: "generate_lead",
-      lead_exam: String(data.get("exam")),
-    });
 
     const nombre = String(data.get("name"));
     const correo = String(data.get("email"));
@@ -82,21 +79,33 @@ export default function LeadForm() {
       .filter(Boolean)
       .join("\n");
 
+    const openWhatsApp = () => {
+      window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
+    };
+
     fetch("/api/contact", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ nombre, correo, telefono, curso, notas, fromUrl: window.location.href }),
-    }).catch(err => console.error("Error al enviar correo", err))
-      .finally(() => {
-        setTimeout(() => {
-          window.open(
-            `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(message)}`,
-            "_blank",
-            "noopener,noreferrer"
-          );
-        }, 5000);
-        
+    })
+      .then(async (response) => {
+        if (!response.ok) {
+          const payload = await response.json().catch(() => ({}));
+          throw new Error(payload.error || "No se pudo enviar el mensaje.");
+        }
+        window.dataLayer?.push({
+          event: "generate_lead",
+          lead_exam: curso,
+        });
         setStatus("done");
+        setTimeout(openWhatsApp, 5000);
+      })
+      .catch((error) => {
+        // Nunca mostrar un éxito falso: si el correo falla, seguimos por WhatsApp.
+        console.error("Error al enviar correo", error);
+        setErrorMessage(error?.message || "No pudimos enviar tus datos.");
+        setStatus("error");
+        setTimeout(openWhatsApp, 1500);
       });
   }
 
@@ -104,6 +113,33 @@ export default function LeadForm() {
     `w-full rounded-xl border bg-ink-950/50 px-4 py-3.5 text-[15px] text-pearl outline-none transition-all placeholder:text-ink-500 focus-visible:bg-ink-950 focus-visible:ring-1 ${
       hasError ? "border-red-400/60 focus-visible:ring-red-400" : "border-ink-800 focus-visible:border-teal-500 focus-visible:ring-teal-500"
     }`;
+
+  if (status === "error") {
+    return (
+      <div
+        className="rounded-2xl border border-red-400/40 bg-red-950/30 p-10 text-center"
+        role="alert"
+      >
+        <p className="font-display text-2xl font-semibold tracking-tight text-pearl">
+          No pudimos enviar tus datos.
+        </p>
+        <p className="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-pearl-dim">
+          {errorMessage}
+        </p>
+        <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-pearl-dim">
+          Te abrimos WhatsApp para no perder tu mensaje. Si no se abrió, escríbenos
+          al 33 27 98 62 75.
+        </p>
+        <button
+          type="button"
+          onClick={() => setStatus("idle")}
+          className="mt-7 rounded-full border border-pearl/18 px-5 py-2.5 font-mono text-[11px] tracking-widest text-pearl uppercase transition-colors hover:border-teal-400 hover:text-teal-300"
+        >
+          Intentar de nuevo
+        </button>
+      </div>
+    );
+  }
 
   if (status === "done") {
     return (

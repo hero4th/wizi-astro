@@ -260,31 +260,53 @@ const channels = [
       form.querySelectorAll("[aria-invalid]").forEach((el) => el.removeAttribute("aria-invalid"));
       if (status) status.textContent = "Enviando mensaje…";
 
+      const msg = [
+        `Hola, me llamo ${nombre}.`,
+        `Quiero informes del curso ${curso}.`,
+        correo ? `Mi correo: ${correo}` : null,
+        telefono ? `Mi teléfono: ${telefono}` : null,
+      ].filter(Boolean).join("\n");
+
+      const openWhatsApp = () => {
+        window.open(`https://wa.me/${whatsapp}?text=${encodeURIComponent(msg)}`, "_blank", "noopener,noreferrer");
+      };
+
+      const showStatus = (html, isError = false) => {
+        if (!status) return;
+        status.innerHTML = html;
+        status.style.color = isError ? "#dc2626" : "";
+      };
+
       fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ nombre, correo, telefono, curso, fromUrl: window.location.href }),
-      }).finally(() => {
-        if (status) {
-          status.innerHTML = `¡Mensaje enviado perfectamente! <br/><span class="text-xs opacity-80 mt-1 block">Abriendo WhatsApp en 5 segundos...</span>`;
-          status.classList.add("text-teal-600");
-          status.classList.remove("text-teal-300");
-        }
+      })
+        .then(async (response) => {
+          if (!response.ok) {
+            const payload = await response.json().catch(() => ({}));
+            throw new Error(payload.error || "No se pudo enviar el mensaje.");
+          }
 
-        const msg = [
-          `Hola, me llamo ${nombre}.`,
-          `Quiero informes del curso ${curso}.`,
-          correo ? `Mi correo: ${correo}` : null,
-          telefono ? `Mi teléfono: ${telefono}` : null,
-        ].filter(Boolean).join("\n");
+          showStatus(
+            `¡Mensaje enviado perfectamente! <br/><span class="text-xs opacity-80 mt-1 block">Abriendo WhatsApp en 5 segundos...</span>`,
+          );
+          window.dataLayer?.push({ event: "generate_lead", lead_exam: curso });
 
-        window.dataLayer?.push({ event: "generate_lead", lead_exam: curso });
-        
-        setTimeout(() => {
-          if (status) status.innerHTML = "¡Mensaje enviado perfectamente!";
-          window.open(`https://wa.me/${whatsapp}?text=${encodeURIComponent(msg)}`, "_blank", "noopener,noreferrer");
-        }, 5000);
-      });
+          setTimeout(() => {
+            showStatus("¡Mensaje enviado perfectamente!");
+            openWhatsApp();
+          }, 5000);
+        })
+        .catch((error) => {
+          // Never show a false success: keep the lead in WhatsApp if email fails.
+          console.error("[contact] No se pudo enviar el formulario:", error);
+          showStatus(
+            `No pudimos enviar el correo. <br/><span class="text-xs opacity-80 mt-1 block">Te abrimos WhatsApp para no perder tu mensaje.</span>`,
+            true,
+          );
+          setTimeout(openWhatsApp, 1500);
+        });
     });
   }
 

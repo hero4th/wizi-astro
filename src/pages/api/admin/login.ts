@@ -2,11 +2,12 @@ export const prerender = false;
 
 import type { APIRoute } from "astro";
 import {
-  verifyPassword,
+  verifyUserPassword,
   createSessionToken,
   setSessionCookie,
   isRateLimited,
   recordLoginAttempt,
+  touchLastLogin,
   clientIp,
 } from "@/lib/auth";
 
@@ -15,19 +16,28 @@ const noStore = { "Cache-Control": "no-store", "Content-Type": "application/json
 export const POST: APIRoute = async ({ request, cookies, redirect }) => {
   const ip = clientIp(request);
 
-  if (await isRateLimited(ip)) {
+  const data = await request.json().catch(() => ({}));
+  const email = String(data.email ?? "").trim();
+  const password = String(data.password ?? "");
+
+  if (await isRateLimited(ip, email)) {
     return new Response(
       JSON.stringify({ error: "Demasiados intentos. Espera 15 minutos e intenta de nuevo." }),
       { status: 429, headers: noStore }
     );
   }
 
-  const data = await request.json().catch(() => ({}));
-  const password = String(data.password ?? "");
+  if (!email || !password) {
+    await recordLoginAttempt(ip, email, false);
+    return new Response(JSON.stringify({ error: "Correo y contraseña son obligatorios." }), {
+      status: 400,
+      headers: noStore,
+    });
+  }
 
-  let ok = false;
+  let account = null;
   try {
-    ok = password.length > 0 && (await verifyPassword(password));
+    account = await verifyUserPassword(email, password);
   } catch (err) {
     console.error("Login error:", (err as Error).message);
     return new Response(JSON.stringify({ error: "Error de configuración del servidor." }), {
@@ -36,17 +46,17 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
     });
   }
 
-  await recordLoginAttempt(ip, ok);
+  await recordLoginAttempt(ip, email, Boolean(account));
 
-  // A failed login answers with 401, not a redirect: the client needs to tell
-  // failure apart from success, and both used to come back as a 303.
-  if (!ok) {
-    return new Response(JSON.stringify({ error: "Contraseña incorrecta." }), {
+  if (!account) {
+    // Same answer for unknown email, wrong password, or inactive account.
+    return new Response(JSON.stringify({ error: "Correo o contraseña incorrectos." }), {
       status: 401,
       headers: noStore,
     });
   }
 
-  setSessionCookie(cookies, await createSessionToken());
+  await touchLastLogin(account.id);
+  setSessionCookie(cookies, await createSessionToken(account.id));
   return redirect("/admin", 303);
 };

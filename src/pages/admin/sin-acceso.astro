@@ -1,0 +1,25 @@
+---
+export const prerender = false;
+
+import AdminLayout from "@/layouts/AdminLayout.astro";
+import { getSessionUser, hasPermission } from "@/lib/auth";
+import { PERMISSIONS } from "@/lib/permissions";
+
+const user = await getSessionUser(Astro.cookies);
+if (!user) return Astro.redirect("/admin/login", 303);
+
+const canSeeBlog = hasPermission(user, PERMISSIONS.POSTS_READ);
+---
+
+<AdminLayout title="Sin acceso">
+  <div class="empty-state">
+    <h1 style="margin-top:0">Sin acceso a esta sección</h1>
+    <p style="margin:0 0 1rem">
+      Tu cuenta (<strong>{user.email}</strong>) tiene el rol <strong>{user.role.name}</strong>,
+      que no incluye permiso para ver esta página.
+    </p>
+    {canSeeBlog
+      ? <a href="/admin" class="btn btn-primary">Ir a los posts</a>
+      : <a href="/blog" class="btn btn-primary">Ir al blog</a>}
+  </div>
+</AdminLayout>

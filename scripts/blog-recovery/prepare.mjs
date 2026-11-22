@@ -3,7 +3,7 @@ import sanitize from 'sanitize-html';
 import { createHash } from 'node:crypto';
 import { pickPrimaryCategory } from '../../src/lib/wordpress.ts';
 
-export const SITE = 'https://www.proacademymx.com';
+export const SITE = 'https://proacademymx.com';
 export const hash = value => createHash('sha256').update(typeof value === 'string' ? value : JSON.stringify(value)).digest('hex');
 const hosts = new Set(['proacademymx.com','www.proacademymx.com','cms.proacademymx.com']);
 const text = html => load(html || '',null,false).root().text().replace(/\s+/g,' ').trim();

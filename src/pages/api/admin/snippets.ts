@@ -1,7 +1,8 @@
 export const prerender = false;
 
 import type { APIRoute } from "astro";
-import { requireSession } from "@/lib/auth";
+import { getSessionUser, hasPermission } from "@/lib/auth";
+import { PERMISSIONS } from "@/lib/permissions";
 import { sql } from "@/lib/db";
 import { processContentHtml } from "@/lib/content";
 
@@ -10,13 +11,18 @@ const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), { status, headers });
 
 export const GET: APIRoute = async ({ cookies }) => {
-  if (!(await requireSession(cookies))) return json({ error: "No autorizado." }, 401);
+  const user = await getSessionUser(cookies);
+  if (!user) return json({ error: "No autorizado." }, 401);
+  if (!hasPermission(user, PERMISSIONS.SNIPPETS_READ)) return json({ error: "Sin permiso." }, 403);
+
   const rows = await sql`SELECT id, name, html FROM snippets ORDER BY created_at DESC LIMIT 100`;
   return json({ snippets: rows });
 };
 
 export const POST: APIRoute = async ({ request, cookies }) => {
-  if (!(await requireSession(cookies))) return json({ error: "No autorizado." }, 401);
+  const user = await getSessionUser(cookies);
+  if (!user) return json({ error: "No autorizado." }, 401);
+  if (!hasPermission(user, PERMISSIONS.SNIPPETS_CREATE)) return json({ error: "Sin permiso." }, 403);
 
   const data = await request.json().catch(() => ({}));
   const name = String(data.name ?? "").trim().slice(0, 80);
@@ -36,7 +42,10 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 };
 
 export const DELETE: APIRoute = async ({ request, cookies }) => {
-  if (!(await requireSession(cookies))) return json({ error: "No autorizado." }, 401);
+  const user = await getSessionUser(cookies);
+  if (!user) return json({ error: "No autorizado." }, 401);
+  if (!hasPermission(user, PERMISSIONS.SNIPPETS_DELETE)) return json({ error: "Sin permiso." }, 403);
+
   const data = await request.json().catch(() => ({}));
   const id = Number(data.id);
   if (!Number.isInteger(id)) return json({ error: "Id inválido." }, 422);

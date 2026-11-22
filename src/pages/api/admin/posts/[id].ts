@@ -1,9 +1,11 @@
 export const prerender = false;
 
 import type { APIRoute } from "astro";
-import { requireSession } from "@/lib/auth";
+import { getSessionUser, hasPermission } from "@/lib/auth";
+import { PERMISSIONS } from "@/lib/permissions";
 import { sql } from "@/lib/db";
 import { processContentHtml, readingTimeFromHtml } from "@/lib/content";
+import { stripFeaturedImageDuplicates } from "@/lib/blog-images";
 import { slugify } from "@/lib/slug";
 import { seoFields } from "@/lib/post-meta";
 
@@ -13,7 +15,11 @@ export const PUT: APIRoute = async ({ params, request, cookies }) => {
   // manual Origin comparison here rejected legitimate requests in
   // production (request.url doesn't reliably reflect the public origin
   // behind Vercel's proxy).
-  if (!(await requireSession(cookies))) return new Response("Unauthorized", { status: 401 });
+  const user = await getSessionUser(cookies);
+  if (!user) return new Response("Unauthorized", { status: 401 });
+  if (!hasPermission(user, PERMISSIONS.POSTS_UPDATE)) {
+    return new Response("Forbidden", { status: 403 });
+  }
 
   const id = Number(params.id);
   if (!Number.isInteger(id)) return new Response("Invalid id", { status: 400 });
@@ -25,8 +31,12 @@ export const PUT: APIRoute = async ({ params, request, cookies }) => {
     return new Response("Título y contenido son obligatorios.", { status: 400 });
   }
 
+  if (data.draft === false && !hasPermission(user, PERMISSIONS.POSTS_PUBLISH)) {
+    return new Response("No tienes permiso para publicar artículos.", { status: 403 });
+  }
+
   const slug: string = data.slug?.trim() ? slugify(data.slug) : slugify(title);
-  const html = processContentHtml(rawBody);
+  const html = stripFeaturedImageDuplicates(processContentHtml(rawBody), data.image);
   const readingTime = data.readingTime ? Number(data.readingTime) : readingTimeFromHtml(html);
   const categories = Array.isArray(data.categories) ? data.categories : [];
   const seo = seoFields(data);
@@ -57,11 +67,13 @@ export const PUT: APIRoute = async ({ params, request, cookies }) => {
         noindex = ${seo.noindex},
         og_image = ${seo.ogImage},
         keywords = ${seo.keywords},
+        updated_by_user_id = ${user.id},
         updated_at = now()
       WHERE id = ${id}
       RETURNING id, slug
     `;
     if (rows.length === 0) return new Response("Post no encontrado.", { status: 404 });
+
     return new Response(JSON.stringify(rows[0]), { status: 200, headers: { "Content-Type": "application/json" } });
   } catch (err) {
     const message = (err as Error).message;
@@ -74,11 +86,16 @@ export const PUT: APIRoute = async ({ params, request, cookies }) => {
 };
 
 export const DELETE: APIRoute = async ({ params, cookies }) => {
-  if (!(await requireSession(cookies))) return new Response("Unauthorized", { status: 401 });
+  const user = await getSessionUser(cookies);
+  if (!user) return new Response("Unauthorized", { status: 401 });
+  if (!hasPermission(user, PERMISSIONS.POSTS_DELETE)) {
+    return new Response("Forbidden", { status: 403 });
+  }
 
   const id = Number(params.id);
   if (!Number.isInteger(id)) return new Response("Invalid id", { status: 400 });
 
   await sql`DELETE FROM posts WHERE id = ${id}`;
+
   return new Response(null, { status: 204 });
 };

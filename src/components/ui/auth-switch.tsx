@@ -10,24 +10,25 @@ export interface AuthSwitchProps {
  * Split-panel login card for the blog admin: a curved teal panel on the left
  * and the form on the right.
  *
- * This admin has no user accounts and no third-party sign-in — just the one
- * shared password checked server-side against ADMIN_PASSWORD_HASH — so the
- * left panel carries the brand instead of a "sign up" switch, and there is a
- * single password field.
+ * Accounts live in the database and each one has a role (superadmin, admin or
+ * blog editor). The email identifies the account; the password is verified
+ * server-side against its bcrypt hash.
  */
 export function AuthSwitch({ initialError = false }: AuthSwitchProps) {
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [reveal, setReveal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(
-    initialError ? "Contraseña incorrecta." : null
+    initialError ? "Correo o contraseña incorrectos." : null
   );
   const [shake, setShake] = useState(false);
+  const emailRef = useRef<HTMLInputElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    inputRef.current?.focus();
+    emailRef.current?.focus();
   }, []);
 
   const fail = (message: string) => {
@@ -40,7 +41,7 @@ export function AuthSwitch({ initialError = false }: AuthSwitchProps) {
   // now flag as deprecated.
   const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
-    if (!password || loading || success) return;
+    if (!email || !password || loading || success) return;
     setLoading(true);
     setError(null);
 
@@ -51,7 +52,7 @@ export function AuthSwitch({ initialError = false }: AuthSwitchProps) {
       const res = await fetch("/api/admin/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password }),
+        body: JSON.stringify({ email, password }),
       });
 
       // Only a real success redirects now; a wrong password comes back as 401
@@ -64,7 +65,7 @@ export function AuthSwitch({ initialError = false }: AuthSwitchProps) {
       }
 
       const data = await res.json().catch(() => ({}) as { error?: string });
-      fail(data.error ?? "Contraseña incorrecta.");
+      fail(data.error ?? "Correo o contraseña incorrectos.");
       setPassword("");
       inputRef.current?.focus();
     } catch {
@@ -154,10 +155,32 @@ export function AuthSwitch({ initialError = false }: AuthSwitchProps) {
                 <p className="text-[13px] font-semibold">{error}</p>
               </div>
 
+              <label htmlFor="email" className="sr-only">
+                Correo electrónico
+              </label>
+              <div className="pa-rise relative" style={{ animationDelay: "0.28s" }}>
+                <span className="pointer-events-none absolute left-5 top-1/2 -translate-y-1/2 text-teal-600 transition-transform duration-300 peer-focus:scale-110">
+                  <MailIcon />
+                </span>
+                <input
+                  ref={emailRef}
+                  id="email"
+                  name="email"
+                  type="email"
+                  required
+                  autoFocus
+                  autoComplete="username"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Correo electrónico"
+                  className="peer w-full rounded-full bg-ink-50 py-3.5 pl-[3.4rem] pr-12 text-[15px] text-ink-950 outline-none ring-2 ring-transparent transition duration-300 placeholder:text-ink-300 focus:bg-white focus:ring-teal-500/45"
+                />
+              </div>
+
               <label htmlFor="password" className="sr-only">
                 Contraseña
               </label>
-              <div className="pa-rise relative" style={{ animationDelay: "0.3s" }}>
+              <div className="pa-rise relative" style={{ animationDelay: "0.34s" }}>
                 <span className="pointer-events-none absolute left-5 top-1/2 -translate-y-1/2 text-teal-600 transition-transform duration-300 peer-focus:scale-110">
                   <LockIcon />
                 </span>
@@ -193,7 +216,7 @@ export function AuthSwitch({ initialError = false }: AuthSwitchProps) {
               <div className="pa-rise mt-3 flex justify-center" style={{ animationDelay: "0.4s" }}>
                 <button
                   type="submit"
-                  disabled={loading || success || !password}
+                  disabled={loading || success || !email || !password}
                   className={cn(
                     "flex min-w-[10rem] items-center justify-center gap-2 rounded-full px-9 py-3.5 font-mono text-[12px] font-bold uppercase tracking-[0.14em] text-white shadow-[0_10px_24px_-8px_rgba(13,148,136,0.7)] transition-all duration-300",
                     "hover:-translate-y-0.5 hover:shadow-[0_16px_30px_-10px_rgba(13,148,136,0.85)]",
@@ -322,6 +345,15 @@ function BrandLogo() {
           <tspan fontSize="16" dy="-14">®</tspan>
         </text>
       </g>
+    </svg>
+  );
+}
+
+function MailIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect x="3" y="5" width="18" height="14" rx="2" />
+      <path d="m3 7 9 6 9-6" />
     </svg>
   );
 }

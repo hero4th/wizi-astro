@@ -1,5 +1,4 @@
-export const prerender = false;
-
+// Static on purpose: the feed is generated at build time alongside the posts.
 import rss from "@astrojs/rss";
 import type { APIContext } from "astro";
 import { SITE } from "@/data/site";

@@ -131,21 +131,33 @@ export function articleSchema(opts: {
   image?: string;
   author?: string;
 }) {
+  const url = normalizeUrl(opts.url);
+  const image = opts.image
+    ? new URL(opts.image, SITE.url).href
+    : `${SITE.url}/og-default.png`;
+
   return {
     "@type": "Article",
     headline: opts.title,
     description: opts.description,
-    url: opts.url,
+    url,
     inLanguage: "es-MX",
     datePublished: opts.datePublished,
     dateModified: opts.dateModified ?? opts.datePublished,
-    image: opts.image ?? `${SITE.url}/og-default.png`,
+    image,
     author: opts.author && opts.author !== SITE.name
       ? { "@type": "Person", name: opts.author }
       : { "@id": ORG_ID },
     publisher: { "@id": ORG_ID },
-    mainEntityOfPage: { "@type": "WebPage", "@id": opts.url },
+    mainEntityOfPage: { "@type": "WebPage", "@id": url },
   };
+}
+
+/** Absolute, slash-free URL for schema nodes. */
+function normalizeUrl(value: string): string {
+  const url = new URL(value, SITE.url);
+  if (url.pathname !== "/") url.pathname = url.pathname.replace(/\/+$/, "");
+  return url.href;
 }
 
 /** Wrap one or more schema nodes in a @graph JSON-LD document. */

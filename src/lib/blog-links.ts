@@ -16,7 +16,7 @@ export function publicBlogLinks(html: string): string {
     try {
       const url = new URL(href);
       const target = cmsPaths[url.pathname.replace(/\/$/, "") || "/"];
-      return target === undefined ? original : `href=${quote}https://www.proacademymx.com${target}${url.search}${url.hash}${quote}`;
+      return target === undefined ? original : `href=${quote}https://proacademymx.com${target}${url.search}${url.hash}${quote}`;
     } catch {
       return original;
     }

@@ -1,6 +1,8 @@
-import { sql } from "./db";
 import { categoryDescription } from "./wordpress";
 import { publicBlogLinks } from "./blog-links";
+import { stripFeaturedImageDuplicates } from "./blog-images";
+import generatedBlogData from "@/data/blog-generated.json";
+import fallbackPostsData from "@/data/blog-fallback.json";
 
 export interface BlogCategoryRef {
   name: string;
@@ -47,12 +49,9 @@ export interface CategoryWithCount {
   description: string;
 }
 
-import fallbackPostsData from "@/data/blog-fallback.json";
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function getFallbackPosts(): Post[] {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (fallbackPostsData as any[]).map((item) => ({
+function snapshotToPost(item: any): Post {
+  return {
     id: item.slug,
     data: {
       title: item.title,
@@ -69,8 +68,8 @@ function getFallbackPosts(): Post[] {
       author: item.author,
       readingTime: item.readingTime,
       draft: item.draft,
-      html: publicBlogLinks(item.html),
-      body: item.body,
+      html: stripFeaturedImageDuplicates(publicBlogLinks(item.html), item.image),
+      body: stripFeaturedImageDuplicates(item.body, item.image),
       seoTitle: item.seoTitle ?? undefined,
       seoDescription: item.seoDescription ?? undefined,
       canonicalUrl: item.canonicalUrl ?? undefined,
@@ -78,69 +77,35 @@ function getFallbackPosts(): Post[] {
       ogImage: item.ogImage ?? undefined,
       keywords: item.keywords ?? undefined,
     },
-  }));
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function rowToPost(row: any): Post {
-  return {
-    id: row.slug,
-    data: {
-      title: row.title,
-      description: row.description,
-      category: row.category,
-      categorySlug: row.category_slug,
-      categories: row.categories ?? [],
-      pubDate: new Date(row.pub_date),
-      updatedDate: row.updated_date ? new Date(row.updated_date) : undefined,
-      image: row.image ?? undefined,
-      imageAlt: row.image_alt ?? "",
-      imageWidth: row.image_width ?? undefined,
-      imageHeight: row.image_height ?? undefined,
-      author: row.author,
-      readingTime: row.reading_time,
-      draft: row.draft,
-      html: publicBlogLinks(row.html),
-      body: row.body,
-      seoTitle: row.seo_title ?? undefined,
-      seoDescription: row.seo_description ?? undefined,
-      canonicalUrl: row.canonical_url ?? undefined,
-      noindex: row.noindex ?? false,
-      ogImage: row.og_image ?? undefined,
-      keywords: row.keywords ?? undefined,
-    },
   };
 }
 
-/** All published posts, newest first. */
-export async function getPublishedPosts(): Promise<Post[]> {
-  try {
-    const rows = await sql`
-      SELECT * FROM posts WHERE draft = false ORDER BY pub_date DESC
-    `;
-    if (rows && rows.length > 0) {
-      return rows.map(rowToPost);
-    }
-  } catch (err) {
-    console.error("[blog] Error al consultar posts en base de datos, usando respaldo local:", err);
-  }
-  return getFallbackPosts();
+function getGeneratedPosts(): Post[] {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return ((generatedBlogData as any[]) || []).map(snapshotToPost);
 }
 
-/** A single post by slug — published only, unless includeDrafts is set (admin preview). */
-export async function getPostBySlug(slug: string, includeDrafts = false): Promise<Post | null> {
-  try {
-    const rows = includeDrafts
-      ? await sql`SELECT * FROM posts WHERE slug = ${slug}`
-      : await sql`SELECT * FROM posts WHERE slug = ${slug} AND draft = false`;
-    if (rows && rows.length > 0) {
-      return rowToPost(rows[0]);
-    }
-  } catch (err) {
-    console.error(`[blog] Error al consultar post '${slug}' en base de datos, usando respaldo local:`, err);
-  }
-  const fallback = getFallbackPosts().find((p) => p.id === slug);
-  return fallback ?? null;
+function getFallbackPosts(): Post[] {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return ((fallbackPostsData as any[]) || []).map(snapshotToPost);
+}
+
+/**
+ * All published posts, newest first.
+ *
+ * This module is intentionally database-free. Public pages are rendered from
+ * the JSON snapshot that the build generates, so visitors never wake the
+ * database. Only /admin (and the prebuild script) may query Postgres.
+ */
+export async function getPublishedPosts(): Promise<Post[]> {
+  const generated = getGeneratedPosts();
+  return generated.length > 0 ? generated : getFallbackPosts();
+}
+
+/** A single published post by slug. */
+export async function getPostBySlug(slug: string): Promise<Post | null> {
+  const posts = await getPublishedPosts();
+  return posts.find((p) => p.id === slug) ?? null;
 }
 
 /** Every category that has at least one published post, most-used first. */

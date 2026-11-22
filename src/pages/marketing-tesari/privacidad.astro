@@ -1,0 +1,196 @@
+---
+import Base from "@/layouts/Base.astro";
+import { SITE } from "@/data/site";
+import { breadcrumbSchema } from "@/lib/schema";
+---
+
+<Base
+  title="Privacidad de Tesari Marketing | Professional Academy"
+  description="Política de privacidad específica de Tesari Marketing: alcance, información tratada, proveedores, almacenamiento, conservación y contacto."
+  schema={[breadcrumbSchema([
+    { name: "Inicio", url: SITE.url },
+    { name: "Tesari Marketing", url: `${SITE.url}/marketing-tesari` },
+    { name: "Privacidad", url: `${SITE.url}/marketing-tesari/privacidad` },
+  ])]}
+  stickyCta={false}
+>
+  <article class="pt-36 pb-24">
+    <div class="container-edge">
+      <header class="mx-auto max-w-2xl">
+        <p class="font-mono text-[11px] tracking-[0.22em] uppercase text-teal-700">Privacidad</p>
+        <h1 class="mt-4 font-display text-3xl leading-tight font-semibold tracking-tight text-balance sm:text-5xl">
+          Privacidad de Tesari Marketing
+        </h1>
+        <p class="mt-5 text-lg leading-relaxed text-ink-500">
+          Una herramienta interna para planear campañas propias.
+        </p>
+      </header>
+
+      <div class="mx-auto mt-14 max-w-2xl space-y-12">
+        <section>
+          <h2 class="border-l-2 border-teal-500 pl-4 font-display text-xl font-semibold tracking-tight sm:text-2xl">
+            Alcance y responsable
+          </h2>
+          <p class="mt-4 text-[15px] leading-relaxed text-ink-500">
+            Tesari Marketing es una herramienta interna para preparar planes de
+            publicidad. El acceso está limitado al propietario autorizado, sin
+            registro público ni acceso para clientes. Tesari Marketing no crea,
+            activa, pausa ni modifica campañas o presupuestos publicitarios.
+          </p>
+          <p class="mt-4 text-[15px] leading-relaxed text-ink-500">
+            La herramienta se utiliza en un entorno local. Las consultas de
+            Google Analytics 4 y Google Search Console están disponibles; las
+            funciones de Google Ads, Keyword Planner y Claude descritas en esta
+            política están previstas y no se presentan como servicios online ya
+            activos.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="border-l-2 border-teal-500 pl-4 font-display text-xl font-semibold tracking-tight sm:text-2xl">
+            Información y finalidad
+          </h2>
+          <p class="mt-4 text-[15px] leading-relaxed text-ink-500">
+            Para el funcionamiento de la herramienta se tratan datos de conexión
+            y sesión, registros técnicos y datos de los análisis solicitados. El
+            navegador utiliza una cookie funcional de sesión local de Tesari
+            Marketing.
+          </p>
+          <p class="mt-4 text-[15px] leading-relaxed text-ink-500">
+            Google Analytics 4 y Google Search Console se consultan con permisos
+            de lectura para revisar métricas de rendimiento. Search Console puede
+            aportar consultas y direcciones de páginas que contengan datos
+            personales. Cuando se habilite la conexión de Google Ads, Tesari
+            Marketing solicitará su permiso. Ese permiso es amplio y técnicamente
+            permite consultar y gestionar anuncios según el rol de la cuenta,
+            aunque Tesari Marketing solo realizará consultas para planificar.
+            Podrá consultar ideas de palabras clave y métricas históricas
+            disponibles para la dirección pública, países e idioma
+            seleccionados; los resultados pueden estar incompletos o no contener
+            determinadas métricas.
+          </p>
+          <p class="mt-4 text-[15px] leading-relaxed text-ink-500">
+            Para elaborar un análisis, Tesari Marketing podrá leer el contenido
+            de la página pública indicada, sus direcciones y datos de procedencia,
+            y combinarlo con resultados de Keyword Planner. El propietario debe
+            evitar introducir páginas privadas o que expongan información
+            sensible. Las páginas públicas de proacademymx.com tienen su propia
+            política de privacidad en{" "}
+            <a
+              href="https://proacademymx.com/politica-de-privacidad"
+              class="text-teal-700 underline underline-offset-2"
+            >https://proacademymx.com/politica-de-privacidad</a>.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="border-l-2 border-teal-500 pl-4 font-display text-xl font-semibold tracking-tight sm:text-2xl">
+            Proveedores y compartición
+          </h2>
+          <p class="mt-4 text-[15px] leading-relaxed text-ink-500">
+            Google recibe las solicitudes de autorización y de lectura de las
+            propiedades o sitios conectados. Cuando se habilite la planificación
+            con Google Ads, recibirá la identificación de la cuenta de Ads y las
+            consultas de planificación, que incluyen la dirección pública, países
+            e idioma seleccionados. Google procesa esa información conforme a sus
+            propias condiciones.
+          </p>
+          <p class="mt-4 text-[15px] leading-relaxed text-ink-500">
+            Para generar el análisis solicitado, el envío previsto a Anthropic se
+            limita a fechas, métricas agregadas y variaciones autorizadas. No
+            incluye consultas de búsqueda, direcciones, identificadores de cuentas
+            o recursos, datos de contacto, contenido público extraído ni el token
+            de acceso de Google. Antes de habilitar ese envío con datos reales, se
+            validarán el alcance y los avisos o consentimientos aplicables. La
+            autorización de este alcance no implica que la integración esté
+            activa.
+          </p>
+          <p class="mt-4 text-[15px] leading-relaxed text-ink-500">
+            La{" "}
+            <a
+              href="https://privacy.claude.com/en/articles/7996866-how-long-do-you-store-my-organization-s-data"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-teal-700 underline underline-offset-2"
+            >
+              política comercial de la API de Anthropic
+            </a>{" "}
+            contempla eliminación de entradas y salidas dentro de 30 días, con
+            excepciones por determinados servicios, acuerdos, políticas o
+            exigencias legales; no se afirma retención cero.
+          </p>
+          <p class="mt-4 text-[15px] leading-relaxed text-ink-500">
+            La aplicación se ejecuta localmente. Su historial y sus copias
+            persistentes se conservan en la instalación local; el alojamiento de
+            estas páginas informativas no implica alojar también la aplicación.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="border-l-2 border-teal-500 pl-4 font-display text-xl font-semibold tracking-tight sm:text-2xl">
+            Almacenamiento y seguridad
+          </h2>
+          <p class="mt-4 text-[15px] leading-relaxed text-ink-500">
+            El token de acceso de Google se mantiene en memoria hasta su
+            expiración o hasta que se descarte al desconectar o cerrar el servidor
+            local. Tesari Marketing no guarda un token de renovación. El
+            vencimiento lógico no garantiza que todas las copias físicas o de
+            respaldo se eliminen en ese mismo momento.
+          </p>
+          <p class="mt-4 text-[15px] leading-relaxed text-ink-500">
+            Los informes de las API permanecen en memoria; los snapshots en
+            archivos JSON y el historial de trabajo en PostgreSQL sí persisten
+            localmente. La configuración y ciertas credenciales técnicas también
+            se guardan en archivos locales.
+          </p>
+          <p class="mt-4 text-[15px] leading-relaxed text-ink-500">
+            Se mantienen registros técnicos para diagnóstico y seguridad; no se
+            garantiza que todos los registros de todos los sistemas estén libres
+            de datos. Una petición ya enviada a un proveedor puede tardar en
+            terminar tras una cancelación o un cierre de sesión.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="border-l-2 border-teal-500 pl-4 font-display text-xl font-semibold tracking-tight sm:text-2xl">
+            Conservación, desconexión y solicitudes
+          </h2>
+          <p class="mt-4 text-[15px] leading-relaxed text-ink-500">
+            Los datos persistentes de control y los resultados de análisis
+            guardados no tienen actualmente un plazo general de eliminación
+            automática definido y se conservan hasta que se gestionen o eliminen
+            expresamente. No existe un procedimiento de autoservicio publicado
+            para borrar todos esos datos. La eliminación puede requerir intervenir
+            en la instalación y no implica necesariamente la eliminación inmediata
+            de copias de respaldo.
+          </p>
+          <p class="mt-4 text-[15px] leading-relaxed text-ink-500">
+            Al cerrar el servidor local o desconectar Google, Tesari Marketing
+            dejará de utilizar el token local correspondiente. Esto no revoca por
+            sí mismo el permiso concedido a la aplicación en Google. El
+            propietario puede retirarlo desde los controles de conexiones de su
+            cuenta de Google.
+          </p>
+          <p class="mt-4 text-[15px] leading-relaxed text-ink-500">
+            Para consultar o solicitar la revisión o eliminación de información
+            vinculada a esta herramienta, puede contactar a{" "}
+            <a
+              href={`mailto:${SITE.email}`}
+              class="text-teal-700 underline underline-offset-2"
+            >{SITE.email}</a>. La atención de cada solicitud y las obligaciones de conservación
+            aplicables se revisarán según sus circunstancias.
+          </p>
+        </section>
+
+        <p class="hairline-t pt-8">
+          <a
+            href="/marketing-tesari/"
+            class="text-[15px] font-medium text-teal-700 underline underline-offset-2"
+          >
+            Acerca de Tesari Marketing
+          </a>
+        </p>
+      </div>
+    </div>
+  </article>
+</Base>
